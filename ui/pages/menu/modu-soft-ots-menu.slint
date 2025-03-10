@@ -1,0 +1,53 @@
+import { OldButton } from "../../components/old.slint";
+
+export component ModuSoftOtisMenu inherits Rectangle {
+    width: 1280px;
+    height: 800px;
+
+    background: #ffffff;
+
+    callback otis-single-page();
+    callback otis-double-page();
+
+    callback back-to-menu-page();
+
+    HorizontalLayout {
+        spacing: 7px;
+        x: root.width / 2 - 280px;
+        y: root.height / 2 - self.height / 4;
+        VerticalLayout {
+            spacing: 7px;
+              
+            OldButton {
+                width: 500px;
+                text: "Double";
+                clicked => {
+                    otis-double-page();
+                }
+            }
+            
+            OldButton {
+                width: 500px;
+                text: "Single (Export)";
+                clicked => {
+                    otis-single-page();
+                }
+            }     
+        }   
+    }
+
+    OldButton {
+        width: 200px;
+        height: 50px;
+        x: root.width - 200px - 40px;
+        y: root.height - 50px - 40px;
+
+        text: "Back";
+        font-size: 28px;
+        font-weight: 400;
+
+        clicked => {
+            back-to-menu-page();
+        }
+    }
+}

@@ -1,0 +1,81 @@
+export component OldButton inherits Rectangle {
+    width: 280px;
+    height: 85px;
+
+    
+    
+    in property <color> bg-color: #4f95ce;
+    in property <color> bg-pressed-color: #63b8fd;
+    
+    in property <length> border-thickness: 8px;
+    in property <color> border-brush-light: #bbbbbb;
+    in property <color> border-brush-dark: #666666;
+    
+    in property <string> text: "test";
+    in property <color> text-color: #ffffff;
+    in property <length> font-size: 38px;
+    in property <int> font-weight: 500;
+    
+    background: border-brush-light;
+    
+    // Border Color
+    Rectangle {
+        width: parent.height;
+        height: parent.height;
+        x: 0;
+        z: 0;
+        background: @linear-gradient(-45deg, border-brush-dark 49.75%,  border-brush-light 50.25%);
+    }
+    Rectangle {
+        z: 0;
+        width: parent.height;
+        height: parent.height;
+        x: parent.width - parent.height;
+        background: @linear-gradient(-45deg, border-brush-dark 49.75%,  border-brush-light 50.25%);
+    }
+    Rectangle {
+        width: parent.width - border-thickness;
+        height: parent.height;
+        background: @linear-gradient(0deg, border-brush-dark 49.75%,  border-brush-light 50.25%);
+        z: 4;
+    }
+    // ============================================================================================================
+
+    main := Rectangle {
+        width: parent.width - border-thickness;
+        height: parent.height - border-thickness;
+        background: bg-color;
+        z: 4;
+
+        animate background  {
+            duration: 0.4s;
+            easing: ease-out-expo;
+       }
+    }
+
+    Text {
+        text: text;
+        color: text-color;
+        font-size: font-size;
+        font-weight: font-weight;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        z: 5;
+    }
+
+    callback clicked();
+
+    ta := TouchArea {
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    } 
+
+    property <bool> active: false;
+    states [
+        active when ta.pressed: {
+            main.background: bg-pressed-color;
+        }
+    ] 
+}

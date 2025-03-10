@@ -1,0 +1,777 @@
+component InputBox inherits Rectangle{
+
+    in property <string> text;
+    property <length> text-padding: 20px;
+    property <color> bg-color: #ffffff;
+    
+    height: 130px;
+    width: 590px;
+
+    background: bg-color;
+    border-radius: 2.5px;
+    
+    // To make the text padding work
+    Rectangle {
+        width: root.width - text-padding - root.border-radius;
+        height: root.height - text-padding - root.border-radius;
+
+        Text {
+            text: text;
+            color: #000000;
+            font-size: 40px;
+            font-weight: 300;
+            horizontal-alignment: left;
+            vertical-alignment: center;
+            width: parent.width;
+            height: parent.height;
+        }
+    }
+}
+component NumberButtonsWithId inherits Rectangle {
+    width: 100px;
+    height: 80px;
+    
+    in property <string> top-text: "1";
+    in property <string> bottom-text: "DISP\nIN";
+    in property <string> id-text: "A";
+
+    in property <length> top-text-font-size: 18px;
+    in property <length> bottom-text-font-size: 20px;
+    in property <length> id-text-font-size: 24px;
+
+    in property <color> top-bg-color: #ffffff;
+    in property <color> bottom-bg-color: #0000ff;
+    in property <color> id-bg-color: #0000ff;
+
+    property <color> main-top-color: top-bg-color;
+    property <color> main-bottom-color: bottom-bg-color;
+    property <color> main-id-color: id-bg-color;
+    
+    in property <color> top-text-color: #000000;
+    in property <color> bottom-text-color: #ffffff;
+    in property <color> id-text-color: #000000;
+
+    in property <length> border-left-thickness: 1px;
+
+    callback clicked();
+
+    ta := TouchArea {
+        GridLayout {
+    
+            // Top Text
+            Rectangle {
+                row: 0;
+                colspan: 3;
+    
+                height: root.height*0.4;
+    
+                Text {
+                    text: top-text;
+                    color: top-text-color;
+    
+                    font-size: top-text-font-size;
+                    font-weight: 700;
+                }
+    
+                background: main-top-color;
+            }
+            
+            // Bottom Text
+            Rectangle {
+                row:1;
+    
+                width: root.width * 0.7;
+    
+                Text {
+                    text: bottom-text;
+    
+                    color: bottom-text-color;
+    
+                    font-size: bottom-text-font-size;
+                    font-weight: 900;
+    
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+    
+                background: main-bottom-color;
+            }
+    
+            Rectangle {
+                // Border between second text and id
+                row: 1; col: 1;
+                background: #ffffff;
+                width: border-left-thickness;
+        
+            }
+    
+            // ID (idk what to call it)
+            Rectangle 
+            {
+                row: 1;
+                col: 2;
+                border-color: #ffffff;
+        
+                Text {
+                    text: id-text;
+        
+                    color: id-text-color;
+        
+                    font-size: id-text-font-size;
+                    font-weight: 700;
+                }
+        
+                background: main-id-color;
+            }
+        }
+
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    }
+    
+
+    property <bool> active: false;
+    states [
+        active when ta.pressed: {
+            main-top-color:  #dddddd;
+            main-bottom-color: #3c83ff;
+            main-id-color: #3c83ff;
+        }
+    ]
+
+    background: bottom-bg-color;
+}
+component NumberButtons inherits Rectangle {
+    width: 100px;
+    height: 80px;
+    
+    in property <string> top-text: "1";
+    in property <string> bottom-text: "DISP\nIN";
+
+    in property <length> top-text-font-size: 18px;
+    in property <length> bottom-text-font-size: 20px;
+
+    in property <color> top-bg-color: #ffffff;
+    in property <color> bottom-bg-color: #0000ff;
+
+    property <color> main-top-color: top-bg-color;
+    property <color> main-bottom-color: bottom-bg-color;
+    
+    in property <color> top-text-color: #000000;
+    in property <color> bottom-text-color: #ffffff;
+
+    callback clicked();
+
+    ta := TouchArea{
+
+        GridLayout {
+            
+            // Top Text
+            Rectangle {
+                row: 0;
+                
+                height: root.height*0.4;
+                
+                Text {
+                    text: top-text;
+                    color: top-text-color;
+                    
+                    font-size: top-text-font-size;
+                    font-weight: 700;
+                }
+
+                background: main-top-color;
+            }
+            
+            // Bottom Text
+            Rectangle {
+            row:1;
+
+            width: root.width;
+
+            Text {
+                text: bottom-text;
+                
+                color: bottom-text-color;
+                
+                font-size: bottom-text-font-size;
+                font-weight: 900;
+                
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+            
+            background: main-bottom-color;
+            }
+        }
+
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    }
+    property <bool> active: false;
+    states [
+        active when ta.pressed: {
+            main-top-color:  #dddddd;
+            main-bottom-color: #3c83ff;
+        }
+    ]
+    
+    background: bottom-bg-color;
+}
+component FunctionButtons inherits Rectangle {
+    height: 70px;
+    width: 90px;
+
+    in property <color> bg-color: #ffffff;
+    in property <color> bg-hover-color: #dfdfdf;
+    property <color> main-bg-color: bg-color;
+
+    in property <string> text: "test";
+
+    callback clicked();
+
+    background: main-bg-color;
+    
+    ta := TouchArea {
+        Text {
+            text: text;
+            color: #000000;
+            font-size: 18px;
+        }
+
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    }
+        
+        property <bool> active: false;
+        states [
+        active when ta.pressed: {
+            main-bg-color:  bg-hover-color;
+        }
+    ]
+}
+component FileButtons inherits Rectangle {
+    height: 70px;
+
+    in property <string> text;
+
+    in property <color> bg-color: #bbbbbb;
+    in property <color> bg-hover-color: #dddddd;
+    property <color> main-bg-color: bg-color;
+    
+    callback clicked();
+
+    background: main-bg-color;
+
+    border-width: 2px;
+    border-radius: 4px;
+    border-color: main-bg-color;
+
+    ta := TouchArea {
+        Text {
+            text: text;
+            font-size: 16px;
+        }
+
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    }
+
+    property <bool> active: false;
+    states [
+        active when ta.pressed: {
+            main-bg-color: bg-hover-color;
+        }
+    ]  
+}
+
+export component SchindlerDoublePage inherits Rectangle{
+    width: 1280px;
+    height: 800px;
+
+    background: #999999;
+    
+    in-out property <string> output-text;
+
+    callback back-to-menu-page();
+
+    GridLayout {
+        padding: 25px;
+        spacing: 25px;
+
+        // Left side
+        GridLayout {
+    
+            InputBox {
+                row: 0;
+                col: 0;
+    
+                text: output-text;
+                colspan: 2;
+                
+                border-radius: 2.5px;
+            }
+    
+            GridLayout {
+                row: 1;
+                col: 1;
+    
+                padding-top: 20px;
+    
+                spacing: 10px;
+    
+                Row {
+                    FunctionButtons {
+                        text: "MODULE";
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "7";
+                        bottom-text: "DISP\nSTATE";
+                        id-text: "D";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "8";
+                        bottom-text: "ENT\nCALL";
+                        id-text: "E";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "9";
+                        bottom-text: "TEST";
+                        id-text: "F";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+    
+                Row {
+                    FunctionButtons {
+                        text: "FUNCT";
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "4";
+                        bottom-text: "DISP\nIN";
+                        id-text: "A";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "5";
+                        bottom-text: "SEL\nOUT";
+                        id-text: "B";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "6";
+                        bottom-text: "";
+                        id-text: "C";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+    
+                Row {
+                    FunctionButtons {
+                        text: "SET";
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "1";
+                        bottom-text: "ON";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "2";
+                        bottom-text: "UP";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "3";
+                        bottom-text: "DOWN";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+    
+                Row {
+                    FunctionButtons {
+                        text: "";
+                        bg-color: #0000ff;
+                        bg-hover-color: #3c83ff;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "0";
+                        bottom-text: "OFF";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "GO ON";
+                        bottom-text: "GO BACK";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "CLEAR";
+                        bottom-text: "ENTER";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+            }
+    
+            GridLayout {
+                row: 2;
+                col: 1;
+                spacing-vertical: 30px;
+                padding-bottom: 60px;
+
+    
+                Row {
+                    Text {
+                        text: "Connect the blue connector.";
+                        vertical-alignment: bottom;
+                        color: #000000;
+                        font-size: 16px;
+                        font-weight: 500;
+                    }
+                }
+    
+                Row {
+                    GridLayout {
+                        spacing: 10px;
+                        Row {
+                            FileButtons{
+                                text: "EXPORT";
+                            }
+                        }
+                        Row {
+                            FileButtons{
+                                text: "SAVE";
+                            }
+            
+                            FileButtons{
+                                text: "EXIT";
+                                clicked => {back-to-menu-page();}
+                            }
+                        }
+                    }
+                }
+            }   
+    
+            
+            
+        }
+
+        // Right side
+        GridLayout {
+    
+            InputBox {
+                row: 0;
+                col: 0;
+    
+                text: output-text;
+                colspan: 2;
+                
+                border-radius: 2.5px;
+            }
+    
+            GridLayout {
+                row: 1;
+                col: 1;
+    
+                padding-top: 20px;
+    
+                spacing: 10px;
+    
+                Row {
+                    FunctionButtons {
+                        text: "MODULE";
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "7";
+                        bottom-text: "DISP\nSTATE";
+                        id-text: "D";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "8";
+                        bottom-text: "ENT\nCALL";
+                        id-text: "E";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "9";
+                        bottom-text: "TEST";
+                        id-text: "F";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+    
+                Row {
+                    FunctionButtons {
+                        text: "FUNCT";
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "4";
+                        bottom-text: "DISP\nIN";
+                        id-text: "A";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "5";
+                        bottom-text: "SEL\nOUT";
+                        id-text: "B";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtonsWithId{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "6";
+                        bottom-text: "";
+                        id-text: "C";
+    
+                        id-text-font-size: 20px;
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+    
+                Row {
+                    FunctionButtons {
+                        text: "SET";
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "1";
+                        bottom-text: "ON";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "2";
+                        bottom-text: "UP";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "3";
+                        bottom-text: "DOWN";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+    
+                Row {
+                    FunctionButtons {
+                        text: "";
+                        bg-color: #0000ff;
+                        bg-hover-color: #3c83ff;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "0";
+                        bottom-text: "OFF";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "GO ON";
+                        bottom-text: "GO BACK";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+    
+                    NumberButtons{
+                        height: 70px;
+                        width: 90px;
+    
+                        top-text: "CLEAR";
+                        bottom-text: "ENTER";
+    
+                        top-text-font-size: 20px;
+                        bottom-text-font-size: 18px;
+                    }
+                }
+            }
+    
+            GridLayout {
+                row: 2;
+                col: 1;
+                spacing-vertical: 30px;
+                padding-bottom: 60px;
+
+    
+                Row {
+                    Text {
+                        text: "Connect the orange connector.";
+                        vertical-alignment: bottom;
+                        color: #000000;
+                        font-size: 16px;
+                        font-weight: 500;
+                    }
+                }
+    
+                Row {
+                    GridLayout {
+                        spacing: 10px;
+                        Row {
+                            FileButtons{
+                                text: "EXPORT";
+                            }
+                        }
+                        Row {
+                            FileButtons{
+                                text: "SAVE";
+                            }
+            
+                            FileButtons{
+                                text: "EXIT";
+                                clicked => { back-to-menu-page(); }
+                            }
+                        }
+                    }
+                }
+            }       
+        }
+    }
+}

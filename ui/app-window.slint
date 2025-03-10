@@ -1,0 +1,168 @@
+import "./fonts/lcddot.ttf";
+// import { MenuPage } from "./pages/menu-page.slint";
+import { SchindlerPage } from "./pages/schindler-page.slint";
+import { OtisPage } from "./pages/otis-page.slint";
+import { OtisDoublePage } from "./pages/otis-double-page.slint";
+import { SchindlerDoublePage } from "./pages/schindler-double-page.slint";
+import { HomeMenu } from "./pages/menu/home-menu.slint";
+import { ModuSoftKnePage } from "./pages/menu/modu-soft-kne.slint";
+import { ModuSoftOtisMenu } from "./pages/menu/modu-soft-ots-menu.slint";
+
+export enum Page {
+    Menu,
+    OtisMenu,
+    SchindlerMenu,
+    ModuSoftKneMenu,
+
+    OtisPage,
+    OtisDoublePage
+}
+
+export component AppWindow inherits Window {
+    title: "MODU-TOOL";
+    background: #ffffff;
+
+    in-out property<Page> current-page: Page.Menu;
+    
+    width: 1280px;
+    height: 800px;
+    
+    Rectangle {
+        background: #9d9d9d;
+        height: 300px;
+        width: 460px;
+    }
+    
+
+    // “Bubble up” child properties & callbacks so they are accessible from Rust:
+
+    // ==================================================== //
+    //                ~~ Global CALLBACKS ~~                //
+    // ==================================================== //
+        // Back to Menu
+        callback back-to-menu-page();
+
+    // ----------------------------------------------------
+
+
+
+    // ================================================== //
+    //                ~~ MENU CALLBACKS ~~                //
+    // ================================================== //
+
+        // Home MENU
+        callback modusoft-kne();
+        callback modusoft-ots();
+        callback modusoft-thy();
+        callback modusoft-ora();
+        callback modusoft-sch();
+
+        // Otis MENU
+        callback otis-single-page();
+        callback otis-double-page();
+
+    // --------------------------------------------------
+
+
+    // Schindler Page
+    callback click-esc();
+    callback click-up();
+    callback click-down();
+    callback click-ok();
+
+    in-out property <[string]> lcd-text: [ "h", "e", "l", "l", "o", " ", " ", " ", "w", "o", "r", "l", "d", "!" ];
+
+    // ============================================================================================================
+    // Otis Page
+    callback get-com-port-data();
+    callback send-data-to-port(string);
+    
+    in-out property <string> output-text;
+
+    // ============================================================================================================
+    
+
+    menu-page-component := HomeMenu { 
+        visible: current-page == Page.Menu; 
+
+        // Bind Properties
+        
+        // Bind Callbacks
+        modusoft-kne => { modusoft-kne() }
+        modusoft-ots => { modusoft-ots() }
+        modusoft-thy => { modusoft-thy() }
+        modusoft-ora => { modusoft-ora() }
+        modusoft-sch => { modusoft-sch() }
+    }
+
+
+
+
+
+    otis-menu := ModuSoftOtisMenu {
+        visible: current-page == Page.OtisMenu; 
+
+        // Bind Properties
+        
+        // Bind Callbacks
+        back-to-menu-page => { back-to-menu-page() }
+
+        otis-single-page => { otis-single-page() }
+        otis-double-page => { otis-double-page() }
+    }
+
+    otis-page-component := OtisPage {
+        visible: current-page == Page.OtisPage;
+
+        // Bind Properties
+        output-text: output-text;
+
+        // Bind Callbacks
+        get-com-port-data => { get-com-port-data() }
+        back-to-menu-page => { back-to-menu-page() }
+        // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS        
+    }
+
+    otis--double-page-component := OtisDoublePage {
+        visible: current-page == Page.OtisDoublePage;
+
+        // Bind Properties
+        output-text: output-text;
+
+        // Bind Callbacks
+        // get-com-port-data => { get-com-port-data() }
+        back-to-menu-page => { back-to-menu-page() }
+        // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS        
+    }
+
+
+
+
+
+    modu-soft-kne-page-component := ModuSoftKnePage {
+        visible: current-page == Page.ModuSoftKneMenu;
+
+        // Bind Properties
+
+        // Bind Callbacks
+        back-to-menu-page => { back-to-menu-page() }
+    }
+    
+    schindler-page-component := SchindlerPage { 
+        visible: current-page == Page.SchindlerMenu;
+        
+        // Bind Properties
+        lcd-text: lcd-text;
+        
+        // Bind Callbacks
+        click-esc => { click-esc() }
+        click-up => { click-up() }
+        click-down => { click-down() }
+        click-ok => { click-ok() }  
+
+        back-to-menu-page => { back-to-menu-page() }
+    }
+
+
+    
+}

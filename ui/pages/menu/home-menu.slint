@@ -1,0 +1,79 @@
+import { OldButton } from "../../components/old.slint";
+
+export component HomeMenu inherits Rectangle {
+    width: 1280px;
+    height: 800px;
+
+    background: #ffffff;
+
+    callback modusoft-kne();
+    callback modusoft-ots();
+    callback modusoft-thy();
+    callback modusoft-ora();
+    callback modusoft-sch();
+
+    HorizontalLayout {
+        spacing: 7px;
+        x: root.width / 2 - 280px;
+        y: root.height / 2 - self.height / 4;
+        VerticalLayout {
+            spacing: 7px;
+            OldButton {
+                text: "Modu-soft.kne";
+                clicked => {
+                    modusoft-kne();
+                }
+            }
+            OldButton {
+                text: "Modu-soft.ots";
+                clicked => {
+                    modusoft-ots();
+                }
+            }
+            OldButton {
+                text: "Modu-soft.thy";
+                clicked => {
+                    modusoft-thy();
+                }
+            }
+        }
+        VerticalLayout {
+            spacing: 7px;
+
+            OldButton {
+                text: "Modu-soft.ora";
+                clicked => {
+                    modusoft-ora();
+                }
+            }
+            OldButton {
+                text: "Modu-soft.sch";
+                clicked => {
+                    modusoft-sch();
+                }
+            }
+        }
+    }
+
+    VerticalLayout {
+        padding: 40px;
+        VerticalLayout {
+            width: 240px;
+            OldButton {
+                width: 240px;
+                height: 56px;
+    
+                text: "Support";
+                font-size: 35px;
+                font-weight: 400;
+            }
+            Text {
+                horizontal-alignment: right; 
+                text: "Verison 0.1.0";
+                font-size: 20px;
+                font-weight: 400;
+                color: #b5b5b5;
+            }
+        }
+    }
+}
