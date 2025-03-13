@@ -7,15 +7,18 @@ import { SchindlerDoublePage } from "./pages/schindler-double-page.slint";
 import { HomeMenu } from "./pages/menu/home-menu.slint";
 import { ModuSoftKnePage } from "./pages/menu/modu-soft-kne.slint";
 import { ModuSoftOtisMenu } from "./pages/menu/modu-soft-ots-menu.slint";
+import { ModuSoftSchMenu } from "./pages/menu/modu-soft-sch-menu.slint";
 
 export enum Page {
     Menu,
     OtisMenu,
-    SchindlerMenu,
     ModuSoftKneMenu,
+    ModuSoftSchMenu,
 
     OtisPage,
-    OtisDoublePage
+    OtisDoublePage,
+
+    SchindlerPage,
 }
 
 export component AppWindow inherits Window {
@@ -60,6 +63,9 @@ export component AppWindow inherits Window {
         // Otis MENU
         callback otis-single-page();
         callback otis-double-page();
+
+        // Schindler MENU
+        callback schindler-page();
 
     // --------------------------------------------------
 
@@ -123,7 +129,7 @@ export component AppWindow inherits Window {
         // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS        
     }
 
-    otis--double-page-component := OtisDoublePage {
+    otis-double-page-component := OtisDoublePage {
         visible: current-page == Page.OtisDoublePage;
 
         // Bind Properties
@@ -147,13 +153,26 @@ export component AppWindow inherits Window {
         // Bind Callbacks
         back-to-menu-page => { back-to-menu-page() }
     }
+
+
+
+
     
-    schindler-page-component := SchindlerPage { 
-        visible: current-page == Page.SchindlerMenu;
+    schindler-menu := ModuSoftSchMenu { 
+        visible: current-page == Page.ModuSoftSchMenu;
         
         // Bind Properties
-        lcd-text: lcd-text;
         
+        // Bind Callbacks 
+        schindler-page => { schindler-page() }
+        back-to-menu-page => { back-to-menu-page() }
+    } 
+
+    schindler-component := SchindlerPage {
+        visible: current-page == Page.SchindlerPage;
+
+        // Bind Properties
+
         // Bind Callbacks
         click-esc => { click-esc() }
         click-up => { click-up() }
@@ -162,7 +181,4 @@ export component AppWindow inherits Window {
 
         back-to-menu-page => { back-to-menu-page() }
     }
-
-
-    
 }

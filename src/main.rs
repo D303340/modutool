@@ -83,7 +83,7 @@ fn navigation(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
             let ui_weak = ui_weak.clone();
             ui.on_modusoft_sch(move || {
                 if let Some(ui) = ui_weak.upgrade() {
-                    ui.set_current_page(Page::Menu);
+                    ui.set_current_page(Page::ModuSoftSchMenu);
                 }
             });
         }
@@ -112,6 +112,19 @@ fn navigation(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
                 }
             });
         }
+    }
+
+    // ================================================== //
+    //                ~~ SCHINDLER MENU ~~                //
+    // ================================================== //
+    {
+        // To Schindler PAGE
+        let ui_weak = ui_weak.clone();
+        ui.on_schindler_page(move || {
+            if let Some(ui) = ui_weak.upgrade() {
+                ui.set_current_page(Page::SchindlerPage);
+            }
+        });
     }
 }
 

@@ -1,0 +1,440 @@
+enum ButtonType {
+    Normal,
+    Warning, // YELLOW
+    Critical, // RED
+}
+
+export component Button inherits Rectangle {
+    in property <ButtonType> type: Normal;
+
+    in property <brush> bg-color: @linear-gradient(0, #151723 0%, #373737 100%);
+    in property <brush> bg-select-color: @linear-gradient(0, #0f142d 0%, #4b4b4b 100%);
+
+    property <brush> main-bg-color;
+    property <brush> main-bg-select-color;
+
+    property <brush> bg-warning: #ffbb0f;
+    property <brush> bg-critical: #f4233f;
+
+    in property <image> icon;
+    in property <length> icon-width: 50px;
+    in property <length> icon-height: 50px;
+
+    background: {
+        if type == ButtonType.Normal{
+            bg-color
+        }
+        else if type == ButtonType.Warning {
+            orange
+        }
+        else if type == ButtonType.Critical {
+            red
+        }
+        else { // DEFAULT 
+            bg-color
+        }
+    };
+
+
+    in property <string> text: "Button!";
+    in property <length> font-size: 16px;
+    in property <int> font-weight: 500;
+    in property <color> text-color: #ffffff;
+
+    border-radius: 8px;
+
+
+    Image {
+        source: icon;
+        width: icon-width;
+        height: icon-height;
+        image-fit: cover;
+    }
+
+    Text {
+        text: root.text;
+
+        font-size: root.font-size;
+        font-weight: root.font-weight;
+
+        color: text-color;
+    }
+
+
+    // Click Function
+    callback clicked();
+
+    ta := TouchArea {
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    } 
+
+    property <bool> active: false;
+    states [
+        active when ta.pressed: {
+            root.background: bg-select-color;
+        }
+    ] 
+    
+}
+
+export component TextField inherits Rectangle {
+    // width: 250px;
+    // height: 75px;
+
+    in property <string> text: "TextField";
+    in property <brush> bg-color: #423F3E;
+    in property <brush> bg-border-color: #6C6C6C;
+    in property <length> border-thickness: 1px;
+    in property <brush> text-color: #cacaca;
+    in property <length> text-padding: 20px;
+
+    in property <TextHorizontalAlignment> horizontal-alignment;
+    in property <TextVerticalAlignment> vertical-alignment: center;
+
+    background: bg-color;
+    border-color: bg-border-color;
+    border-width: border-thickness;
+
+    Text {
+        width: root.width - (border-thickness * 2) - text-padding;
+        height: root.height - border-thickness - 0;
+
+        horizontal-alignment: root.horizontal-alignment;
+        vertical-alignment: root.vertical-alignment;
+
+        text: root.text;
+        font-size: 20px;
+
+        color: text-color;
+    }
+}
+
+export component ToggleSlide inherits Rectangle {
+    in property <float> size: 1;
+    in property <length> slide-offset: 9px;
+
+    in property <brush> bg-on-color: #107eff;
+    in property <brush> bg-off-color: #b5b5b5;
+
+    width: 100px * size;
+    height: 50px * size;
+    border-radius: 999px;
+    background: #107eff;
+
+    slide := Rectangle {
+        background: #ffffff;
+        border-radius: 999px;
+
+        height: root.height - (slide-offset * size);
+        width: root.height - (slide-offset * size);
+
+        x: root.height + ((slide-offset/2) * size);
+
+        animate x {
+             duration: 0.08s;
+        }
+    }
+
+    // Click Function
+    callback clicked();
+
+    ta := TouchArea {
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    } 
+
+    property <bool> active: false;
+    states [
+        active when active: {
+            root.background: bg-off-color;
+            slide.x: (slide-offset/2) * size;
+        } 
+    ] 
+
+}
+
+export component SchindlerTestPage inherits Rectangle {
+    width: 1280px;
+    height: 800px;
+
+    background: #2B2B2B;
+    
+    GridLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-bottom: 20px;
+
+        // HEADER
+        Rectangle {
+            row: 0;
+            col: 0;
+            colspan: 2;
+
+            height: 60px;
+
+            Button {
+                width: 45px;
+                height: 45px;
+                x: 1280px - 65px;
+                border-radius: 6px;
+                
+                bg-color: #EE1D36;
+
+                text: "";
+
+                icon: @image-url("../images/X.png");
+                icon-width: 22px;
+                icon-height: 22px;
+            }
+        }
+
+        // RIGHT MENU
+        Rectangle {
+            row: 1;
+            col: 1;
+            
+            width: 250px;
+            height: 720px;
+
+            GridLayout {
+                padding-left: 12px;
+                padding-right: 12px;
+                spacing: 4px;
+
+                // 1 -> 3
+                Row {
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "1";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "2";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "3";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                }
+                
+                // 4 -> 6
+                Row {
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "4";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "5";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "6";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                }
+
+                // 7 -> 9
+                Row {
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "7";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "8";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "9";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                }
+
+                Row {
+                    Button { 
+                        width: 77px; 
+                        height: 77px;
+                        bg-color: #d9d9d9;
+    
+                        text: "0";
+                        text-color: #000000;
+                        font-size: 24px;
+                        font-weight: 500;
+                    }
+                    GridLayout {
+                        colspan: 2;
+                        spacing: 4px;
+                        Row {
+                            TextField {
+                                colspan: 2;
+                                text: "ABC123!@#";
+                            }
+                        }
+                        Row {
+                            Button {
+                                text: "";
+                                bg-color: #cccccc;
+                                border-radius: 4px;
+                            }
+                            Button {
+                                text: "";
+                                bg-color: #cccccc;
+                                border-radius: 4px;
+                            }
+                        }
+
+                    }
+                }
+
+                Row {
+                    VerticalLayout {
+                        colspan: 3;
+                        padding-top: 20px;
+                        alignment: start;
+                        spacing: 8px;
+                        VerticalLayout {
+                            alignment: start;
+                            spacing: 2px;
+                            Text {
+                                text: "List Mode:";
+                                font-size: 15px;
+                                font-weight: 500;
+                            }
+                            HorizontalLayout {
+                                spacing: 8px;
+                                Rectangle {
+                                    background: #d9d9d9;
+                                    height: 30px;
+                                    border-radius: 2px;
+                                }
+                                ToggleSlide {
+                                    size: 0.6;
+                                }
+                            }
+                        }
+
+                        VerticalLayout {
+                            alignment: start;
+                            spacing: 2px;
+                            Text {
+                                text: "Command:";
+                                font-size: 15px;
+                                font-weight: 500;
+                            }
+                            HorizontalLayout {
+                                spacing: 8px;
+                                Rectangle {
+                                    background: #d9d9d9;
+                                    height: 30px;
+                                    border-radius: 2px;
+                                }
+                                Button {
+                                    bg-color: #107eff;
+                                    text: "";
+                                    width: 60px;
+                                    border-radius: 4px;
+                                }
+                            }
+                        }
+
+                        VerticalLayout {
+                            alignment: start;
+                            spacing: 2px;
+                            Text {
+                                text: "???";
+                                font-size: 15px;
+                                font-weight: 500;
+                            }
+                            HorizontalLayout {
+                                spacing: 8px;
+                                Rectangle {
+                                    background: #d9d9d9;
+                                    height: 30px;
+                                    border-radius: 2px;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Row {
+                    Rectangle {
+                        Image {
+                            source: @image-url("../images/serial_port.png");
+                            width: 100px;
+                            x: 130px;
+                            y: -35px;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // MAIN
+        Rectangle {
+            row: 1;
+            col: 0;
+            border-width: 1px;
+            background: #423F3E;
+            border-color: #646363;
+        }
+    }
+}
