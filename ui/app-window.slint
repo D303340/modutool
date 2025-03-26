@@ -9,6 +9,15 @@ import { ModuSoftKnePage } from "./pages/menu/modu-soft-kne.slint";
 import { ModuSoftOtisMenu } from "./pages/menu/modu-soft-ots-menu.slint";
 import { ModuSoftSchMenu } from "./pages/menu/modu-soft-sch-menu.slint";
 
+import { SchindlerTestPage } from "./pages/schindler-test-page.slint";
+
+// DEBUG
+import { StyleTestPage } from "./pages/style-test.slint";
+// ------------------------------------------------------
+
+
+
+
 export enum Page {
     Menu,
     OtisMenu,
@@ -19,13 +28,17 @@ export enum Page {
     OtisDoublePage,
 
     SchindlerPage,
+
+    SchindlerTestPage,
+    
+    StyleTestPage,
 }
 
 export component AppWindow inherits Window {
     title: "MODU-TOOL";
     background: #ffffff;
 
-    in-out property<Page> current-page: Page.Menu;
+    in-out property<Page> current-page: Page.SchindlerTestPage;
     
     width: 1280px;
     height: 800px;
@@ -40,7 +53,7 @@ export component AppWindow inherits Window {
     // “Bubble up” child properties & callbacks so they are accessible from Rust:
 
     // ==================================================== //
-    //                ~~ Global CALLBACKS ~~                //
+    //                -- Global CALLBACKS --                //
     // ==================================================== //
         // Back to Menu
         callback back-to-menu-page();
@@ -50,7 +63,7 @@ export component AppWindow inherits Window {
 
 
     // ================================================== //
-    //                ~~ MENU CALLBACKS ~~                //
+    //                -- MENU CALLBACKS --                //
     // ================================================== //
 
         // Home MENU
@@ -59,6 +72,7 @@ export component AppWindow inherits Window {
         callback modusoft-thy();
         callback modusoft-ora();
         callback modusoft-sch();
+        callback style-test();
 
         // Otis MENU
         callback otis-single-page();
@@ -78,6 +92,18 @@ export component AppWindow inherits Window {
 
     in-out property <[string]> lcd-text: [ "h", "e", "l", "l", "o", " ", " ", " ", "w", "o", "r", "l", "d", "!" ];
 
+
+    // ================================================== //
+    //                -- SCHINDLER Page --                //
+    // ================================================== //
+        // CALLBACKS:
+
+        // PROPERTIES: 
+        in-out property <string> console-output: "test123";
+
+    // --------------------------------------------------
+
+
     // ============================================================================================================
     // Otis Page
     callback get-com-port-data();
@@ -87,11 +113,19 @@ export component AppWindow inherits Window {
 
     // ============================================================================================================
     
+    // ======================================= //
+    //               DEBUGGING                 //
+    // --------------------------------------- //
 
-    menu-page-component := HomeMenu { 
-        visible: current-page == Page.Menu; 
-
+    if current-page == Page.StyleTestPage: StyleTestPage {
         // Bind Properties
+    }
+   
+    // ======================================= //
+
+
+    if current-page == Page.Menu: HomeMenu {
+         // Bind Properties
         
         // Bind Callbacks
         modusoft-kne => { modusoft-kne() }
@@ -99,15 +133,11 @@ export component AppWindow inherits Window {
         modusoft-thy => { modusoft-thy() }
         modusoft-ora => { modusoft-ora() }
         modusoft-sch => { modusoft-sch() }
+        style-test => { style-test() }
     }
 
 
-
-
-
-    otis-menu := ModuSoftOtisMenu {
-        visible: current-page == Page.OtisMenu; 
-
+    if current-page == Page.OtisMenu: ModuSoftOtisMenu {
         // Bind Properties
         
         // Bind Callbacks
@@ -117,37 +147,28 @@ export component AppWindow inherits Window {
         otis-double-page => { otis-double-page() }
     }
 
-    otis-page-component := OtisPage {
-        visible: current-page == Page.OtisPage;
-
+    if current-page == Page.OtisPage: OtisPage {
         // Bind Properties
         output-text: output-text;
 
         // Bind Callbacks
         get-com-port-data => { get-com-port-data() }
         back-to-menu-page => { back-to-menu-page() }
-        // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS        
+        // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS 
     }
 
-    otis-double-page-component := OtisDoublePage {
-        visible: current-page == Page.OtisDoublePage;
-
+    if current-page == Page.OtisDoublePage: OtisDoublePage {
         // Bind Properties
         output-text: output-text;
 
         // Bind Callbacks
         // get-com-port-data => { get-com-port-data() }
         back-to-menu-page => { back-to-menu-page() }
-        // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS        
+        // send-data-to-port => { send-data-to-port() } NO NEED TO BIND THIS
     }
 
 
-
-
-
-    modu-soft-kne-page-component := ModuSoftKnePage {
-        visible: current-page == Page.ModuSoftKneMenu;
-
+    if current-page == Page.ModuSoftKneMenu: ModuSoftKnePage {
         // Bind Properties
 
         // Bind Callbacks
@@ -156,21 +177,15 @@ export component AppWindow inherits Window {
 
 
 
-
-    
-    schindler-menu := ModuSoftSchMenu { 
-        visible: current-page == Page.ModuSoftSchMenu;
-        
+    if current-page == Page.ModuSoftSchMenu: ModuSoftSchMenu {
         // Bind Properties
         
         // Bind Callbacks 
         schindler-page => { schindler-page() }
         back-to-menu-page => { back-to-menu-page() }
-    } 
-
-    schindler-component := SchindlerPage {
-        visible: current-page == Page.SchindlerPage;
-
+    }
+    
+    if current-page == Page.SchindlerPage: SchindlerPage {
         // Bind Properties
 
         // Bind Callbacks
@@ -180,5 +195,13 @@ export component AppWindow inherits Window {
         click-ok => { click-ok() }  
 
         back-to-menu-page => { back-to-menu-page() }
+    }
+    
+
+    if current-page == Page.SchindlerTestPage: SchindlerTestPage {
+        // Bind Properties
+        console-output <=> console-output;
+        
+        // Bind Callbacks
     }
 }

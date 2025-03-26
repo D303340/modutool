@@ -11,6 +11,7 @@ export component HomeMenu inherits Rectangle {
     callback modusoft-thy();
     callback modusoft-ora();
     callback modusoft-sch();
+    callback style-test();
 
     HorizontalLayout {
         spacing: 7px;
@@ -51,6 +52,12 @@ export component HomeMenu inherits Rectangle {
                 text: "Modu-soft.sch";
                 clicked => {
                     modusoft-sch();
+                }
+            }
+            OldButton {
+                text: "Style Test";
+                clicked => {
+                    style-test();
                 }
             }
         }
