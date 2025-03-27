@@ -20,7 +20,6 @@ use slint::SharedString;
 mod helper;
 mod comport;
 mod mqtt;
-use mqtt::{create_mqtt_worker};
 
 
 slint::include_modules!();
@@ -308,9 +307,24 @@ fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
     let ui_weak = ui.as_weak();
     
-
+    
     // Create the MQTT worker (connects to mqtt.lift-online.eu)
-    let mqtt_worker = create_mqtt_worker(&ui, ui_weak.clone());
+    let id = "hfguh82ge1ugdbflb23r32";
+    let host = "mqtt.lift-online.eu";
+    let port = 1883;
+    let username = "ali";
+    let password = "ooxeej0J";
+    
+    let mut mqtt_options = MqttOptions::new(id, host, port);
+    mqtt_options.clean_start();
+
+    mqtt_options.set_credentials(username, password);
+    mqtt_options.set_keep_alive(Duration::from_secs(10));
+
+    let (client, eventloop) = AsyncClient::new(mqtt_options, 10);
+
+    // let mqtt_worker = create_mqtt_worker(&ui, ui_weak.clone());
+    let mqtt_worker = MqttWorker::new(&ui, client, eventloop);
 
 
 
