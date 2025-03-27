@@ -1,19 +1,14 @@
-use rumqttc::v5::{
-    AsyncClient, 
-    Event, 
-    EventLoop, 
-    MqttOptions
-};
+use rumqttc::v5::{AsyncClient, Event, EventLoop, MqttOptions};
 
 use rumqttc::v5::mqttbytes::v5::{LastWill, Packet};
 use rumqttc::v5::mqttbytes::QoS;
 use rumqttc::{TlsConfiguration, Transport};
 use slint::SharedString;
-use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
-use std::fs;
-use std::time::Duration;
-use std::thread;
 use std::env;
+use std::fs;
+use std::thread;
+use std::time::Duration;
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 use crate::AppWindow;
 use slint::ComponentHandle;
@@ -43,7 +38,7 @@ pub async fn mqtt_worker_loop(
 ) {
     // Example: Publish something initially
     client
-        .publish("ui", QoS::ExactlyOnce, false, "1")
+        .publish("test/ui", QoS::ExactlyOnce, false, "1")
         .await
         .unwrap();
 
@@ -52,24 +47,24 @@ pub async fn mqtt_worker_loop(
 
     // Handle commands from the channel (Publish, Quit, etc.)
     loop {
-        let m = r.recv().await;
 
-        match m {
-            None => {}
-            Some(MqttMessage::Publish { topic, payload }) => {
-                client
-                    .publish(
-                        topic.to_string(),
-                        QoS::AtLeastOnce,
-                        false,
-                        payload.to_string(),
-                    )
-                    .await
-                    .unwrap();
-            }
-            Some(MqttMessage::Quit) => {
-                client_task.abort();
-                return;
+        if let Some(msg) = r.recv().await {
+            match msg {
+                MqttMessage::Publish { topic, payload } => {
+                    client
+                        .publish(
+                            topic.to_string(),
+                            QoS::AtLeastOnce,
+                            false,
+                            payload.to_string(),
+                        )
+                        .await
+                        .unwrap();
+                }
+                MqttMessage::Quit => {
+                    client_task.abort();
+                    break;
+                }
             }
         }
     }
@@ -82,8 +77,11 @@ async fn mqtt_client(
     client: AsyncClient,
     mut eventloop: EventLoop,
 ) -> tokio::io::Result<()> {
-    client.subscribe("test/sch/output", QoS::AtLeastOnce).await.unwrap();
 
+    client
+        .subscribe("test/sch/output", QoS::AtMostOnce)
+        .await
+        .unwrap();
     loop {
         let event = eventloop.poll().await;
 
@@ -129,3 +127,4 @@ impl MqttWorker {
         self.worker_thread.join()
     }
 }
+
