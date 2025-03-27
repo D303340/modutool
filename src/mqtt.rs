@@ -1,19 +1,14 @@
-use rumqttc::v5::{
-    AsyncClient, 
-    Event, 
-    EventLoop, 
-    MqttOptions
-};
+use rumqttc::v5::{AsyncClient, Event, EventLoop, MqttOptions};
 
 use rumqttc::v5::mqttbytes::v5::{LastWill, Packet};
 use rumqttc::v5::mqttbytes::QoS;
 use rumqttc::{TlsConfiguration, Transport};
 use slint::SharedString;
-use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
-use std::fs;
-use std::time::Duration;
-use std::thread;
 use std::env;
+use std::fs;
+use std::thread;
+use std::time::Duration;
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 use crate::AppWindow;
 
@@ -48,7 +43,7 @@ pub async fn mqtt_worker_loop(
 ) {
     // Example: Publish something initially
     client
-        .publish("ui", QoS::ExactlyOnce, false, "1")
+        .publish("test/ui", QoS::ExactlyOnce, false, "1")
         .await
         .unwrap();
 
@@ -61,7 +56,12 @@ pub async fn mqtt_worker_loop(
             match msg {
                 MqttMessage::Publish { topic, payload } => {
                     client
-                        .publish(topic.to_string(), QoS::AtLeastOnce, false, payload.to_string())
+                        .publish(
+                            topic.to_string(),
+                            QoS::AtLeastOnce,
+                            false,
+                            payload.to_string(),
+                        )
                         .await
                         .unwrap();
                 }
@@ -81,7 +81,10 @@ async fn mqtt_client(
     client: AsyncClient,
     mut eventloop: EventLoop,
 ) -> tokio::io::Result<()> {
-    client.subscribe("test/sch/output", QoS::AtMostOnce).await.unwrap();
+    client
+        .subscribe("test/sch/output", QoS::AtMostOnce)
+        .await
+        .unwrap();
 
     loop {
         match eventloop.poll().await {
@@ -130,7 +133,7 @@ pub fn create_mqtt_worker(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) -> Mq
     mqttoptions.set_credentials("ali", "ooxeej0J");
 
     // 5) Last Will (optional)
-    let will = LastWill::new("ui", "0", QoS::AtMostOnce, false, None);
+    let will = LastWill::new("test/ui", "0", QoS::AtMostOnce, false, None);
     mqttoptions.set_last_will(will);
 
     // Create the client + eventloop pair
@@ -152,3 +155,4 @@ pub fn create_mqtt_worker(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) -> Mq
         worker_thread,
     }
 }
+
