@@ -12,7 +12,6 @@ use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 use crate::AppWindow;
 use slint::ComponentHandle;
-
 // Re-export so main.rs can see this.
 pub enum MqttMessage {
     Quit,
@@ -22,8 +21,16 @@ pub enum MqttMessage {
     },
 }
 
+pub enum MqttEvent {
+    Incoming {
+        topic: SharedString,
+        payload: SharedString,
+    },
+}
+
 pub struct MqttWorker {
     pub channel: UnboundedSender<MqttMessage>,
+    pub events: Option<UnboundedReceiver<MqttEvent>>,
     worker_thread: thread::JoinHandle<()>,
 }
 
@@ -35,6 +42,7 @@ pub async fn mqtt_worker_loop(
     handle: slint::Weak<AppWindow>,
     client: AsyncClient,
     eventloop: EventLoop,
+    event_tx: UnboundedSender<MqttEvent>,
 ) {
     // Example: Publish something initially
     client
@@ -43,7 +51,7 @@ pub async fn mqtt_worker_loop(
         .unwrap();
 
     // Spawn the background task for handling MQTT events
-    let client_task = tokio::task::spawn(mqtt_client(handle.clone(), client.clone(), eventloop));
+    let client_task = tokio::task::spawn(mqtt_client(handle.clone(), client.clone(), eventloop, event_tx.clone()));
 
     // Handle commands from the channel (Publish, Quit, etc.)
     loop {
@@ -76,10 +84,15 @@ async fn mqtt_client(
     handle: slint::Weak<AppWindow>,
     client: AsyncClient,
     mut eventloop: EventLoop,
+    event_tx: UnboundedSender<MqttEvent>,
 ) -> tokio::io::Result<()> {
 
     client
-        .subscribe("test/sch/output", QoS::AtMostOnce)
+        .subscribe("test/ui", QoS::AtMostOnce)
+        .await
+        .unwrap();
+    client
+        .subscribe("test/sch/input", QoS::AtMostOnce)
         .await
         .unwrap();
     loop {
@@ -89,6 +102,11 @@ async fn mqtt_client(
             Ok(Event::Incoming(Packet::Publish(p))) => {
                 let payload_str = String::from_utf8_lossy(&p.payload);
                 println!("Incoming = {:?}, {:?}\n\n", p.topic, payload_str);
+
+                // NEW: Send event to main.rs
+                let topic = SharedString::from(String::from_utf8_lossy(&p.topic).to_string());
+                let payload = SharedString::from(String::from_utf8_lossy(&p.payload).to_string());
+                let _ = event_tx.send(MqttEvent::Incoming { topic, payload });
             }
             Ok(v) => {
                 println!("Event = {v:?}");
@@ -102,29 +120,44 @@ async fn mqtt_client(
 
 /// Creates the MQTT connection with optional TLS and credentials,
 /// and spawns a background thread to run the `mqtt_worker_loop`.
+
 impl MqttWorker {
     pub fn new(ui: &AppWindow, client: AsyncClient, eventloop: EventLoop) -> Self {
-        let (channel, r) = tokio::sync::mpsc::unbounded_channel();
+        // Create the command channel.
+        let (command_tx, command_rx) = tokio::sync::mpsc::unbounded_channel();
+        // Create the events channel.
+        let (event_tx, event_rx) = tokio::sync::mpsc::unbounded_channel();
 
-        let worker_thread = std::thread::spawn({
-            let handle_weak = ui.as_weak();
+        let handle_weak = ui.as_weak();
 
-            move || {
-                tokio::runtime::Runtime::new()
-                    .unwrap()
-                    .block_on(mqtt_worker_loop(r, handle_weak, client, eventloop))
-            }
+        let worker_thread = std::thread::spawn(move || {
+            tokio::runtime::Runtime::new()
+                .unwrap()
+                .block_on(mqtt_worker_loop(command_rx, handle_weak, client, eventloop, event_tx))
         });
 
         Self {
-            channel,
+            channel: command_tx,
+            events: Some(event_rx),
             worker_thread,
         }
+    }
+
+    pub fn publish(&self, topic: impl Into<SharedString>, payload: impl Into<SharedString>) -> Result<(), tokio::sync::mpsc::error::SendError<MqttMessage>> {
+        self.channel.send(MqttMessage::Publish { 
+            topic: topic.into(), 
+            payload: payload.into() 
+        })
     }
 
     pub fn join(self) -> std::thread::Result<()> {
         let _ = self.channel.send(MqttMessage::Quit);
         self.worker_thread.join()
     }
+
+    pub fn take_events(&mut self) -> Option<UnboundedReceiver<MqttEvent>> {
+        self.events.take()
+    }
+    
 }
 

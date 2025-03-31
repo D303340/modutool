@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::error::Error;
+use std::num::ParseIntError;
 // use std::time::Duration;
 
 use mqtt::{MqttMessage, MqttWorker};
@@ -13,8 +14,9 @@ use rumqttc::Transport;
 use tokio::time::{sleep, Duration};
 
 use rumqttc::LastWill;
+use crate::mqtt::MqttEvent;
 
-use slint::invoke_from_event_loop;
+use slint::{invoke_from_event_loop, ToSharedString};
 use slint::SharedString;
 
 mod helper;
@@ -302,12 +304,11 @@ fn schindler_test_page(ui: &AppWindow,
 }
 
 
-
-fn main() -> Result<(), Box<dyn Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
     let ui_weak = ui.as_weak();
-    
-    
+        
     // Create the MQTT worker (connects to mqtt.lift-online.eu)
     let id = "hfguh82ge1ugdbflb23r32";
     let host = "mqtt.lift-online.eu";
@@ -323,18 +324,98 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let (client, eventloop) = AsyncClient::new(mqtt_options, 10);
 
-    // let mqtt_worker = create_mqtt_worker(&ui, ui_weak.clone());
-    let mqtt_worker = MqttWorker::new(&ui, client, eventloop);
+    // let mqtt_worker = MqttWorker::new(&ui, client, eventloop);
+
+    
 
 
 
+    let mut mqtt_worker = MqttWorker::new(&ui, client, eventloop);
+
+    // Optional: Take events if you want to process them
+    if let Some(mut events) = mqtt_worker.take_events() {
+        let ui_weak = ui_weak.clone();
+        
+        tokio::spawn(async move {
+            while let Some(event) = events.recv().await {
+                match event {
+                    MqttEvent::Incoming { topic, payload } => {
+                        let result = ui_weak.upgrade_in_event_loop(move |ui| {
+                            let old = ui.global::<Schindler_Test_Logic>().get_console_output();
+                            let output = SharedString::from(format!("{}\n{}", old, payload));
+
+                            // Create a new SharedString from the concatenation of the string representations
+                            ui.global::<Schindler_Test_Logic>().set_console_output(output);
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    // Clone the channel, not just a reference to mqtt_worker
+    let publish_channel = mqtt_worker.channel.clone();
+    
+    // Get the inspection mode value BEFORE the closure
+    let inspection_mode = ui.global::<Schindler_Test_Logic>().get_in_inspection_mode();
+
+    // Create a closure that captures just the inspection_mode value
+    ui.global::<Schindler_Test_Logic>().on_inspection_clicked(move || {        
+        let insp = SharedString::from("INSPECTION");
+        let norm = SharedString::from("NORMAL");
+
+        let send = if inspection_mode { insp } else { norm };
+        println!("INSPECTION MODE: {:?}", inspection_mode);
+
+        let _ = publish_channel.send(MqttMessage::Publish { 
+            topic: SharedString::from("test/sch/input"), 
+            payload: send // No need to wrap in SharedString again
+        });
+    });
+
+
+    let publish_channel = mqtt_worker.channel.clone();
+    ui.global::<Schindler_Test_Logic>().on_DRESG_D_clicked(move || {    
+        let _ = publish_channel.send(MqttMessage::Publish { 
+            topic: SharedString::from("test/sch/input"), 
+            payload: SharedString::from("DRESG-D") // No need to wrap in SharedString again
+        });
+    });
+
+    let publish_channel = mqtt_worker.channel.clone();
+    ui.global::<Schindler_Test_Logic>().on_DRESG_E_clicked(move || {    
+        let _ = publish_channel.send(MqttMessage::Publish { 
+            topic: SharedString::from("test/sch/input"), 
+            payload: SharedString::from("DRESG-E") // No need to wrap in SharedString again
+        });
+    });
+
+    let publish_channel = mqtt_worker.channel.clone();
+    ui.global::<Schindler_Test_Logic>().on_DRESG_U_clicked(move || {    
+        let _ = publish_channel.send(MqttMessage::Publish { 
+            topic: SharedString::from("test/sch/input"), 
+            payload: SharedString::from("DRESG-U") // No need to wrap in SharedString again
+        });
+    });
+
+    let publish_channel = mqtt_worker.channel.clone();
+    ui.global::<Schindler_Test_Logic>().on_Stop_clicked(move || {    
+        let _ = publish_channel.send(MqttMessage::Publish { 
+            topic: SharedString::from("test/sch/input"), 
+            payload: SharedString::from("STOP") // No need to wrap in SharedString again
+        });
+    });
+
+    
+    
+    // let ui_weak = ui_weak.clone();
     // Navigation Logic
     navigation(&ui, ui_weak.clone());
 
     // Pages
-    otis_page(&ui, ui_weak.clone(), &mqtt_worker);
-    schindler_page(&ui, ui_weak.clone(), &mqtt_worker);
-    schindler_double_page(&ui, ui_weak.clone(), &mqtt_worker);
+    // otis_page(&ui, ui_weak.clone(), &mqtt_worker);
+    // schindler_page(&ui, ui_weak.clone(), &mqtt_worker);
+    // schindler_double_page(&ui, ui_weak.clone(), &mqtt_worker);
     schindler_test_page(&ui, ui_weak.clone());
     
     ui.run()?;

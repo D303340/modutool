@@ -1,8 +1,47 @@
 import { Button, Radio, ProgressBar } from "../components/new.slint";
 
-component InspectSwitch inherits Rectangle {
+component InspectSwitch inherits Button {
     width: 196px;
     height: 180px;
+
+    bg-color: transparent;
+    bg-select-color: transparent;
+
+    icon-rotation-angle: 90deg;
+
+    callback on-clicked();
+    
+    icons := Rectangle {
+        y: 20px;
+        x: root.width/2 - self.width/2 - 18px;
+        width: 160px;
+        height: 160px;
+        Image {
+            source: @image-url("../images/Inspection_black.png");
+            
+            width: 160px;
+            height: 160px;
+            rotation-angle: root.icon-rotation-angle;
+        }
+    }
+
+    animate icon-rotation-angle {
+        duration: 0.4s;
+        easing: ease-out-expo;
+    }
+
+    clicked => {
+        on-clicked();
+        if self.icon-rotation-angle == 0deg{
+            self.icon-rotation-angle = 90deg;
+        }
+        else{
+            self.icon-rotation-angle = 0deg;
+        }
+    }
+
+
+
     Text {
         text: "NORMAL";
         y: 0;
@@ -18,57 +57,25 @@ component InspectSwitch inherits Rectangle {
         font-weight: 500;
 
     }
-
-    Button {
-        y: 20px;
-        x: root.width/2 - self.width/2 - 18px;
-        width: 160px;
-        height: self.width;
-        bg-color: transparent;
-
-        icon: @image-url("../images/Inspection_black.png");
-        icon-height: self.height; 
-        icon-width: self.width;
-        icon-rotation-angle: 90deg;
-
-        animate icon-rotation-angle {
-            duration: 0.4s;
-            easing: ease-out-expo;
-        }
-
-        clicked => {
-            if self.icon-rotation-angle == 0deg{
-                self.icon-rotation-angle = 90deg;
-            }
-            else{
-                self.icon-rotation-angle = 0deg;
-            }
-        }
-    }
 }
 
-component InspectButton inherits Rectangle {
+component InspectButton inherits Button {
     width: 100px;
     height: 120px;
 
-    in property <image> icon: @image-url("../images/DRESG-E.png");
-    in property <string> text: "DRESG-E";
+    in property <image> icon-url: @image-url("../images/DRESG-E.png");
+    in property <string> label-text: "DRESG-E";
 
-    Button {
-        width: 100px;
-        height: 100px;
-        y: 0px;
-        
-        bg-color: transparent;
+    bg-color: transparent;
+    bg-select-color: transparent;
 
-        icon: icon;
-        icon-height: 100px; 
-        icon-width: 100px; 
-    }
+    icon: icon-url;
+    icon-height: 100px; 
+    icon-width: 100px; 
 
     Text {
-        text: text;
-        y: 104px;
+        text: label-text;
+        y: 113px;
         font-weight: 500;
         color: #b6b6b6;
     }
@@ -152,12 +159,22 @@ component Led inherits Rectangle {
     }
 }
 
+export global Schindler-Test-Logic {
+    callback inspection_clicked();
+    callback DRESG-D_clicked();
+    callback DRESG-E_clicked();
+    callback DRESG-U_clicked();
+    callback Stop_clicked();
+    callback send-data-to-mqtt(string);
+
+    in-out property <string> console-output: "test123567";
+    in-out property <bool> in-inspection-mode: false;
+}
+
+
 export component SchindlerTestPage inherits Rectangle {
     width: 1280px;
     height: 800px;
-
-    // callback back-to-menu-page();
-    in-out property <string> console-output;
 
     background: #2B2B2B;
     
@@ -181,12 +198,20 @@ export component SchindlerTestPage inherits Rectangle {
                     InspectSwitch {
                         x: parent.width/2 - self.width/2 + 50px + x-offset;
                         y: 60px + y-offset;
+
+                        on-clicked => {
+                            Schindler-Test-Logic.inspection_clicked();
+                        }
                     }
                     
                     // DRESG-E Button
                     InspectButton {
                         x: 110px + x-offset;
                         y: 240px + y-offset;
+
+                        clicked => {
+                            Schindler-Test-Logic.DRESG-E_clicked();
+                        }
                     }
                     
                     // DRESG-D Button
@@ -194,7 +219,11 @@ export component SchindlerTestPage inherits Rectangle {
                         x: 225px + x-offset;
                         y: 232px + y-offset;
                         icon: @image-url("../images/DRESG-D.png");
-                        text: "DRESG-D";
+                        label-text: "DRESG-D";
+
+                        clicked => {
+                            Schindler-Test-Logic.DRESG-D_clicked();
+                        }
                     }
         
                     // DRESG-U Button
@@ -202,7 +231,11 @@ export component SchindlerTestPage inherits Rectangle {
                         x: 22px + x-offset;
                         y: 160px + y-offset;
                         icon: @image-url("../images/DRESG-U.png");
-                        text: "DRESG-U";
+                        label-text: "DRESG-U";
+
+                        clicked => {
+                            Schindler-Test-Logic.DRESG-U_clicked();
+                        }
                     }
         
                     // Stop Button
@@ -234,7 +267,7 @@ export component SchindlerTestPage inherits Rectangle {
                         property <bool> toggled;
                         clicked => {
                             toggled = !toggled;
-
+                            Schindler-Test-Logic.Stop_clicked();
                             self.icon-width = toggled ? 126px : 130px;
                             self.icon-height = toggled ? 126px : 130px;
                         }
@@ -808,26 +841,35 @@ export component SchindlerTestPage inherits Rectangle {
                 // }
                 
                 // CONSOLE
+                
                 Rectangle {
                     background: #423F3E;
                     border-width: 1px;
                     border-color: #646363;
                     
-                    HorizontalLayout {
-                        padding: 5px;
-                        padding-left: 10px;
-                        padding-right: 10px;
+                    Flickable {
+                        viewport-y: {
+                            if (self.viewport-height > self.height) { self.height - self.viewport-height } 
+                            else { 0px }
+                            
+                        };
 
-                        Text {
-                            text: console-output;
-                            font-size: 14px;
-                            vertical-alignment: bottom;
-                            horizontal-alignment: left;
+                        HorizontalLayout {
+                            padding: 5px;
+                            padding-left: 10px;
+                            padding-right: 10px;
+                            
+                            Text {
+                                text: Schindler-Test-Logic.console-output;
+                                font-size: 14px;
+                                vertical-alignment: bottom;
+                                horizontal-alignment: left;
+                            }
                         }
                     }
                 }
 
-                // KEYPAD
+                // // KEYPAD
                 // GridLayout {
                 //         col: 2;
                 //         spacing-vertical: 0px;

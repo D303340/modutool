@@ -9,7 +9,7 @@ import { ModuSoftKnePage } from "./pages/menu/modu-soft-kne.slint";
 import { ModuSoftOtisMenu } from "./pages/menu/modu-soft-ots-menu.slint";
 import { ModuSoftSchMenu } from "./pages/menu/modu-soft-sch-menu.slint";
 
-import { SchindlerTestPage } from "./pages/schindler-test-page.slint";
+import { SchindlerTestPage, Schindler-Test-Logic } from "./pages/schindler-test-page.slint";
 
 // DEBUG
 import { StyleTestPage } from "./pages/style-test.slint";
@@ -32,6 +32,10 @@ export enum Page {
     SchindlerTestPage,
     
     StyleTestPage,
+}
+
+export {
+    Schindler-Test-Logic
 }
 
 export component AppWindow inherits Window {
@@ -57,6 +61,8 @@ export component AppWindow inherits Window {
     // ==================================================== //
         // Back to Menu
         callback back-to-menu-page();
+
+        
 
     // ----------------------------------------------------
 
@@ -198,10 +204,5 @@ export component AppWindow inherits Window {
     }
     
 
-    if current-page == Page.SchindlerTestPage: SchindlerTestPage {
-        // Bind Properties
-        console-output <=> console-output;
-        
-        // Bind Callbacks
-    }
+    if current-page == Page.SchindlerTestPage: SchindlerTestPage { }
 }
