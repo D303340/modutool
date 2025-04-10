@@ -1,13 +1,9 @@
-use rumqttc::v5::{AsyncClient, Event, EventLoop, MqttOptions};
+use rumqttc::v5::{AsyncClient, Event, EventLoop};
 
-use rumqttc::v5::mqttbytes::v5::{LastWill, Packet};
+use rumqttc::v5::mqttbytes::v5::Packet;
 use rumqttc::v5::mqttbytes::QoS;
-use rumqttc::{TlsConfiguration, Transport};
 use slint::SharedString;
-use std::env;
-use std::fs;
 use std::thread;
-use std::time::Duration;
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 
 use crate::AppWindow;
@@ -95,13 +91,17 @@ async fn mqtt_client(
         .subscribe("test/sch/input", QoS::AtMostOnce)
         .await
         .unwrap();
+    client
+        .subscribe("test/sch/output", QoS::AtMostOnce)
+        .await
+        .unwrap();
     loop {
         let event = eventloop.poll().await;
 
         match &event {
             Ok(Event::Incoming(Packet::Publish(p))) => {
                 let payload_str = String::from_utf8_lossy(&p.payload);
-                println!("Incoming = {:?}, {:?}\n\n", p.topic, payload_str);
+                // println!("Incoming = {:?}, {:?}\n\n", p.topic, payload_str);
 
                 // NEW: Send event to main.rs
                 let topic = SharedString::from(String::from_utf8_lossy(&p.topic).to_string());

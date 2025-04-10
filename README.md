@@ -1,38 +1,56 @@
-# Slint Rust Template
+# Slint & Rust Way Better Template (WBT)
+A way better template for slint rust.
+## Making a new page
 
-A template for a Rust application that's using [Slint](https://slint.rs/) for the user interface.
+1. Create a new slint file in the `ui/views/pages`.
 
-## About
+2. Past this template code in the new file:
+    ```qt
+    import { Page } from "../../components/page.slint";
+    import { Pallet } from "../../components/style.slint";
 
-This template helps you get started developing a Rust application with Slint as toolkit
-for the user interface. It demonstrates the integration between the `.slint` UI markup and
-Rust code, how to react to callbacks, get and set properties, and use basic widgets.
 
-## Usage
+    export global YourPageLogic {
+        // Every property and/or callback you want to 
+        // expose to Rust must be declared here...
+    }
 
-1. Install Rust by following its [getting-started guide](https://www.rust-lang.org/learn/get-started).
-   Once this is done, you should have the `rustc` compiler and the `cargo` build system installed in your `PATH`.
-2. Download and extract the [ZIP archive of this repository](https://github.com/slint-ui/slint-rust-template/archive/refs/heads/main.zip).
-3. Rename the extracted directory and change into it:
+    export component YourPage inherits Page {
+        // your code here...
+    }
     ```
-    mv slint-rust-template-main my-project
-    cd my-project    
-    ```
-4. Build with `cargo`:
-    ```
-    cargo build
-    ```
-5. Run the application binary:
-    ```
-    cargo run
-    ```
+3. Inside `ui/components/pages.slint` add your page. for example:
+    ```python
+    import { AboutPage, AboutPageLogic } from "../views/pages/AboutPage.slint";
+    export { AboutPage, AboutPageLogic }
+    ``` 
+    <sup>Note: export the page and logic, so it can be used in the app-window.slint</sup><br><br>
 
-We recommend using an IDE for development, along with our [LSP-based IDE integration for `.slint` files](https://github.com/slint-ui/slint/blob/master/tools/lsp/README.md). You can also load this project directly in [Visual Studio Code](https://code.visualstudio.com) and install our [Slint extension](https://marketplace.visualstudio.com/items?itemName=Slint.slint).
 
-## Next Steps
+4. Inside `ui/app-window.slint` import your page and logic from 'ui/components/pages.slint'. for example:
+    ```qt
+    import { YourPage, YourPageLogic } from "./components/pages.slint";
+    export { YourPage, YourPageLogic }
 
-We hope that this template helps you get started, and that you enjoy exploring making user interfaces with Slint. To learn more
-about the Slint APIs and the `.slint` markup language, check out our [online documentation](https://slint.dev/docs).
+    // This is so Rust has access to global components
+    // Export every imported component you want access inside Rust
+    export { ColorScheme, Pallet }
+    export { HomePageLogic }
+    ```
+5. in `src/pages` make a new rust file for your page.
 
-Don't forget to edit this readme to replace it by yours, and edit the `name =` field in `Cargo.toml` to match the name of your
-project.
+6. Inside your rust file, add this template code. try keeping the function name the same as the page name. for example:
+    ```rust
+    use crate::slint_ui::*;
+
+    pub fn your_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
+        let ui_weak = ui_weak.clone();
+    }
+    ```
+7. Inside `main.rs` add your page logic:
+    ```rust
+    mod pages{
+        pub mod home_page;
+    }
+    ``` 
+    <sup>Note: make sure the module is public.</sup><br><br>
