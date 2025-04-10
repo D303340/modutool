@@ -1,0 +1,74 @@
+import { Page } from "../../components/page.slint";
+import { Pallet, ColorScheme } from "../../components/style.slint";
+
+component button inherits Rectangle {
+    width: 30px;
+    height: 30px;
+
+    // Click Function
+    callback clicked();
+
+    ta := TouchArea {
+        clicked => {
+            clicked();
+        }
+    } 
+
+    property <bool> active: false;
+    states [
+        active when ta.pressed: {
+            
+        }
+    ] 
+}
+
+export global PageOneLogic {
+    // Every property and/or callback you want to expose to Rust must be declared here
+    callback to-page-two();
+}
+
+export component PageOne inherits Page {
+    width: 200px;
+    height: 200px;
+    background: Pallet.primary;
+    VerticalLayout {
+        alignment: center;
+        spacing: 20px;
+        Text {
+            horizontal-alignment: center;
+            text: "Page One";
+            color: Pallet.text;
+            font-size: 20px;
+        }
+        HorizontalLayout {
+            alignment: center;
+            spacing: 5px;
+            button {
+                border-radius: 6px;
+                width: 80px;
+                background: Pallet.button;
+                Text {
+                    text: "page 2";
+                    color: Pallet.text;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+                clicked => {
+                    PageOneLogic.to-page-two();
+                }
+            }
+            button {
+                border-radius: 30px/2;
+                background: Pallet.contrast;
+                clicked => {
+                    if Pallet.color-scheme == ColorScheme.dark {
+                        Pallet.color-scheme = ColorScheme.light;
+                    }
+                    else {
+                        Pallet.color-scheme = ColorScheme.dark;
+                    }
+                }
+            }
+        }
+    }
+}

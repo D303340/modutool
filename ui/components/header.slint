@@ -1,0 +1,43 @@
+import { Pallet } from "./style.slint";
+import { SimpleButton } from "buttons.slint";
+
+export component Header {
+    height: 800px;
+    width: 40px;
+
+    Rectangle {
+        background: Pallet.header-background;
+        VerticalLayout {
+            VerticalLayout {
+                spacing: 6px;
+    
+                Rectangle {
+                    width: root.width;
+                    height: root.width;
+                    background: #0091ff;
+                }
+                Rectangle {
+                    width: root.width;
+                    height: root.width;
+                    background: #88ff00;
+                }
+                Rectangle {
+                    width: root.width;
+                    height: root.width;
+                    background: red;
+                }
+    
+            }
+            
+            VerticalLayout {
+                alignment: end;
+                
+                Rectangle {
+                    width: root.width;
+                    height: root.width;
+                    background: blue;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+import { Pallet } from "./style.slint";
+
+export component SimpleButton {
+    in-out property <brush> background: blue;
+    in-out property <length> border-width;
+    in-out property <brush> border-color;
+    in-out property <length> border-radius;
+
+    // Click Function
+    callback clicked();
+    property <bool> active: false;
+
+    Rectangle {
+        background: root.background;
+        border-width: root.border-width;
+        border-color: root.border-color;
+        border-radius: root.border-radius;
+
+        ta := TouchArea {
+            clicked => {
+                clicked();
+                active = !active;
+            }
+        }
+    
+        states [
+            active when ta.pressed: {
+                background: green;
+            }
+        ] 
+    }
+}

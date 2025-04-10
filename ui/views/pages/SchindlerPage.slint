@@ -1,0 +1,124 @@
+import { Page } from "../../components/page.slint";
+import { Pallet } from "../../components/style.slint";
+import { SimpleButton } from "../../components/buttons.slint";
+
+struct console-output {
+    time : string,
+    message : string
+}
+
+export global SchindlerPageLogic {
+    // Every property and/or callback you want to 
+    // expose to Rust must be declared here...
+    in property <string> console-main: "";
+    in property <string> console-time: "";
+    in property <[console-output]> output-message : [
+        {time: "00:00:00", message: "Hello World!"},
+        {time: "00:00:00", message: "Hello World 2!"}
+    ];
+}
+
+export component SchindlerPage inherits Page {
+    title: "Schindler 3300";
+    background: Pallet.background;
+    GridLayout {
+        spacing: 12px;
+        padding: 12px;
+
+        Rectangle {
+            background: red;
+            rowspan: 2;
+            width: 296px;
+
+            Text {
+                text: "? ? ?";
+            }
+        }
+
+        Rectangle {
+            background: blue;
+            col: 1;
+            row: 0;
+
+            Text {
+                text: "VISUAL INFO";
+            }
+        }
+
+        Rectangle {
+            col: 1;
+            row: 1;
+            
+            width: 600px;
+            height: 250px;
+            
+            border-width: 1px;
+            border-color: Pallet.console-border;
+            background: Pallet.console-background;
+            
+            Flickable {
+                interactive: true;
+                width: parent.width;
+                viewport-width: self.width;
+                viewport-y: {
+                    if (self.viewport-height > self.height) { self.height - self.viewport-height } 
+                    else { 0px }   
+                };
+
+                VerticalLayout {
+                    spacing: 4px;
+                    padding-left: 5px;
+                    padding-right: 5px;
+                    padding-top: 5px;  
+                    padding-bottom: 5px;
+                    alignment: end;
+
+                    for output-message[i] in SchindlerPageLogic.output-message : HorizontalLayout {
+                        spacing: 6px;
+                        Rectangle {
+                            width: 43px;
+                            Text {
+                                y: 0px;
+                                text: SchindlerPageLogic.output-message[i].time;
+                                wrap: word-wrap;
+                                color: Pallet.console-time-text;
+                                horizontal-alignment: center;
+                                vertical-alignment: bottom;
+                            }
+                        }
+                        
+                        Rectangle {
+                            width: 3px;
+                            height: 3px;
+                            background: Pallet.console-time-text;
+                            y: 7px;
+                        }
+
+
+                        Text {
+                            text: SchindlerPageLogic.output-message[i].message;
+                            width: parent.width - 47px - 6px;
+                            color: Pallet.console-main-text;
+                            horizontal-alignment: left;
+                            vertical-alignment: bottom;
+                        }
+                    }
+                }
+            } 
+        }
+        
+        Rectangle {
+            background: #ff00ff;
+            width: 296px;
+
+            col: 2;
+            row: 0;
+            rowspan: 2;
+
+            Text {
+                text: "KEYPAD";
+            }
+        }
+    }
+}
+

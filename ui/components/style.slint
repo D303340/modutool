@@ -1,0 +1,31 @@
+/* 
+    Here you will find all the styling for every component.
+*/
+
+export enum ColorScheme {
+    light,
+    dark
+}
+
+//    Guide for making a new Color: 
+//    out property <brush> color-name: dark-mode ? dark-color : light-color;
+
+export global Pallet {
+    in-out property <ColorScheme> color-scheme: dark;
+    property <bool> dark-mode: color-scheme == ColorScheme.dark;
+    
+    out property <brush> primary: dark-mode ? #1e1e1e : #ffffff;
+    out property <brush> secondary: dark-mode ? #2a2a2a : #cccccc;
+    out property <brush> text: dark-mode ? #ffffff : #000000;
+    out property <brush> button: dark-mode ? #557c4f : #5ed84b;
+    out property <brush> button-warning: dark-mode ? #7f1e1e : #d72929;
+    out property <brush> contrast: dark-mode ? #d5d5d5 : #292929;
+
+    out property <brush> background: dark-mode ? #1e1e1e : #c2c2c2;
+    out property <brush> header-background: dark-mode ? #0f0f0f : #ababab;
+
+    out property <brush> console-background: dark-mode ? #303437 : #e6e6e6;
+    out property <brush> console-main-text: dark-mode ? #ffffff : #000000;
+    out property <brush> console-time-text: dark-mode ? #767f86 : #6f6f6f;
+    out property <brush> console-border: dark-mode ? #8b8b8b : #b5b5b5;
+}

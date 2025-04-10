@@ -1,0 +1,36 @@
+import { Page } from "../../components/page.slint";
+import { Pallet } from "../../components/style.slint";
+
+
+export global HomePageLogic {
+    // Every property and/or callback you want to 
+    // expose to Rust must be declared here...
+}
+
+export component HomePage inherits Page {
+    // your code here...
+
+    width: 1280px;
+    height: 800px;
+    background: Pallet.primary;
+
+    Text {
+        text: "Welcome to ModuSystem!";
+        property <length> offset: 20px;
+        y: 800px / 2 - self.height / 2 - offset;
+        font-size: 20px;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        color: transparent;
+
+        animate y, color {
+             duration: 1s;
+             easing: ease-out-sine;
+        }
+
+        init => { 
+            self.y = self.y + offset;
+            self.color = @linear-gradient(90deg, Pallet.text, red);
+        }
+    }
+}
