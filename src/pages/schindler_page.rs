@@ -1,6 +1,7 @@
 use slint::{Model, ModelRc, SharedString, VecModel};
 use std::rc::Rc;
 
+use helpers::mqtt::MqttMessage;
 use rumqttc::v5::{ MqttOptions, AsyncClient};
 use tokio::time::Duration;
 
@@ -37,6 +38,15 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
 
     let mut mqtt_worker = helpers::mqtt::MqttWorker::new(&ui, client, eventloop);
 
+    let publish_channel = mqtt_worker.channel.clone();
+    ui.global::<SchindlerPageLogic>().on_keypad_clicked(move |keypad_value| {    
+        println!("\n\n\nVALUE OF THE KEYDPAD: {}\n\n\n", keypad_value);
+        let _ = publish_channel.send(MqttMessage::Publish { 
+            topic: SharedString::from("test/sch/input"), 
+            payload: keypad_value // Clone the SharedString to avoid moving it
+        });
+    });
+
     // Optional: Take events if you want to process them
     if let Some(mut events) = mqtt_worker.take_events() {
         let ui_weak = ui_weak.clone();
@@ -48,10 +58,6 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                         let _result = ui_weak.upgrade_in_event_loop(move |ui| {
                             match from_str::<helpers::json::SchindlerTestData>(&payload) {
                                 Ok(schindler) => {
-                                    println!("Time:    {}", schindler.time);
-                                    println!("Level:   {}", schindler.level);
-                                    println!("Message: {}", schindler.message);
-
                                     let messages : ModelRc<console_output> =  ui.global::<SchindlerPageLogic>().get_output_message();
                                     let just_time = schindler.time.split_whitespace().nth(1).unwrap_or(&schindler.time);
 
@@ -85,5 +91,8 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                 }
             }
         });
+
+        
+        
     }
 }

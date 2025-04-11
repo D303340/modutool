@@ -10,6 +10,8 @@ struct console-output {
 export global SchindlerPageLogic {
     // Every property and/or callback you want to 
     // expose to Rust must be declared here...
+    callback keypad-clicked(keypad-value: string);
+
     in property <string> console-main: "";
     in property <string> console-time: "";
     in property <[console-output]> output-message : [
@@ -139,11 +141,17 @@ export component SchindlerPage inherits Page {
                         border-radius: 2px;
                         background: #1c1c1c;
                         background-select: #353844;
-                        Text {
+                        label: keypad-char;
+
+                        keypad-text :=Text {
                             vertical-alignment: center;
                             horizontal-alignment: center;
                             font-size: 20px;
                             text: keypad-char;
+                        }
+
+                        clicked => {
+                            SchindlerPageLogic.keypad-clicked(keypad-char);
                         }
                     }
                 }

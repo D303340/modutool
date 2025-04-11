@@ -1,6 +1,8 @@
 import { Pallet } from "./style.slint";
 
 export component SimpleButton {
+    in property <int> id;
+    in-out property <string> label: "button";
     in-out property <brush> background: blue;
     in-out property <brush> background-select: green;
     in-out property <length> border-width;
