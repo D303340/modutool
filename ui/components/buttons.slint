@@ -2,6 +2,7 @@ import { Pallet } from "./style.slint";
 
 export component SimpleButton {
     in-out property <brush> background: blue;
+    in-out property <brush> background-select: green;
     in-out property <length> border-width;
     in-out property <brush> border-color;
     in-out property <length> border-radius;
@@ -10,11 +11,14 @@ export component SimpleButton {
     callback clicked();
     property <bool> active: false;
 
+
     Rectangle {
         background: root.background;
         border-width: root.border-width;
         border-color: root.border-color;
         border-radius: root.border-radius;
+
+        @children
 
         ta := TouchArea {
             clicked => {
@@ -25,7 +29,7 @@ export component SimpleButton {
     
         states [
             active when ta.pressed: {
-                background: green;
+                background: root.background-select;
             }
         ] 
     }

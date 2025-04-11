@@ -26,7 +26,7 @@ export component SchindlerPage inherits Page {
         padding: 12px;
 
         Rectangle {
-            background: red;
+            background: Pallet.panel-background;
             rowspan: 2;
             width: 296px;
 
@@ -35,8 +35,10 @@ export component SchindlerPage inherits Page {
             }
         }
 
+        // Visual Info
         Rectangle {
-            background: blue;
+            height: 514px;
+            background: Pallet.panel-background;
             col: 1;
             row: 0;
 
@@ -45,6 +47,7 @@ export component SchindlerPage inherits Page {
             }
         }
 
+        // Console
         Rectangle {
             col: 1;
             row: 1;
@@ -107,16 +110,43 @@ export component SchindlerPage inherits Page {
             } 
         }
         
+        // Keypad
         Rectangle {
-            background: #ff00ff;
+            background: Pallet.panel-background;
             width: 296px;
 
             col: 2;
             row: 0;
             rowspan: 2;
 
-            Text {
-                text: "KEYPAD";
+            property <[[string]]> keypad-rows: [["1", "2", "3"], 
+                                                ["4", "5", "6"], 
+                                                ["7", "8", "9"], 
+                                                ["<>", "0", "><"]];
+
+            VerticalLayout {
+                alignment: end;                
+                padding: keypad-spacing;
+                property <length> keypad-spacing: 8px;
+                spacing: keypad-spacing;
+
+                for keypad-row in keypad-rows : HorizontalLayout {
+                    alignment: space-between;
+
+                    for keypad-char in keypad-row : SimpleButton {
+                        width: (parent.width / 3) - keypad-spacing;
+                        height: (parent.width / 3) - keypad-spacing;
+                        border-radius: 2px;
+                        background: #1c1c1c;
+                        background-select: #353844;
+                        Text {
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                            font-size: 20px;
+                            text: keypad-char;
+                        }
+                    }
+                }
             }
         }
     }

@@ -1,8 +1,6 @@
 import { ColorScheme, Pallet} from "./components/style.slint";
 
-import { PageOne, PageOneLogic,
-         PageTwo, PageTwoLogic,
-         HomePage, HomePageLogic,
+import { HomePage, HomePageLogic,
          SchindlerPage, SchindlerPageLogic
 } from "./components/pages.slint";
 
@@ -11,16 +9,12 @@ import { PageOne, PageOneLogic,
 // Reëxport every imported component you want access inside Rust
 export { ColorScheme, Pallet }
 export { 
-    PageOneLogic,
-    PageTwoLogic,
     HomePageLogic,
     SchindlerPageLogic
 }
 
 
 export enum Pages {
-    PageOne,
-    PageTwo,
     Home,
     SchindlerPage,
 }
@@ -29,14 +23,13 @@ export enum Pages {
 export component AppWindow inherits Window {
     // width: 1280px;
     // height: 800px;
+    full-screen: true;
     
     min-width: 1280px;
     min-height: 800px;
 
     in property <Pages> current-page: Pages.SchindlerPage;
 
-    if current-page == Pages.PageOne : PageOne {}
-    if current-page == Pages.PageTwo : PageTwo {}
     if current-page == Pages.Home : HomePage {}
     if current-page == Pages.SchindlerPage : SchindlerPage {}
 }

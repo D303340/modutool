@@ -66,7 +66,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                                         message: SharedString::from(new_message),
                                     });
 
-                                    const MAX_ITEMS: usize = 50;
+                                    const MAX_ITEMS: usize = 100;
                                     if items.len() > MAX_ITEMS {
                                         // Remove the extra elements from the beginning.
                                         items.drain(0..(items.len() - MAX_ITEMS));

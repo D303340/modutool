@@ -4,8 +4,6 @@
 use std::error::Error;
 
 mod pages{
-    pub mod page_one;
-    pub mod page_two;
     pub mod home_page;
     pub mod schindler_page;
 }
@@ -21,8 +19,6 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     ui.global::<Pallet>().set_color_scheme(ColorScheme::Dark);
 
-    pages::page_one::page_one(&ui, ui_weak.clone());
-    pages::page_two::page_two(&ui, ui_weak.clone());
     pages::home_page::home_page(&ui, ui_weak.clone());
     pages::schindler_page::schindler_page(&ui, ui_weak.clone()).await;
 
