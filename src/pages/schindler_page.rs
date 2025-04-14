@@ -38,14 +38,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
 
     let mut mqtt_worker = helpers::mqtt::MqttWorker::new(&ui, client, eventloop);
 
-    let publish_channel = mqtt_worker.channel.clone();
-    ui.global::<SchindlerPageLogic>().on_keypad_clicked(move |keypad_value| {    
-        println!("\n\n\nVALUE OF THE KEYDPAD: {}\n\n\n", keypad_value);
-        let _ = publish_channel.send(MqttMessage::Publish { 
-            topic: SharedString::from("test/sch/input"), 
-            payload: keypad_value // Clone the SharedString to avoid moving it
-        });
-    });
+  
 
     // Optional: Take events if you want to process them
     if let Some(mut events) = mqtt_worker.take_events() {
@@ -92,7 +85,13 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
             }
         });
 
-        
-        
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_keypad_clicked(move |keypad_value| {    
+            println!("\n\n\nVALUE OF THE KEYDPAD: {}\n\n\n", keypad_value);
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: keypad_value // Clone the SharedString to avoid moving it
+            });
+        });
     }
 }

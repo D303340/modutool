@@ -34,6 +34,7 @@ export component SchindlerPage inherits Page {
 
             Text {
                 text: "? ? ?";
+                
             }
         }
 
@@ -46,6 +47,7 @@ export component SchindlerPage inherits Page {
 
             Text {
                 text: "VISUAL INFO";
+                color: Pallet.text;
             }
         }
 
@@ -143,10 +145,11 @@ export component SchindlerPage inherits Page {
                         background-select: #353844;
                         label: keypad-char;
 
-                        keypad-text :=Text {
+                        keypad-text := Text {
                             vertical-alignment: center;
                             horizontal-alignment: center;
                             font-size: 20px;
+                            color: Pallet.text;
                             text: keypad-char;
                         }
 
