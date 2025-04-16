@@ -1,6 +1,9 @@
+import "../assets/fonts/lcd font.ttf";
+import "../assets/fonts/Roboto-Regular.ttf";
 /* 
     Here you will find all the styling for every component.
 */
+
 
 export enum ColorScheme {
     light,
@@ -24,4 +27,7 @@ export global Pallet {
     out property <brush> console-main-text: dark-mode ? #ffffff : #000000;
     out property <brush> console-time-text: dark-mode ? #767f86 : #6f6f6f;
     out property <brush> console-border: dark-mode ? #8b8b8b : #b5b5b5;
+
+    out property <brush> keypad-button: dark-mode ? #1c1c1c : #f0f0f0;
+    out property <brush> keypad-text: dark-mode ? #c6c6c6 : #4a4a4a;
 }

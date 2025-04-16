@@ -1,10 +1,12 @@
 import { Page } from "../../components/page.slint";
 import { Pallet } from "../../components/style.slint";
+import { SimpleButton } from "../../components/buttons.slint";
 
 
 export global HomePageLogic {
     // Every property and/or callback you want to 
     // expose to Rust must be declared here...
+    callback to-schindler();
 }
 
 export component HomePage inherits Page {
@@ -30,7 +32,39 @@ export component HomePage inherits Page {
 
         init => { 
             self.y = self.y + offset;
-            self.color = @linear-gradient(90deg, Pallet.text, red);
+            self.color = @linear-gradient(90deg, Pallet.text, #3788be);
+        }
+    }
+
+    SimpleButton {
+        background: transparent;
+        width: 130px;
+        height: 50px;
+        border-radius: 5px;
+        y: (800px / 2 - self.height / 2) + 50px;
+
+        Text {
+            text: "Schindler";
+            color: #000000;
+            font-size: 16px;
+            font-weight: 600;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        clicked => {
+            HomePageLogic.to-schindler();
+        }
+
+        property <length> offset: 20px;
+
+        animate y, background {
+            duration: 1s;
+            easing: ease-out-sine;
+        }
+        init => { 
+            self.y = self.y + offset;
+            self.background = #53c5fe;
         }
     }
 }
