@@ -3,39 +3,71 @@ import { SimpleButton } from "buttons.slint";
 
 export component Header {
     height: 800px;
-    width: 40px;
+    width: 50px;
 
     Rectangle {
         background: Pallet.header-background;
         VerticalLayout {
             VerticalLayout {
-                spacing: 6px;
+                spacing: 16px;
     
                 Rectangle {
                     width: root.width;
                     height: root.width;
-                    background: #0091ff;
+                    Image {
+                        source: @image-url("../assets/icons/Logo.png");
+                        width: 42px;
+                        height: 42px;
+                    }
+                }
+
+                // SPACER
+                Rectangle {
+                    width: root.width - 8px;
+                    height: 1px;
+                    x: 4px;
+                    background: #4c4c4c;
+                }
+
+                Rectangle {
+                    width: root.width;
+                    height: root.width;
+                    Image {
+                        source: @image-url("../assets/icons/Home.png");
+                        width: 30px;
+                        height: 30px;
+                    }
                 }
                 Rectangle {
                     width: root.width;
                     height: root.width;
-                    background: #88ff00;
+                    Image {
+                        source: @image-url("../assets/icons/Settings.png");
+                        width: 33px;
+                        height: 33px;
+                    }
                 }
                 Rectangle {
                     width: root.width;
                     height: root.width;
-                    background: red;
+                    Image {
+                        source: @image-url("../assets/icons/Help.png");
+                        width: 31px;
+                        height: 31px;
+                    }
                 }
     
             }
             
             VerticalLayout {
                 alignment: end;
-                
+                padding-bottom: 16px;
                 Rectangle {
-                    width: root.width;
-                    height: root.width;
-                    background: blue;
+                    Image {
+                        source: @image-url("../assets/icons/SideBar_Minimize.png");
+                        width: 28px;
+                        height: 30px;
+                    }
                 }
             }
         }
