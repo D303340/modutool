@@ -20,6 +20,81 @@ export global SchindlerPageLogic {
     ];
 }
 
+
+enum programboard-direction-state {
+    Up,
+    Down,
+    Stop 
+}
+
+component keypad-led-indicator inherits VerticalLayout {
+    height: 20px;
+    width: 90px;
+
+    spacing: 60px;
+
+    in-out property <programboard-direction-state> state: programboard-direction-state.Stop;
+
+    in property <brush> top-led: state == programboard-direction-state.Up && state != programboard-direction-state.Stop ? #ff0000 : #3f3f3f.brighter(0.5);
+    in property <brush> bottom-led: state == programboard-direction-state.Down && state != programboard-direction-state.Stop ? #ff0000 : #3f3f3f.brighter(0.5);
+
+
+    // TOP
+    Rectangle {
+        Rectangle {
+            background: top-led;
+            width: 18px;
+            height: 14px;
+            x: 0px;
+            y: 16px;
+        }
+        
+        Rectangle {
+            background: top-led;
+            width: 18px;
+            height: 14px;
+            x: parent.width / 2 - self.width / 2;
+            y: 0px;
+        }
+        
+        Rectangle {
+            background: top-led;
+            width: 18px;
+            height: 14px;
+            x: parent.width - self.width;
+            y: 16px;
+        }
+    }
+
+    // BOTTOM
+
+    Rectangle {
+        Rectangle {
+            background: bottom-led;
+            width: 18px;
+            height: 14px;
+            x: 0px;
+            y: 0px;
+        }
+        
+        Rectangle {
+            background: bottom-led;
+            width: 18px;
+            height: 14px;
+            x: parent.width / 2 - self.width / 2;
+            y: 16px;
+        }
+        
+        Rectangle {
+            background: bottom-led;
+            width: 18px;
+            height: 14px;
+            x: parent.width - self.width;
+            y: 0px;
+        }
+    }
+}
+
 export component SchindlerPage inherits Page {
     title: "Schindler 3300";
     background: Pallet.background;
@@ -30,11 +105,11 @@ export component SchindlerPage inherits Page {
         Rectangle {
             background: Pallet.panel-background;
             rowspan: 2;
-            width: 296px;
+            width: 286px;
 
             Text {
                 text: "? ? ?";
-                
+                color: Pallet.text;
             }
         }
 
@@ -126,35 +201,110 @@ export component SchindlerPage inherits Page {
             property <[[string]]> keypad-rows: [["1", "2", "3"], 
                                                 ["4", "5", "6"], 
                                                 ["7", "8", "9"], 
-                                                ["<>", "0", "><"]];
+                                                ["-", "0", "*"], 
+                                                ["< >",    "> <"]];
 
             VerticalLayout {
-                alignment: end;                
-                padding: keypad-spacing;
-                property <length> keypad-spacing: 8px;
-                spacing: keypad-spacing;
-
-                for keypad-row in keypad-rows : HorizontalLayout {
-                    alignment: space-between;
-
-                    for keypad-char in keypad-row : SimpleButton {
-                        width: (parent.width / 3) - keypad-spacing;
-                        height: (parent.width / 3) - keypad-spacing;
-                        border-radius: 2px;
-                        background: #1c1c1c;
-                        background-select: #353844;
-                        label: keypad-char;
-
-                        keypad-text := Text {
-                            vertical-alignment: center;
-                            horizontal-alignment: center;
-                            font-size: 20px;
-                            color: Pallet.text;
-                            text: keypad-char;
+                // LCD
+                LCD-Layout := HorizontalLayout {
+                    width: parent.width - 20px;
+                    height: 250px;
+                    alignment: center;
+                    spacing: 30px;
+                    VerticalLayout {
+                        spacing: 4px;
+                        alignment: end;
+    
+                        property <length> lcd-font-size: 80px;
+                        property <length> lcd-frame-width: 102px;
+                        property <length> lcd-frame-height: 100px;
+                        property <length> lcd-frame-radius: 4px;
+    
+                        property <brush> lcd-frame-color: #111111;
+                        property <brush> lcd-bg-color: #333333;
+                        property <brush> lcd-fg-color: #dfdfdf;
+    
+                        Rectangle {
+                            background: parent.lcd-frame-color;
+                            width: parent.lcd-frame-width;
+                            height: parent.lcd-frame-height;
+                            border-radius: parent.lcd-frame-radius;
+                            Text {
+                                text: " ‎ ";
+                                color: lcd-bg-color;
+                                width: parent.width + 28px;
+                                horizontal-alignment: left;
+                                font-family: "LCDFont";
+                                font-size: lcd-font-size;
+                            }
+                            Text {
+                                text: "47";
+                                color: lcd-fg-color;
+                                width: parent.width + 28px;
+                                horizontal-alignment: left;
+                                font-family: "LCDFont";
+                                font-size: lcd-font-size;
+                            }
                         }
+                        Rectangle {
+                            background: parent.lcd-frame-color;
+                            width: parent.lcd-frame-width;
+                            height: parent.lcd-frame-height;
+                            border-radius: parent.lcd-frame-radius;
+                            Text {
+                                text: " ‎ ";
+                                color: lcd-bg-color;
+                                width: parent.width + 28px;
+                                horizontal-alignment: left;
+                                font-family: "LCDFont";
+                                font-size: lcd-font-size;
+                            }
+                            Text {
+                                text: "23";
+                                color: lcd-fg-color;
+                                width: parent.width + 28px;
+                                horizontal-alignment: left;
+                                font-family: "LCDFont";
+                                font-size: lcd-font-size;
+                            }
+                        }
+                    }
 
-                        clicked => {
-                            SchindlerPageLogic.keypad-clicked(keypad-char);
+                    keypad-led-indicator {
+                        y: parent.height / 2 - self.height / 2 - 15px;
+                    }
+                }
+                
+                // KEYPAD
+                VerticalLayout {
+                    alignment: end;                
+                    padding: keypad-spacing;
+                    property <length> keypad-spacing: 8px;
+                    spacing: keypad-spacing;
+
+                    for keypad-row in keypad-rows : HorizontalLayout {
+                        alignment: space-between;
+
+                        for keypad-char in keypad-row : SimpleButton {
+                            width: (parent.width / 3) - keypad-spacing;
+                            height: (parent.width / 4) - keypad-spacing;
+                            border-radius: 5px;
+                            background: #1c1c1c;
+                            background-select: #617c94;
+
+                            keypad-text := Text {
+                                vertical-alignment: center;
+                                horizontal-alignment: center;
+                                font-size: 24px;
+                                font-family: "Roboto";
+                                font-weight: 600;
+                                color: Pallet.keypad-text;
+                                text: keypad-char;
+                            }
+
+                            clicked => {
+                                SchindlerPageLogic.keypad-clicked(keypad-char);
+                            }
                         }
                     }
                 }
@@ -162,4 +312,3 @@ export component SchindlerPage inherits Page {
         }
     }
 }
-
