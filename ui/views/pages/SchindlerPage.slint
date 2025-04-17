@@ -1,6 +1,6 @@
 import { Page } from "../../components/page.slint";
 import { Pallet } from "../../components/style.slint";
-import { SimpleButton } from "../../components/buttons.slint";
+import { SimpleButton, ToggleSlide } from "../../components/buttons.slint";
 
 struct console-output {
     time : string,
@@ -11,6 +11,24 @@ export global SchindlerPageLogic {
     // Every property and/or callback you want to 
     // expose to Rust must be declared here...
     callback keypad-clicked(keypad-value: string);
+
+    // Schindler Commands
+    callback SIM_FLOOR_CALL();
+    callback LIST_MODE(toggled: bool);
+    callback SYSTEM_INFO();
+    callback SHOW_VERSION();
+    callback SHOW_SERVICE_STATE();
+    callback SHOW_LAST_ERR();
+    callback CLEAR_LAST_ERROR();
+    callback READ_SIM_CARD();
+    callback CTRL_IOSTATUS();
+    callback CAR_IOSTATUS_RQST();
+    callback CAR_DEAD_LOOP();
+    callback COP_IDENTIFY_HW();
+    callback COP_IDENTIFY_SW();
+    callback COP_DEAD_LOOP();
+    callback GET_CARLIGHT_STATE();
+
 
     in property <string> console-main: "";
     in property <string> console-time: "";
@@ -107,9 +125,354 @@ export component SchindlerPage inherits Page {
             rowspan: 2;
             width: 286px;
 
-            Text {
-                text: "? ? ?";
-                color: Pallet.text;
+            VerticalLayout {
+                padding: 18px;
+                spacing: 8px;
+
+                // System Commands
+                HorizontalLayout {
+                    padding: 15px;
+                    padding-bottom: 30px;
+                    alignment: space-between;
+                    spacing: 30px;
+                    Text {
+                        text: "LIST_MODE:";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+                    ToggleSlide {
+                        width: 60px;
+                        height: 30px;
+                        clicked => {
+                            SchindlerPageLogic.LIST_MODE(self.toggled);
+                        }
+                    }
+                }
+
+                HorizontalLayout {
+                    alignment: space-between; 
+                    SimpleButton { 
+                        height: 40px;
+                        width: 127px;
+                        background: #188bff;
+                        border-radius: 4px;
+                        Text {
+                            text: "SYSTEM_INFO";
+                            font-family: "Roboto";
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: Pallet.text;
+                            vertical-alignment: center;
+                            horizontal-alignment: left;
+                        }
+
+                        clicked => {
+                            SchindlerPageLogic.SYSTEM_INFO();
+                        }
+                    }
+
+                    SimpleButton { 
+                        height: 40px;
+                        width: 112px;
+                        background: #188bff;
+                        border-radius: 4px;
+                        Text {
+                            text: "SHOW_VER.";
+                            font-family: "Roboto";
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: Pallet.text;
+                            vertical-alignment: center;
+                            horizontal-alignment: left;
+                        }
+
+                        clicked => {
+                            SchindlerPageLogic.SHOW_VERSION();
+                        }
+                    }
+                }
+            
+                property <length> spacers: 0px;
+
+                SimpleButton { 
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    
+                    Text {
+                        text: "SHOW_SERVICES_STATE";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.SHOW_SERVICE_STATE();
+                    }
+                }
+
+                // ~~ SPACER ~~
+                Rectangle { height: parent.spacers; }
+                // ~~ SPACER ~~
+
+                // Fault / Error History
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "SHOW_LAST_ERR";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.SHOW_LAST_ERR();
+                    }
+                }
+
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "CLEAR_LAST_ERR";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.CLEAR_LAST_ERROR();
+                    }
+                }
+
+                // ~~ SPACER ~~
+                Rectangle { height: parent.spacers; }
+                // ~~ SPACER ~~
+
+                // Sim-Card / Floor-Call
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "REAM_SIM_CARD";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.READ_SIM_CARD();
+                    }
+                }
+
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "SIM_FLOOR_CALL";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.SIM_FLOOR_CALL();
+                    }
+                }
+
+                // ~~ SPACER ~~
+                Rectangle { height: parent.spacers; }
+                // ~~ SPACER ~~
+
+                // I/O - Status
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "CTRL_IOSTATUS";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.CTRL_IOSTATUS();
+                    }
+                }
+
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "CAR_IOSTATUS_RQST";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.CAR_IOSTATUS_RQST();
+                    }
+                }
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "GET_CARLIGHT_STATE";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.GET_CARLIGHT_STATE();
+                    }
+                }
+
+                // ~~ SPACER ~~
+                Rectangle { height: parent.spacers; }
+                // ~~ SPACER ~~
+
+                // Reset / "Dead-loop" Commands
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "CAR_DEAD_LOOP";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.CAR_DEAD_LOOP();
+                    }
+                }
+
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "COP_DEAD_LOOP";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.COP_DEAD_LOOP();
+                    }
+                }
+
+                // ~~ SPACER ~~
+                Rectangle { height: parent.spacers; }
+                // ~~ SPACER ~~
+
+                // Reset / "Dead-loop" Commands
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "COP_IDENTIFY_HW";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.COP_IDENTIFY_HW();
+                    }
+                }
+
+                SimpleButton {
+                    height: 40px;
+                    width: parent.width - parent.padding - 18px;
+                    background: #188bff;
+                    border-radius: 4px;
+                    padding-bottom: 20px;
+                    Text {
+                        text: "COP_IDENTIFY_SW";
+                        font-family: "Roboto";
+                        font-size: 16px;
+                        font-weight: 600;
+                        color: Pallet.text;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    clicked => {
+                        SchindlerPageLogic.COP_IDENTIFY_SW();
+                    }
+                }
             }
         }
 
@@ -207,9 +570,10 @@ export component SchindlerPage inherits Page {
             VerticalLayout {
                 // LCD
                 LCD-Layout := HorizontalLayout {
-                    width: parent.width - 20px;
+                    width: parent.width - 65px;
+                    x: parent.width / 2 - self.width / 2;
                     height: 250px;
-                    alignment: center;
+                    alignment: space-between;
                     spacing: 30px;
                     VerticalLayout {
                         spacing: 4px;
@@ -238,7 +602,7 @@ export component SchindlerPage inherits Page {
                                 font-size: lcd-font-size;
                             }
                             Text {
-                                text: "47";
+                                text: "91";
                                 color: lcd-fg-color;
                                 width: parent.width + 28px;
                                 horizontal-alignment: left;
@@ -271,6 +635,7 @@ export component SchindlerPage inherits Page {
                     }
 
                     keypad-led-indicator {
+                        state: programboard-direction-state.Stop;
                         y: parent.height / 2 - self.height / 2 - 15px;
                     }
                 }

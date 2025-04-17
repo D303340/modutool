@@ -35,3 +35,66 @@ export component SimpleButton {
         ] 
     }
 }
+
+export component ToggleSlide {
+    in property <length> slide-offset: 8px;
+    in-out property <bool> toggled: true;
+
+    callback clicked();
+
+    in property <brush> toggled-color: #188BFF;
+    in property <brush> untoggled-color: #3f3f3f;
+
+    width: 100px;
+    height: 50px;
+    in property <length> border-radius: root.height / 2;
+    
+    Rectangle {
+        width: root.width;
+        height: root.height;
+
+        border-radius: root.border-radius;
+        
+        background: untoggled-color;
+        
+
+        slide := Rectangle {
+            background: #e2e2e2;
+            
+            height: root.height - (slide-offset);
+            width: root.height - (slide-offset);
+            
+            border-radius: self.height / 2;
+            
+            x: slide-offset/2;
+            
+            animate x {
+                duration: 0.15s;
+                easing: ease-in;
+            }
+            
+        }
+
+        animate background {
+            delay: 0.075s;
+            duration: 0.15s;    
+            easing: ease-out;
+        }
+        
+        // Click Function
+        
+        ta := TouchArea {
+            clicked => {
+                toggled = !toggled;
+                clicked();
+            }
+        } 
+        
+        states [
+            toggled when toggled: {
+                background: toggled-color;
+                slide.x: root.width - slide.width - (slide-offset/2);
+            } 
+        ] 
+    }
+}

@@ -58,7 +58,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                                     let mut items: Vec<console_output> = messages.iter().collect();
 
                                     // Add your new element:
-                                    let new_message = format!("Message:  {}", schindler.message);
+                                    let new_message = format!("{}", schindler.message);
 
                                     items.push(console_output {
                                         time: just_time.into(),
@@ -93,5 +93,131 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                 payload: keypad_value // Clone the SharedString to avoid moving it
             });
         });
+        
+        
+        
+        // COMMANDS
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_SIM_FLOOR_CALL(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("SIM_FLOOR_CALL") // Clone the SharedString to avoid moving it
+            });
+        });
+        
+        
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_LIST_MODE(move |toggled| {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from(toggled.to_string()) // Clone the SharedString to avoid moving it
+            });
+        });
+        
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_SYSTEM_INFO(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("SIM_FLOOR_CALL") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_SHOW_VERSION(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("SHOW_VERSION") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_SHOW_SERVICE_STATE(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("SHOW_SERVICE_STATE") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_SHOW_LAST_ERR(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("SHOW_LAST_ERR") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_CLEAR_LAST_ERROR(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("CLEAR_LAST_ERROR") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_READ_SIM_CARD(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("READ_SIM_CARD") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_CTRL_IOSTATUS(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("CTRL_IOSTATUS") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_CAR_IOSTATUS_RQST(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("CAR_IOSTATUS_RQST") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_CAR_DEAD_LOOP(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("CAR_DEAD_LOOP") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_COP_IDENTIFY_HW(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("COP_IDENTIFY_HW") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_COP_IDENTIFY_SW(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("COP_IDENTIFY_SW") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_COP_DEAD_LOOP(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("COP_DEAD_LOOP") // Clone the SharedString to avoid moving it
+            });
+        });
+
+        let publish_channel = mqtt_worker.channel.clone();
+        ui.global::<SchindlerPageLogic>().on_GET_CARLIGHT_STATE(move || {
+            let _ = publish_channel.send(MqttMessage::Publish { 
+                topic: SharedString::from("test/sch/input"), 
+                payload: SharedString::from("GET_CARLIGHT_STATE") // Clone the SharedString to avoid moving it
+            });
+        });
+        
     }
 }
