@@ -8,6 +8,9 @@ mod pages{
     pub mod schindler_page;
 }
 
+mod helpers{
+}
+
 // Import the centralized Slint module
 mod slint_ui;
 use slint_ui::*;

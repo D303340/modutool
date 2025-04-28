@@ -1,12 +1,11 @@
 import { Pallet } from "./style.slint";
 
 export component SimpleButton {
-    in property <int> id;
-    in-out property <brush> background: blue;
-    in-out property <brush> background-select: green;
+    in-out property <brush> background: Pallet.simple-button;
+    in-out property <brush> background-select: Pallet.simple-button-pressed;
     in-out property <length> border-width;
     in-out property <brush> border-color;
-    in-out property <length> border-radius;
+    in-out property <length> border-radius: 4px;
 
     // Click Function
     callback clicked();
@@ -34,6 +33,49 @@ export component SimpleButton {
             }
         ] 
     }
+}
+
+export component ToggleButton {
+    in property <string> text: "";
+
+    property <brush> text-color: Pallet.toggle-button-text;
+
+    // Click Function
+    callback clicked();
+    property <bool> active: false;
+
+    BG := Rectangle {
+        background: Pallet.toggle-button;
+        border-radius: 4px;
+
+        if text != "" || text != " ": Text {
+            text: root.text;
+
+            font-size: 13px;
+            font-weight: 700;
+            
+            color: text-color;
+            
+            vertical-alignment: center;
+            horizontal-alignment: center;
+        }
+
+        @children
+    }
+
+    ta := TouchArea {
+        clicked => {
+            clicked();
+            active = !active;
+        }
+    }
+
+    states [
+        active when active: {
+            BG.background: Pallet.toggle-button-active;
+            text-color: Pallet.toggle-button-active-text;
+        }
+    ] 
 }
 
 export component ToggleSlide {

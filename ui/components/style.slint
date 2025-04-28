@@ -17,17 +17,63 @@ export global Pallet {
     in-out property <ColorScheme> color-scheme: dark;
     property <bool> dark-mode: color-scheme == ColorScheme.dark;
 
-    out property <brush> text: dark-mode ? #ffffff : #000000;
+    // Colors 
+    out property <brush> primary: dark-mode ? #00A6DD : #00A6DD;
 
+    // BACKGROUND
     out property <brush> background: dark-mode ? #1e1e1e : #f0f0f0;
-    out property <brush> panel-background: dark-mode ? #1e1e1e.brighter(0.4) : #ffffff;
-    out property <brush> header-background: dark-mode ? #0f0f0f : #ababab;
+    
 
-    out property <brush> console-background: dark-mode ? #303437 : #e6e6e6;
+    // PANEL
+    out property <brush> panel-background: dark-mode ? #1e1e1e.brighter(0.4) : #ffffff;
+    
+    out property <brush> child-panel-background: dark-mode ? #3F3F3F : #d7d7d7;
+    out property <brush> child-panel-title: dark-mode ? #B5B5B5 : #383838;
+
+
+    // CONSOLE
+    out property <brush> console-background: dark-mode ? #373737 : #e6e6e6;
     out property <brush> console-main-text: dark-mode ? #ffffff : #000000;
-    out property <brush> console-time-text: dark-mode ? #767f86 : #6f6f6f;
+    out property <brush> console-time-text: dark-mode ? #6e6e6e : #6f6f6f;
     out property <brush> console-border: dark-mode ? #8b8b8b : #b5b5b5;
 
-    out property <brush> keypad-button: dark-mode ? #1c1c1c : #f0f0f0;
-    out property <brush> keypad-text: dark-mode ? #c6c6c6 : #4a4a4a;
+    out property <brush> console-header-background: dark-mode ? #242424 : #d7d7d7;
+
+
+    // KETPAD
+    out property <brush> keypad-button: dark-mode ? #151515 : #f0f0f0;
+    out property <brush> keypad-button-pressed: dark-mode ? #1f1f1f : #f0f0f0;
+    out property <brush> keypad-text: dark-mode ? #c0c0c0 : #f0f0f0;
+
+
+    // BUTTONS
+        // toggle
+        out property <brush> toggle-button: dark-mode ? #282828 : #f0f0f0;
+        out property <brush> toggle-button-active: dark-mode ? #00B238 : #f0f0f0;
+
+        out property <brush> toggle-button-text: dark-mode ? #777777 : #f0f0f0;
+        out property <brush> toggle-button-active-text: dark-mode ? #ffffff : #f0f0f0;
+
+        // SimpleButton
+        out property <brush> simple-button: dark-mode ? #00A6DD : #00A6DD;
+        out property <brush> simple-button-pressed: dark-mode ? #21c8ff : #00A6DD;
+        out property <brush> simple-button-text: dark-mode ? #ffffff : #00A6DD;
+
+
+    
+        
+    // Input
+    out property <brush> input-background: dark-mode ? #333333 : #f0f0f0;
+    out property <brush> input-border: dark-mode ? #838383 : #f0f0f0;
+    out property <brush> input-text: dark-mode ? #d3d3d3 : #f0f0f0;
+
+    out property <brush> input-keypad-background: dark-mode ? #222222 : #f0f0f0;
+    
+    
+    
+    
+    
+    out property <brush> text: dark-mode ? #b4b4b4 : #000000;
+
+    out property <brush> header-background: dark-mode ? #0f0f0f : #ababab;
 }

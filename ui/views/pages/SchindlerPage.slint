@@ -1,6 +1,8 @@
 import { Page } from "../../components/page.slint";
 import { Pallet } from "../../components/style.slint";
-import { SimpleButton, ToggleSlide } from "../../components/buttons.slint";
+import { SimpleButton, ToggleSlide, ToggleButton } from "../../components/buttons.slint";
+import { NumberInput, KeypadInput } from "../../components/input.slint";
+import { LineGraph } from "../../components/graphs.slint";
 
 struct console-output {
     time : string,
@@ -34,8 +36,12 @@ export global SchindlerPageLogic {
     in property <string> console-time: "";
     in property <[console-output]> output-message : [
         {time: "00:00:00", message: "Hello World!"},
-        {time: "00:00:00", message: "Hello World 2!"}
+        {time: "00:00:00", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \nCurabitur ultrices condimentum elementum. \nNam ut varius sem. Nunc id finibus est."},
+        {time: "00:00:00", message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur ultrices condimentum elementum. Nam ut varius sem. Nunc id finibus est."},
+        {time: "00:00:00", message: "Hello World again!"}
     ];
+
+    in property <[float]> graph-data: [0];
 }
 
 
@@ -113,6 +119,45 @@ component keypad-led-indicator inherits VerticalLayout {
     }
 }
 
+component child-panel {
+    width: 254px;
+    // min-height: 200px;
+    
+    in property <string> title: "Child Panel";
+    in property <length> title-padding-x: 13px;
+    in property <length> title-padding-y: 11px;
+
+    in property <length> title-content-spacing: 10px;
+    
+    in property <length> content-padding: 16px;
+
+
+    // Background
+    Rectangle {
+        background: Pallet.child-panel-background;
+        
+        // Title
+        title-component := Text {
+            text: title;
+            font-size: 18px;
+            font-weight: 700;
+            color: Pallet.child-panel-title;
+            x: title-padding-x;
+            y: title-padding-y;
+        }
+
+        // Content
+        Rectangle {
+            width: parent.width - 2 * content-padding;
+            height: parent.height - (2 * content-padding) - title-component.height - title-content-spacing;
+            x: content-padding;
+            y: parent.height - self.height - content-padding;
+
+            @children
+        }
+    }
+}
+
 export component SchindlerPage inherits Page {
     title: "Schindler 3300";
     background: Pallet.background;
@@ -120,560 +165,601 @@ export component SchindlerPage inherits Page {
         spacing: 12px;
         padding: 12px;
 
+        // Command Panel
         Rectangle {
             background: Pallet.panel-background;
             rowspan: 2;
             width: 286px;
+            clip: true;
 
             VerticalLayout {
-                padding: 18px;
-                spacing: 8px;
+                padding: 16px;
+                spacing: 16px;
 
-                // System Commands
-                HorizontalLayout {
-                    padding: 15px;
-                    padding-bottom: 30px;
-                    alignment: space-between;
-                    spacing: 30px;
-                    Text {
-                        text: "LIST_MODE:";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-                    ToggleSlide {
-                        width: 60px;
-                        height: 30px;
-                        clicked => {
-                            SchindlerPageLogic.LIST_MODE(self.toggled);
+                // List Mode
+                child-panel {
+                    title: "List Mode:";
+                    height: 220px;
+                    VerticalLayout {
+                        spacing: 15px;
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 70px;
+                            Text { 
+                                text: "Enabled:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            ToggleSlide {
+                                width: 50px;
+                                height: 25px;
+                                clicked => {
+                                    SchindlerPageLogic.LIST_MODE(self.toggled);
+                                }
+                            }
+                        }
+
+                        GridLayout {
+                            spacing: 8px;
+                            Row {
+                                ToggleButton {
+                                    text: "Common";
+                                    height: 35px;
+                                }
+
+                                ToggleButton {
+                                    text: "Cabin";
+                                    height: 35px;
+                                }
+
+                                ToggleButton {
+                                    text: "CAN-BUS";
+                                    height: 35px;
+                                }
+                            }
+
+                            Row {
+                                ToggleButton {
+                                    text: "Door";
+                                    height: 35px;
+                                }
+
+                                ToggleButton {
+                                    text: "Panels";
+                                    height: 35px;
+                                }
+
+                                ToggleButton {
+                                    text: "Busilog";
+                                    height: 35px;
+                                }
+                            }
+
+                            Row {
+                                ToggleButton {
+                                    text: "Drive";
+                                    height: 35px;
+                                }
+
+                                ToggleButton {
+                                    text: "BIO-BUS";
+                                    height: 35px;
+                                }
+
+                                ToggleButton {
+                                    text: "All";
+                                    height: 35px;
+                                }
+                            }
+                        }
+                    }   
+                }
+
+                // SYSTEM INFO
+                child-panel {
+                    title: "System Information";
+                    height: 220px;
+                    VerticalLayout {
+                        spacing: 8px;
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 50px;
+                            Text { 
+                                text: "Show Version:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 50px;
+                            Text { 
+                                text: "System Info:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 50px;
+                            Text { 
+                                text: "Service State:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 50px;
+                            Text { 
+                                text: "COP Hardware:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 50px;
+                            Text { 
+                                text: "COP Software:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
+                        }
+                    }   
+                }
+
+                // Traffic Sim 
+                child-panel {
+                    title: "Traffic Simulation";
+                    height: 130px;
+
+                    VerticalLayout {
+                        spacing: 8px;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text {
+                                text: "Floor Call:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+
+                            NumberInput {
+                                value: 6;
+                                width: 96px;
+                                height: 28px;
+                            }
+
+                            SimpleButton {
+                                width: 28px;
+                                height: self.width;
+                                background: Pallet.toggle-button-active;
+                                background-select: Pallet.toggle-button-active.brighter(0.5);
+                            }
+                        }
+
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text {
+                                text: "Rand. Call:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+
+                            NumberInput {
+                                value: 6;
+                                width: 96px;
+                                height: 28px;
+                            }
+
+                            SimpleButton {
+                                width: 28px;
+                                height: self.width;
+                                background: Pallet.toggle-button-active;
+                                background-select: Pallet.toggle-button-active.brighter(0.5);
+                            }
                         }
                     }
                 }
 
-                HorizontalLayout {
-                    alignment: space-between; 
-                    SimpleButton { 
-                        height: 40px;
-                        width: 127px;
-                        background: #188bff;
-                        border-radius: 4px;
-                        Text {
-                            text: "SYSTEM_INFO";
-                            font-family: "Roboto";
-                            font-size: 16px;
-                            font-weight: 600;
-                            color: Pallet.text;
-                            vertical-alignment: center;
-                            horizontal-alignment: left;
+                // I/O Diagnostics
+                child-panel {
+                    title: "System Information";
+                    height: 120px;
+                    VerticalLayout {
+                        spacing: 8px;
+                        HorizontalLayout {
+                            alignment: space-between;
+                            padding-left: 10px;
+                            padding-right: 10px;
+                            Text { 
+                                text: "Controller I/O Status";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
                         }
 
-                        clicked => {
-                            SchindlerPageLogic.SYSTEM_INFO();
+                        HorizontalLayout {
+                            alignment: space-between;
+                            padding-left: 10px;
+                            padding-right: 10px;
+
+                            Text { 
+                                text: "Car I/O Status";
+                                font-weight: 700;
+                                font-size: 13px;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+                            }
                         }
-                    }
-
-                    SimpleButton { 
-                        height: 40px;
-                        width: 112px;
-                        background: #188bff;
-                        border-radius: 4px;
-                        Text {
-                            text: "SHOW_VER.";
-                            font-family: "Roboto";
-                            font-size: 16px;
-                            font-weight: 600;
-                            color: Pallet.text;
-                            vertical-alignment: center;
-                            horizontal-alignment: left;
-                        }
-
-                        clicked => {
-                            SchindlerPageLogic.SHOW_VERSION();
-                        }
-                    }
-                }
-            
-                property <length> spacers: 0px;
-
-                SimpleButton { 
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    
-                    Text {
-                        text: "SHOW_SERVICES_STATE";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.SHOW_SERVICE_STATE();
-                    }
-                }
-
-                // ~~ SPACER ~~
-                Rectangle { height: parent.spacers; }
-                // ~~ SPACER ~~
-
-                // Fault / Error History
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "SHOW_LAST_ERR";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.SHOW_LAST_ERR();
-                    }
-                }
-
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "CLEAR_LAST_ERR";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.CLEAR_LAST_ERROR();
-                    }
-                }
-
-                // ~~ SPACER ~~
-                Rectangle { height: parent.spacers; }
-                // ~~ SPACER ~~
-
-                // Sim-Card / Floor-Call
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "REAM_SIM_CARD";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.READ_SIM_CARD();
-                    }
-                }
-
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "SIM_FLOOR_CALL";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.SIM_FLOOR_CALL();
-                    }
-                }
-
-                // ~~ SPACER ~~
-                Rectangle { height: parent.spacers; }
-                // ~~ SPACER ~~
-
-                // I/O - Status
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "CTRL_IOSTATUS";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.CTRL_IOSTATUS();
-                    }
-                }
-
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "CAR_IOSTATUS_RQST";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.CAR_IOSTATUS_RQST();
-                    }
-                }
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "GET_CARLIGHT_STATE";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.GET_CARLIGHT_STATE();
-                    }
-                }
-
-                // ~~ SPACER ~~
-                Rectangle { height: parent.spacers; }
-                // ~~ SPACER ~~
-
-                // Reset / "Dead-loop" Commands
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "CAR_DEAD_LOOP";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.CAR_DEAD_LOOP();
-                    }
-                }
-
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "COP_DEAD_LOOP";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.COP_DEAD_LOOP();
-                    }
-                }
-
-                // ~~ SPACER ~~
-                Rectangle { height: parent.spacers; }
-                // ~~ SPACER ~~
-
-                // Reset / "Dead-loop" Commands
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "COP_IDENTIFY_HW";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.COP_IDENTIFY_HW();
-                    }
-                }
-
-                SimpleButton {
-                    height: 40px;
-                    width: parent.width - parent.padding - 18px;
-                    background: #188bff;
-                    border-radius: 4px;
-                    padding-bottom: 20px;
-                    Text {
-                        text: "COP_IDENTIFY_SW";
-                        font-family: "Roboto";
-                        font-size: 16px;
-                        font-weight: 600;
-                        color: Pallet.text;
-                        vertical-alignment: center;
-                        horizontal-alignment: left;
-                    }
-
-                    clicked => {
-                        SchindlerPageLogic.COP_IDENTIFY_SW();
-                    }
+                    }   
                 }
             }
         }
 
         // Visual Info
         Rectangle {
-            height: 514px;
+            height: 494px;
             background: Pallet.panel-background;
             col: 1;
             row: 0;
 
-            Text {
-                text: "VISUAL INFO";
-                color: Pallet.text;
+            // Text {
+            //     text: "VISUAL INFO";
+            //     color: Pallet.text;
+            // }
+
+            LineGraph {
+                width: 300px;
+                height: 160px;
+                max: 8.00;
+                data: [SchindlerPageLogic.graph-data, [0, 0, 4, 4, 5, 3, 3, 2, 1, 0]];
+                graph-colors: [#01b5c9, #d87363];
+                
             }
         }
 
         // Console
-        Rectangle {
+        VerticalLayout {
             col: 1;
             row: 1;
             
             width: 600px;
-            height: 250px;
+            height: 270px;
             
-            border-width: 1px;
-            border-color: Pallet.console-border;
-            background: Pallet.console-background;
-            
-            Flickable {
-                interactive: true;
-                width: parent.width;
-                viewport-width: self.width;
-                viewport-y: {
-                    if (self.viewport-height > self.height) { self.height - self.viewport-height } 
-                    else { 0px }   
-                };
+            spacing: -1px;
 
-                VerticalLayout {
-                    spacing: 4px;
-                    padding-left: 5px;
-                    padding-right: 5px;
-                    padding-top: 5px;  
-                    padding-bottom: 5px;
-                    alignment: end;
+            // HEADER
+            Rectangle {
+                height: 30px;
+                background: Pallet.console-header-background;
+                border-width: 1px;
+                border-color: Pallet.console-border;
 
-                    for output-message[i] in SchindlerPageLogic.output-message : HorizontalLayout {
-                        spacing: 6px;
-                        Rectangle {
-                            width: 43px;
-                            Text {
-                                y: 0px;
-                                text: SchindlerPageLogic.output-message[i].time;
-                                wrap: word-wrap;
-                                color: Pallet.console-time-text;
-                                horizontal-alignment: center;
-                                vertical-alignment: bottom;
+                HorizontalLayout {
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    alignment: space-between;
+                    HorizontalLayout {
+                        spacing: 8px;
+                        SimpleButton {
+                            width: parent.height;
+                            height: parent.height;
+                            background: transparent;
+                            Image {
+                                source: @image-url("../../assets/icons/Console_Bottom.png");
+                                width: 20px;
+                                height: 20px;
                             }
                         }
-                        
-                        Rectangle {
-                            width: 3px;
-                            height: 3px;
-                            background: Pallet.console-time-text;
-                            y: 7px;
+    
+                        SimpleButton {
+                            width: parent.height;
+                            height: parent.height;
+                            background: transparent;
+                            Image {
+                                source: @image-url("../../assets/icons/Save.png");
+                                width: 20px;
+                                height: 20px;
+                            }
                         }
+    
+                        SimpleButton {
+                            width: parent.height;
+                            height: parent.height;
+                            background: transparent;
+                            Image {
+                                source: @image-url("../../assets/icons/Erase.png");
+                                width: 20px;
+                                height: 20px;
+                            }
+                        }
+                    }
 
-
-                        Text {
-                            text: SchindlerPageLogic.output-message[i].message;
-                            width: parent.width - 47px - 6px;
-                            color: Pallet.console-main-text;
-                            horizontal-alignment: left;
-                            vertical-alignment: bottom;
+                    SimpleButton {
+                        width: parent.height;
+                        height: parent.height;
+                        background: transparent;
+                        Image {
+                            source: @image-url("../../assets/icons/Console_Maximize.png");
+                            width: 20px;
+                            height: 20px;
+                            colorize: #d3d3d3;
                         }
                     }
                 }
-            } 
+
+
+            }
+
+            // CONSOLE
+
+            Rectangle {
+                border-width: 1px;
+                border-color: Pallet.console-border;
+                background: Pallet.console-background;
+                Flickable {
+                    interactive: true;
+                    width: parent.width;
+                    viewport-width: self.width;
+                    viewport-y: {
+                        if (self.viewport-height > self.height) { self.height - self.viewport-height } 
+                        else { 0px }   
+                    };
+    
+                    VerticalLayout {
+                        spacing: 4px;
+                        padding: 8px;
+                        alignment: end;
+    
+                        for output-message[i] in SchindlerPageLogic.output-message : HorizontalLayout {
+                            spacing: 6px;
+                            Text {
+                                y: 0px;
+                                text: SchindlerPageLogic.output-message[i].time;
+                                font-family: "Roboto";
+                                color: Pallet.console-time-text;
+                                horizontal-alignment: center;
+                                vertical-alignment: top;
+                            }
+    
+                            Rectangle {
+                                width: i == SchindlerPageLogic.output-message.length - 1 ? 3px : 2px;
+                                Rectangle {
+                                    height: parent.height - 4px;
+                                    background: i == SchindlerPageLogic.output-message.length - 1 ? Pallet.primary : Pallet.console-time-text;
+                                }
+                            }
+    
+                            Text {
+                                text: SchindlerPageLogic.output-message[i].message;
+                                width: parent.width - 47px - 6px;
+                                color: Pallet.console-main-text;
+                                wrap: word-wrap;
+                                horizontal-alignment: left;
+                                vertical-alignment: top;
+                                font-family: "Roboto";
+                            }
+                        }
+    
+                    }
+                } 
+            }
+            
         }
         
         // Keypad
         Rectangle {
-            background: Pallet.panel-background;
             width: 296px;
-
+            
             col: 2;
             row: 0;
             rowspan: 2;
-
-            property <[[string]]> keypad-rows: [["1", "2", "3"], 
-                                                ["4", "5", "6"], 
-                                                ["7", "8", "9"], 
-                                                ["-", "0", "*"], 
-                                                ["< >",    "> <"]];
-
+            
+            
             VerticalLayout {
-                // LCD
-                LCD-Layout := HorizontalLayout {
-                    width: parent.width - 65px;
-                    x: parent.width / 2 - self.width / 2;
-                    height: 250px;
-                    alignment: space-between;
-                    spacing: 30px;
-                    VerticalLayout {
-                        spacing: 4px;
-                        alignment: end;
-    
-                        property <length> lcd-font-size: 80px;
-                        property <length> lcd-frame-width: 102px;
-                        property <length> lcd-frame-height: 100px;
-                        property <length> lcd-frame-radius: 4px;
-    
-                        property <brush> lcd-frame-color: #111111;
-                        property <brush> lcd-bg-color: #333333;
-                        property <brush> lcd-fg-color: #dfdfdf;
-    
-                        Rectangle {
-                            background: parent.lcd-frame-color;
-                            width: parent.lcd-frame-width;
-                            height: parent.lcd-frame-height;
-                            border-radius: parent.lcd-frame-radius;
-                            Text {
-                                text: " ‎ ";
-                                color: lcd-bg-color;
-                                width: parent.width + 28px;
-                                horizontal-alignment: left;
-                                font-family: "LCDFont";
-                                font-size: lcd-font-size;
-                            }
-                            Text {
-                                text: "91";
-                                color: lcd-fg-color;
-                                width: parent.width + 28px;
-                                horizontal-alignment: left;
-                                font-family: "LCDFont";
-                                font-size: lcd-font-size;
-                            }
-                        }
-                        Rectangle {
-                            background: parent.lcd-frame-color;
-                            width: parent.lcd-frame-width;
-                            height: parent.lcd-frame-height;
-                            border-radius: parent.lcd-frame-radius;
-                            Text {
-                                text: " ‎ ";
-                                color: lcd-bg-color;
-                                width: parent.width + 28px;
-                                horizontal-alignment: left;
-                                font-family: "LCDFont";
-                                font-size: lcd-font-size;
-                            }
-                            Text {
-                                text: "23";
-                                color: lcd-fg-color;
-                                width: parent.width + 28px;
-                                horizontal-alignment: left;
-                                font-family: "LCDFont";
-                                font-size: lcd-font-size;
-                            }
-                        }
-                    }
+                spacing: 12px;
 
-                    keypad-led-indicator {
-                        state: programboard-direction-state.Stop;
-                        y: parent.height / 2 - self.height / 2 - 15px;
-                    }
+                // TOP
+                Rectangle {
+                    height: 258px;
+                    background: Pallet.panel-background;
                 }
-                
-                // KEYPAD
-                VerticalLayout {
-                    alignment: end;                
-                    padding: keypad-spacing;
-                    property <length> keypad-spacing: 8px;
-                    spacing: keypad-spacing;
 
-                    for keypad-row in keypad-rows : HorizontalLayout {
+                // BOTTOM
+                Rectangle {
+                    background: Pallet.panel-background;
+                    height: 506px;
+
+                    VerticalLayout {
                         alignment: space-between;
+                        padding-top: 25px;
 
-                        for keypad-char in keypad-row : SimpleButton {
-                            width: (parent.width / 3) - keypad-spacing;
-                            height: (parent.width / 4) - keypad-spacing;
-                            border-radius: 5px;
-                            background: #1c1c1c;
-                            background-select: #617c94;
+                        KeypadInput {
+                            x: parent.width / 2 - self.width / 2;
+                            width: 240px;
+                            height: 60px;
+                        }
+    
+                        GridLayout {
+                            x: parent.width / 2 - self.width / 2;
+                            width: 260px;
+                            padding-bottom: 30px;
+                            spacing: 10px;
 
-                            keypad-text := Text {
-                                vertical-alignment: center;
-                                horizontal-alignment: center;
-                                font-size: 24px;
-                                font-family: "Roboto";
-                                font-weight: 600;
-                                color: Pallet.keypad-text;
-                                text: keypad-char;
+
+                            Row {
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "1"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    } 
+                                }
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "2"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "3"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
                             }
-
-                            clicked => {
-                                SchindlerPageLogic.keypad-clicked(keypad-char);
+    
+                            Row {
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "4"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "5"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "6"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                            }
+    
+                            Row {
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "7"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    } 
+                                }
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "8"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "9"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                            }
+    
+                            Row {
+                                SimpleButton { 
+                                    width: 80px;
+                                    height: 80px;
+                                    background: Pallet.keypad-button;
+                                    background-select: Pallet.keypad-button-pressed;
+                                    Text { 
+                                        text: "0"; 
+                                        color: Pallet.keypad-text; 
+                                        font-size: 30px;
+                                    }
+                                }
+                                SimpleButton { 
+                                    colspan: 2;
+                                    height: 80px;
+                                    background: Pallet.primary;
+                                    background-select: Pallet.primary;
+                                }
                             }
                         }
                     }
                 }
             }
+            
         }
     }
 }

@@ -11,9 +11,13 @@ use crate::slint_ui::*;
 
 #[path = "../helpers"]
 mod helpers {
-    pub mod json;
     pub mod mqtt;
     pub mod convert;
+}
+
+#[path = "../models"]
+mod models {
+    pub mod json;
 }
 
 
@@ -49,7 +53,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                 match event {
                     helpers::mqtt::MqttEvent::Incoming { topic: _, payload } => {
                         let _result = ui_weak.upgrade_in_event_loop(move |ui| {
-                            match from_str::<helpers::json::SchindlerTestData>(&payload) {
+                            match from_str::<models::json::SchindlerTestData>(&payload) {
                                 Ok(schindler) => {
                                     let messages : ModelRc<console_output> =  ui.global::<SchindlerPageLogic>().get_output_message();
                                     let just_time = schindler.time.split_whitespace().nth(1).unwrap_or(&schindler.time);
@@ -65,7 +69,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
                                         message: SharedString::from(new_message),
                                     });
 
-                                    const MAX_ITEMS: usize = 100;
+                                    const MAX_ITEMS: usize = 300;
                                     if items.len() > MAX_ITEMS {
                                         // Remove the extra elements from the beginning.
                                         items.drain(0..(items.len() - MAX_ITEMS));
@@ -85,15 +89,41 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
             }
         });
 
+
+        
+        let numbers: ModelRc<f32> = ui.global::<SchindlerPageLogic>().get_graph_data();
+
+        // KEYPAD
         let publish_channel = mqtt_worker.channel.clone();
         ui.global::<SchindlerPageLogic>().on_keypad_clicked(move |keypad_value| {    
             println!("\n\n\nVALUE OF THE KEYDPAD: {}\n\n\n", keypad_value);
+
+            let num = keypad_value.parse::<f32>().unwrap();
+
+            const MAX_POINTS: usize = 15;
+
+            // 2. downcast to VecModel<f32>
+            let vec_model = numbers
+                .as_any()
+                .downcast_ref::<VecModel<f32>>()
+                .expect("graph_data should be a VecModel<f32>");
+
+            // 3. push the new number
+            vec_model.push(num);
+
+            // 4. if we're over our limit, pop off the oldest (index 0)
+            if vec_model.row_count() > MAX_POINTS {
+                vec_model.remove(0);   // keeps the model at MAX_POINTS elements :contentReference[oaicite:0]{index=0}
+            }
+
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
                 payload: keypad_value // Clone the SharedString to avoid moving it
             });
         });
         
+
+
         
         
         // COMMANDS
@@ -108,9 +138,10 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
         
         let publish_channel = mqtt_worker.channel.clone();
         ui.global::<SchindlerPageLogic>().on_LIST_MODE(move |toggled| {
+            let payload = if toggled { "List_Mode:=1" } else { "List_Mode:=0" };
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from(toggled.to_string()) // Clone the SharedString to avoid moving it
+                payload: SharedString::from(payload.to_string()) // Clone the SharedString to avoid moving it
             });
         });
         
@@ -119,7 +150,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
         ui.global::<SchindlerPageLogic>().on_SYSTEM_INFO(move || {
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("SIM_FLOOR_CALL") // Clone the SharedString to avoid moving it
+                payload: SharedString::from("SYSTEM_INFO") // Clone the SharedString to avoid moving it
             });
         });
 

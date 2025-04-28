@@ -1,0 +1,92 @@
+// Define a global callback to build an SVG path string from Y‑values.
+
+
+export component LineGraph {
+    width: 600px;
+    height: 400px;
+
+    padding: 50px;
+
+    in property <[[float]]> data: [[0]]; // data to be plotted
+    in property <[brush]> graph-colors: [#01f8ae, #3cdbff]; // color of the graph
+
+    in property <int> max: 12; // max value of the data
+
+    Rectangle {
+        
+        width: parent.width;
+        height: parent.height;
+        
+        // background: #000000;
+
+        for graph-data[i] in data: Rectangle {
+            for graph[j] in graph-data : Rectangle {
+                width: parent.width;
+                height: parent.height;
+                
+                // prevent out of bounds error
+                property <float> next-value: graph-data[j + 1] > graph-data.length ? graph-data[j] : graph-data[j + 1];
+                property <int> next-index: j + 1 > graph-data.length ? j : j + 1;
+
+
+                
+                // FILL
+                if j  + 1 < (graph-data.length): Rectangle {
+                    Path {
+                        viewbox-width: parent.width / 1px;
+                        viewbox-height: parent.height / 1px;
+
+                        fill: graph-colors[i].transparentize(0.6);
+
+                        stroke: transparent;
+                        stroke-width: 1px;
+
+                        anti-alias: false;
+
+
+                        MoveTo {
+                            x: (parent.viewbox-width / (graph_data.length - 1)) * j;
+                            y: parent.viewbox-height - parent.viewbox-height / max * graph;
+                        }
+        
+                        LineTo {
+                            x: (parent.viewbox-width / (graph_data.length - 1)) * (j+1) ;
+                            y: parent.viewbox-height - parent.viewbox-height / max * next-value;
+                        }
+        
+                        LineTo {
+                            x: (parent.viewbox-width / (graph_data.length - 1)) * (j+1) ;
+                            y: parent.viewbox-height;
+                        }
+        
+                        LineTo {
+                            x: (parent.viewbox-width / (graph_data.length - 1)) * j ;
+                            y: parent.viewbox-height;
+                        }
+        
+                        Close { }
+                    }
+
+                    // THICK
+                    Path {
+                        viewbox-width: parent.width / 1px;
+                        viewbox-height: parent.height / 1px;
+                        stroke: graph-colors[i];
+                        stroke-width: 2px;
+                        anti-alias: true;
+
+                        MoveTo {
+                            x: ((parent.viewbox-width) / (graph_data.length - 1)) * j ;
+                            y: parent.viewbox-height - parent.viewbox-height / max * graph;
+                        }
+        
+                        LineTo {
+                            x: ((parent.viewbox-width) / (graph_data.length - 1)) * (next-index ) ;
+                            y: parent.viewbox-height - parent.viewbox-height / max * next-value;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
