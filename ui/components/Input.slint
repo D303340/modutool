@@ -46,6 +46,12 @@ export component NumberInput {
                 width: image-size;
                 height: image-size;
             }
+
+            clicked => {
+                if ((value - step) >= min) {
+                    value -= step;
+                }
+            }
         }
 
         Text {
@@ -74,6 +80,12 @@ export component NumberInput {
                 width: image-size;
                 height: image-size;
             }
+
+            clicked => {
+                if ((value + step) <= max) {
+                    value += step;
+                }
+            }
         }
     }
 }
@@ -83,7 +95,7 @@ export component KeypadInput {
     width: 240px;
     height: 60px; 
 
-    in property <string> value: "1234567890";
+    in-out property <string> value: "1234567890";
 
     Rectangle {
         background: Pallet.input-keypad-background;
@@ -117,7 +129,12 @@ export component KeypadInput {
                     height: parent.height - 16px;
                     x: -1px;
                 }
+
+                clicked => {
+                    value = "";
+                }
             }
         }
     }
 }
+

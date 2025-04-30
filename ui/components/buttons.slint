@@ -42,10 +42,13 @@ export component ToggleButton {
 
     // Click Function
     callback clicked();
-    property <bool> active: false;
+    in-out property <bool> active: false;
+
+    in property <brush> background: Pallet.toggle-button;
+    in property <brush> background-active: Pallet.toggle-button-active;
 
     BG := Rectangle {
-        background: Pallet.toggle-button;
+        background: root.background;
         border-radius: 4px;
 
         if text != "" || text != " ": Text {
@@ -72,7 +75,7 @@ export component ToggleButton {
 
     states [
         active when active: {
-            BG.background: Pallet.toggle-button-active;
+            BG.background: root.background-active;
             text-color: Pallet.toggle-button-active-text;
         }
     ] 
@@ -139,4 +142,82 @@ export component ToggleSlide {
             } 
         ] 
     }
+}
+
+export struct RadioMatrixButton {
+    id: int,
+    mode: int,
+    text: string,
+    active: bool,
+}
+
+export component MatrixRadio{
+    min-width: 200px;
+    min-height: 100px;
+
+    in-out property <[RadioMatrixButton]> buttons: [ {id: 0, mode: 1, text: "A", active: false}];
+    in-out property <RadioMatrixButton> active;
+
+    in property <length> button-width: 40px;
+    in property <length> button-height: 40px;
+    in property <length> button-radius: 3px;
+
+    in property <length> button-spacing: 10px;
+
+    in property <length> button-padding: 20px;
+
+
+    in property <brush> active-color: Pallet.toggle-button-active;
+    in property <brush> inactive-color: Pallet.toggle-button;
+
+    in property <int> columns: 3;
+    in property <int> rows: 3;
+
+    VerticalLayout {
+        alignment: space-between;
+        padding-bottom: button-height/2 + button-padding;
+        padding-top: button-height/2 + button-padding;
+        padding-left: button-width/2 + button-padding;
+        padding-right: button-width/2 + button-padding;
+
+        spacing: button-spacing;
+
+
+        property <int> row_loop: Math.ceil(buttons.length / columns);
+
+        for i in row_loop: HorizontalLayout {
+            spacing: button-spacing;
+            alignment: space-between;
+
+            property <int> col-loop: Math.min(columns, buttons.length - i * columns);
+
+            for j in col-loop: Rectangle {
+                property <int> idx: i * columns + j;
+
+                if idx < buttons.length: Rectangle {
+                    width: button-width;
+                    height: button-height;
+                    border-radius: button-radius;
+
+                    background: buttons[idx].active ? active-color : inactive-color;
+
+                    Text {
+                        text: buttons[idx].text;
+                        font-family: "Roboto";
+                        font-weight: 700;
+                        color: buttons[idx].active ? Pallet.toggle-button-active-text : Pallet.toggle-button-text;
+                    }
+
+                    ta := TouchArea {
+                        clicked => {
+                            buttons[root.active.id].active = false;
+                            buttons[idx].active = true;
+                            root.active = buttons[idx];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

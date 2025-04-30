@@ -1,6 +1,6 @@
 import { Page } from "../../components/page.slint";
 import { Pallet } from "../../components/style.slint";
-import { SimpleButton, ToggleSlide, ToggleButton } from "../../components/buttons.slint";
+import { SimpleButton, ToggleSlide, ToggleButton, MatrixRadio } from "../../components/buttons.slint";
 import { NumberInput, KeypadInput } from "../../components/input.slint";
 import { LineGraph } from "../../components/graphs.slint";
 
@@ -13,23 +13,12 @@ export global SchindlerPageLogic {
     // Every property and/or callback you want to 
     // expose to Rust must be declared here...
     callback keypad-clicked(keypad-value: string);
+    callback keypad-enter(keypad-value: string);
 
     // Schindler Commands
-    callback SIM_FLOOR_CALL();
-    callback LIST_MODE(toggled: bool);
-    callback SYSTEM_INFO();
-    callback SHOW_VERSION();
-    callback SHOW_SERVICE_STATE();
-    callback SHOW_LAST_ERR();
-    callback CLEAR_LAST_ERROR();
-    callback READ_SIM_CARD();
-    callback CTRL_IOSTATUS();
-    callback CAR_IOSTATUS_RQST();
-    callback CAR_DEAD_LOOP();
-    callback COP_IDENTIFY_HW();
-    callback COP_IDENTIFY_SW();
-    callback COP_DEAD_LOOP();
-    callback GET_CARLIGHT_STATE();
+    callback Send_Command(command: string);
+    callback Send_Command_Number(command: string, value: int);
+    callback Send_Command_HEX(command: string, value: int);
 
 
     in property <string> console-main: "";
@@ -42,6 +31,12 @@ export global SchindlerPageLogic {
     ];
 
     in property <[float]> graph-data: [0];
+}
+
+enum visual-info-tab-state {
+    Essential,
+    Doors,
+    floor,
 }
 
 
@@ -191,68 +186,38 @@ export component SchindlerPage inherits Page {
                                 font-size: 13px;
                                 vertical-alignment: center;
                             }
-                            ToggleSlide {
+                            list-mode-enabled := ToggleSlide {
                                 width: 50px;
                                 height: 25px;
                                 clicked => {
-                                    SchindlerPageLogic.LIST_MODE(self.toggled);
+                                    SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.toggled == true ? mode.active.mode : 0);
                                 }
                             }
                         }
 
-                        GridLayout {
-                            spacing: 8px;
-                            Row {
-                                ToggleButton {
-                                    text: "Common";
-                                    height: 35px;
-                                }
+                        mode := MatrixRadio { 
+                            button-height: 35px;
+                            button-width: 65px;
+                            button-padding: 0px;
+                            button-spacing: 0px;
 
-                                ToggleButton {
-                                    text: "Cabin";
-                                    height: 35px;
-                                }
-
-                                ToggleButton {
-                                    text: "CAN-BUS";
-                                    height: 35px;
+                            buttons: [  
+                            {id: 0, mode: 1, text: "Common", active: true},
+                            {id: 1, mode: 2, text: "Door", active: false},
+                            {id: 2, mode: 3, text: "Drive", active: false},
+                            {id: 3, mode: 4, text: "Cabin", active: false},
+                            {id: 4, mode: 5, text: "Panels", active: false},
+                            {id: 5, mode: 6, text: "BIO-BUS", active: false},
+                            {id: 6, mode: 7, text: "CAN-BUS", active: false},
+                            {id: 7, mode: 8, text: "Busilog", active: false},
+                            {id: 8, mode: 9, text: "All", active: false} ];
+                            
+                            changed active => { 
+                                if list-mode-enabled.toggled == true {
+                                    SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.active.mode); 
                                 }
                             }
-
-                            Row {
-                                ToggleButton {
-                                    text: "Door";
-                                    height: 35px;
-                                }
-
-                                ToggleButton {
-                                    text: "Panels";
-                                    height: 35px;
-                                }
-
-                                ToggleButton {
-                                    text: "Busilog";
-                                    height: 35px;
-                                }
-                            }
-
-                            Row {
-                                ToggleButton {
-                                    text: "Drive";
-                                    height: 35px;
-                                }
-
-                                ToggleButton {
-                                    text: "BIO-BUS";
-                                    height: 35px;
-                                }
-
-                                ToggleButton {
-                                    text: "All";
-                                    height: 35px;
-                                }
-                            }
-                        }
+                        }   
                     }   
                 }
 
@@ -274,6 +239,10 @@ export component SchindlerPage inherits Page {
                             SimpleButton {
                                 width: 50px;
                                 height: 25px;
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command("SHOW_VERSION");
+                                }
                             }
                         }
 
@@ -289,6 +258,10 @@ export component SchindlerPage inherits Page {
                             SimpleButton {
                                 width: 50px;
                                 height: 25px;
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command("SYSTEM_INFO");
+                                }
                             }
                         }
 
@@ -304,6 +277,10 @@ export component SchindlerPage inherits Page {
                             SimpleButton {
                                 width: 50px;
                                 height: 25px;
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command("SHOW_SERVICE_STATE");
+                                }
                             }
                         }
 
@@ -319,6 +296,10 @@ export component SchindlerPage inherits Page {
                             SimpleButton {
                                 width: 50px;
                                 height: 25px;
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command("COP_IDENTIFY_HW");
+                                }
                             }
                         }
 
@@ -334,6 +315,10 @@ export component SchindlerPage inherits Page {
                             SimpleButton {
                                 width: 50px;
                                 height: 25px;
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command("COP_IDENTIFY_SW");
+                                }
                             }
                         }
                     }   
@@ -355,7 +340,7 @@ export component SchindlerPage inherits Page {
                                 vertical-alignment: center;
                             }
 
-                            NumberInput {
+                            floor-calls := NumberInput {
                                 value: 6;
                                 width: 96px;
                                 height: 28px;
@@ -366,6 +351,10 @@ export component SchindlerPage inherits Page {
                                 height: self.width;
                                 background: Pallet.toggle-button-active;
                                 background-select: Pallet.toggle-button-active.brighter(0.5);
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command_Number("SIM_FLOOR_CALL:=", floor-calls.value);
+                                }
                             }
                         }
 
@@ -378,7 +367,7 @@ export component SchindlerPage inherits Page {
                                 vertical-alignment: center;
                             }
 
-                            NumberInput {
+                            rand-calls := NumberInput {
                                 value: 6;
                                 width: 96px;
                                 height: 28px;
@@ -389,6 +378,10 @@ export component SchindlerPage inherits Page {
                                 height: self.width;
                                 background: Pallet.toggle-button-active;
                                 background-select: Pallet.toggle-button-active.brighter(0.5);
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command_HEX("SIM_FLOOR_CALL:=", rand-calls.value);
+                                }
                             }
                         }
                     }
@@ -443,20 +436,185 @@ export component SchindlerPage inherits Page {
             background: Pallet.panel-background;
             col: 1;
             row: 0;
+            property <length> panel-width: parent.width / 3;
+            in-out property <visual-info-tab-state> current-tab: visual-info-tab-state.Essential;
 
-            // Text {
-            //     text: "VISUAL INFO";
-            //     color: Pallet.text;
-            // }
-
-            LineGraph {
-                width: 300px;
-                height: 160px;
-                max: 8.00;
-                data: [SchindlerPageLogic.graph-data, [0, 0, 4, 4, 5, 3, 3, 2, 1, 0]];
-                graph-colors: [#01b5c9, #d87363];
-                
+            // Middle Separator
+            Rectangle {
+                background: Pallet.navigation-bar-tab-inactive;
+                height: 2px;
+                y: 37px;
             }
+
+            VerticalLayout {
+                // NAVIGATION BAR
+                HorizontalLayout {
+
+                    // ESSENTIAL
+                    VerticalLayout {
+
+                        // Selection Indicator
+                        Rectangle {
+                            width: 90px;
+                            height: 3px;
+                            Rectangle {
+                                height: 3px;
+                                width: 92px;
+                                x: 0px;
+                                background: current-tab == visual-info-tab-state.Essential ? Pallet.primary : transparent;
+                            }
+                        }
+
+                        SimpleButton {
+                            border-radius: 0;
+                            background: current-tab == visual-info-tab-state.Essential ? Pallet.panel-background : transparent;
+                            width: 90px;
+                            height: 36px;
+
+                            Text {
+                                y: 7px;
+                                text: "Essential";
+                                font-size: 16px;
+                                font-weight: 500;
+                                color: current-tab == visual-info-tab-state.Essential ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                                vertical-alignment: center;
+                            }
+
+                            clicked => {
+                                current-tab = visual-info-tab-state.Essential;
+                            }
+                        }
+                    }
+
+                    // SEPARATOR
+                    Rectangle {
+                        width: 2px;
+                        height: 34px;
+                        y: 3px;
+                        background: current-tab == visual-info-tab-state.Essential || current-tab == visual-info-tab-state.Doors ? Pallet.navigation-bar-tab-inactive : transparent;
+                    }
+
+                    // DOORS
+                    VerticalLayout {
+
+                        // Selection Indicator
+                        Rectangle {
+                            width: 90px;
+                            Rectangle {
+                                height: 3px;
+                                width: 94px;
+                                background: current-tab == visual-info-tab-state.Doors ? Pallet.primary : transparent;
+                            }
+                        }
+
+                        SimpleButton {
+                            border-radius: 0;
+                            background: current-tab == visual-info-tab-state.Doors ? Pallet.panel-background : transparent;
+                            width: 90px;
+                            height: 36px;
+
+                            Text {
+                                y: 7px;
+                                text: "Doors";
+                                font-size: 16px;
+                                font-weight: 500;
+                                color: current-tab == visual-info-tab-state.Doors ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                                vertical-alignment: center;
+                            }
+
+                            clicked => {
+                                current-tab = visual-info-tab-state.Doors;
+                            }
+                        }
+                    }
+
+                    // SEPARATOR
+                    Rectangle {
+                        width: 2px;
+                        height: 34px;
+                        y: 3px;
+                        background: current-tab == visual-info-tab-state.Doors || current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-tab-inactive : transparent;
+                    }
+
+                    // LEVEL
+                    VerticalLayout {
+
+                        // Selection Indicator
+                        Rectangle {
+                            width: 90px;
+                            Rectangle {
+                                height: 3px;
+                                width: 94px;
+                                background: current-tab == visual-info-tab-state.floor ? Pallet.primary : transparent;
+                            }
+                        }
+
+                        SimpleButton {
+                            border-radius: 0;
+                            background: current-tab == visual-info-tab-state.floor ? Pallet.panel-background : transparent;
+                            width: 90px;
+                            height: 36px;
+
+                            Text {
+                                y: 7px;
+                                text: "Floor";
+                                font-size: 16px;
+                                font-weight: 500;
+                                color: current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                                vertical-alignment: center;
+                            }
+
+                            clicked => {
+                                current-tab = visual-info-tab-state.floor;
+                            }
+                        }
+                    }
+
+                    // SEPARATOR
+                    Rectangle {
+                        width: 2px;
+                        height: 34px;
+                        y: 3px;
+                        background: current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-tab-inactive : transparent;
+                    }
+                }
+                // VISUAL INFO
+                GridLayout {
+                    padding: 16px;
+                    spacing: 16px;
+                    Row {
+                        Rectangle {
+                            background: Pallet.child-panel-background;
+                            colspan: 2;
+                        }
+    
+                        Rectangle {
+                            background: Pallet.child-panel-background;
+                        }
+    
+                        Rectangle {
+                            width: (600px - 64px) / 3;
+                            rowspan: 2;
+                            background: Pallet.child-panel-background;
+                        }
+                    }
+    
+                    Row {
+                        Rectangle {
+                            width: (600px - 64px) / 3;
+                            height: self.width;
+                            background: Pallet.child-panel-background;
+                        }
+    
+                        Rectangle {
+                            width: (600px - 64px) / 3;
+                            height: self.width;
+                            background: Pallet.child-panel-background;
+                        }
+                    }
+                }
+            }
+
         }
 
         // Console
@@ -512,6 +670,9 @@ export component SchindlerPage inherits Page {
                                 source: @image-url("../../assets/icons/Erase.png");
                                 width: 20px;
                                 height: 20px;
+                            }
+                            clicked => {
+                                SchindlerPageLogic.output-message = [{time: "", message: ""}];
                             }
                         }
                     }
@@ -581,11 +742,9 @@ export component SchindlerPage inherits Page {
                                 font-family: "Roboto";
                             }
                         }
-    
                     }
                 } 
             }
-            
         }
         
         // Keypad
@@ -615,7 +774,7 @@ export component SchindlerPage inherits Page {
                         alignment: space-between;
                         padding-top: 25px;
 
-                        KeypadInput {
+                        keypad-value := KeypadInput {
                             x: parent.width / 2 - self.width / 2;
                             width: 240px;
                             height: 60px;
@@ -639,6 +798,10 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     } 
+
+                                    clicked => {
+                                        keypad-value.value += "1";
+                                    }
                                 }
                                 SimpleButton { 
                                     width: 80px;
@@ -650,6 +813,10 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     }
+
+                                    clicked => {
+                                        keypad-value.value += "2";
+                                    }
                                 }
                                 SimpleButton { 
                                     width: 80px;
@@ -660,6 +827,10 @@ export component SchindlerPage inherits Page {
                                         text: "3"; 
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
+                                    }
+
+                                    clicked => {
+                                        keypad-value.value += "3";
                                     }
                                 }
                             }
@@ -675,6 +846,10 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     }
+
+                                    clicked => {
+                                        keypad-value.value += "4";
+                                    }
                                 }
                                 SimpleButton { 
                                     width: 80px;
@@ -686,6 +861,10 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     }
+
+                                    clicked => {
+                                        keypad-value.value += "5";
+                                    }
                                 }
                                 SimpleButton { 
                                     width: 80px;
@@ -696,6 +875,10 @@ export component SchindlerPage inherits Page {
                                         text: "6"; 
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
+                                    }
+
+                                    clicked => {
+                                        keypad-value.value += "6";
                                     }
                                 }
                             }
@@ -711,6 +894,10 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     } 
+
+                                    clicked => {
+                                        keypad-value.value += "7";
+                                    }
                                 }
                                 SimpleButton { 
                                     width: 80px;
@@ -722,6 +909,10 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     }
+
+                                    clicked => {
+                                        keypad-value.value += "8";
+                                    }
                                 }
                                 SimpleButton { 
                                     width: 80px;
@@ -732,6 +923,10 @@ export component SchindlerPage inherits Page {
                                         text: "9"; 
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
+                                    }
+
+                                    clicked => {
+                                        keypad-value.value += "9";
                                     }
                                 }
                             }
@@ -747,12 +942,20 @@ export component SchindlerPage inherits Page {
                                         color: Pallet.keypad-text; 
                                         font-size: 30px;
                                     }
+
+                                    clicked => {
+                                        keypad-value.value += "0";
+                                    }
                                 }
                                 SimpleButton { 
                                     colspan: 2;
                                     height: 80px;
                                     background: Pallet.primary;
                                     background-select: Pallet.primary;
+                                    clicked => {
+                                        SchindlerPageLogic.keypad-enter(keypad-value.value);
+                                        keypad-value.value = "";
+                                    }
                                 }
                             }
                         }

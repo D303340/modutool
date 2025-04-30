@@ -95,27 +95,9 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
 
         // KEYPAD
         let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_keypad_clicked(move |keypad_value| {    
+        ui.global::<SchindlerPageLogic>().on_keypad_enter(move |keypad_value| {    
             println!("\n\n\nVALUE OF THE KEYDPAD: {}\n\n\n", keypad_value);
-
-            let num = keypad_value.parse::<f32>().unwrap();
-
-            const MAX_POINTS: usize = 15;
-
-            // 2. downcast to VecModel<f32>
-            let vec_model = numbers
-                .as_any()
-                .downcast_ref::<VecModel<f32>>()
-                .expect("graph_data should be a VecModel<f32>");
-
-            // 3. push the new number
-            vec_model.push(num);
-
-            // 4. if we're over our limit, pop off the oldest (index 0)
-            if vec_model.row_count() > MAX_POINTS {
-                vec_model.remove(0);   // keeps the model at MAX_POINTS elements :contentReference[oaicite:0]{index=0}
-            }
-
+            
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
                 payload: keypad_value // Clone the SharedString to avoid moving it
@@ -128,125 +110,37 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>){
         
         // COMMANDS
         let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_SIM_FLOOR_CALL(move || {
+        ui.global::<SchindlerPageLogic>().on_Send_Command(move |command| {
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("SIM_FLOOR_CALL") // Clone the SharedString to avoid moving it
-            });
-        });
-        
-        
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_LIST_MODE(move |toggled| {
-            let payload = if toggled { "List_Mode:=1" } else { "List_Mode:=0" };
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from(payload.to_string()) // Clone the SharedString to avoid moving it
-            });
-        });
-        
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_SYSTEM_INFO(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("SYSTEM_INFO") // Clone the SharedString to avoid moving it
+                payload: SharedString::from(command) // Clone the SharedString to avoid moving it
             });
         });
 
         let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_SHOW_VERSION(move || {
+        ui.global::<SchindlerPageLogic>().on_Send_Command_Number(move |command, value| {
+
+            let mut combined_string = String::from(command);
+            combined_string.push_str(&format!("{}", value));
+
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("SHOW_VERSION") // Clone the SharedString to avoid moving it
+                payload: SharedString::from(combined_string) // Clone the SharedString to avoid moving it
             });
         });
 
         let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_SHOW_SERVICE_STATE(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("SHOW_SERVICE_STATE") // Clone the SharedString to avoid moving it
-            });
-        });
+        ui.global::<SchindlerPageLogic>().on_Send_Command_HEX(move |command, value| {
+            // convert to hex
+            let hex_number = format!("{:X}", value);
+            
+            //combine string: SYS_SIM_START:= with hex_number
+            let mut combined_string = String::from(command);
+            combined_string.push_str(&hex_number);
 
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_SHOW_LAST_ERR(move || {
             let _ = publish_channel.send(MqttMessage::Publish { 
                 topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("SHOW_LAST_ERR") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_CLEAR_LAST_ERROR(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("CLEAR_LAST_ERROR") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_READ_SIM_CARD(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("READ_SIM_CARD") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_CTRL_IOSTATUS(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("CTRL_IOSTATUS") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_CAR_IOSTATUS_RQST(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("CAR_IOSTATUS_RQST") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_CAR_DEAD_LOOP(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("CAR_DEAD_LOOP") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_COP_IDENTIFY_HW(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("COP_IDENTIFY_HW") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_COP_IDENTIFY_SW(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("COP_IDENTIFY_SW") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_COP_DEAD_LOOP(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("COP_DEAD_LOOP") // Clone the SharedString to avoid moving it
-            });
-        });
-
-        let publish_channel = mqtt_worker.channel.clone();
-        ui.global::<SchindlerPageLogic>().on_GET_CARLIGHT_STATE(move || {
-            let _ = publish_channel.send(MqttMessage::Publish { 
-                topic: SharedString::from("test/sch/input"), 
-                payload: SharedString::from("GET_CARLIGHT_STATE") // Clone the SharedString to avoid moving it
+                payload: SharedString::from(combined_string) // Clone the SharedString to avoid moving it
             });
         });
         
