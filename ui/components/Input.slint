@@ -49,7 +49,7 @@ export component NumberInput {
 
             clicked => {
                 if ((value - step) >= min) {
-                    value -= step;
+                    value = value - step;
                 }
             }
         }
@@ -83,7 +83,7 @@ export component NumberInput {
 
             clicked => {
                 if ((value + step) <= max) {
-                    value += step;
+                    value = value + step;
                 }
             }
         }

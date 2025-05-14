@@ -232,26 +232,6 @@ export component SchindlerPage inherits Page {
                             padding-left: 10px;
                             padding-right: 50px;
                             Text { 
-                                text: "Show Version:";
-                                font-weight: 700;
-                                font-size: 13px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command("SHOW_VERSION");
-                                }
-                            }
-                        }
-
-                        HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 50px;
-                            Text { 
                                 text: "System Info:";
                                 font-weight: 700;
                                 font-size: 13px;
@@ -263,7 +243,7 @@ export component SchindlerPage inherits Page {
                                 height: 25px;
 
                                 clicked => {
-                                    SchindlerPageLogic.Send_Command("SYSTEM_INFO");
+                                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
                                 }
                             }
                         }
@@ -272,7 +252,7 @@ export component SchindlerPage inherits Page {
                             padding-left: 10px;
                             padding-right: 50px;
                             Text { 
-                                text: "Service State:";
+                                text: "Read Sim Card:";
                                 font-weight: 700;
                                 font-size: 13px;
                                 color: Pallet.default-text;
@@ -283,7 +263,27 @@ export component SchindlerPage inherits Page {
                                 height: 25px;
 
                                 clicked => {
-                                    SchindlerPageLogic.Send_Command("SHOW_SERVICE_STATE");
+                                    SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
+                                }
+                            }
+                        }
+
+                        HorizontalLayout {
+                            padding-left: 10px;
+                            padding-right: 50px;
+                            Text { 
+                                text: "Last Error:";
+                                font-weight: 700;
+                                font-size: 13px;
+                                color: Pallet.default-text;
+                                vertical-alignment: center;
+                            }
+                            SimpleButton {
+                                width: 50px;
+                                height: 25px;
+
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command_Number("SHOW_LAST_ERR:=", 2);
                                 }
                             }
                         }
@@ -323,7 +323,7 @@ export component SchindlerPage inherits Page {
                                 height: 25px;
 
                                 clicked => {
-                                    SchindlerPageLogic.Send_Command("COP_IDENTIFY_SW");
+                                    SchindlerPageLogic.Send_Command("?");
                                 }
                             }
                         }
@@ -440,321 +440,365 @@ export component SchindlerPage inherits Page {
             }
         }
 
-        // Visual Info
-        Rectangle {
-            height: 494px;
-            background: Pallet.panel-background;
+
+        /// Middle Panel
+        // This is so the Console can resize properly
+        // slint doesn't support changing the col and row at runtime
+        middle-panel := Rectangle {
             col: 1;
             row: 0;
-            property <length> panel-width: parent.width / 3;
-            in-out property <visual-info-tab-state> current-tab: visual-info-tab-state.Essential;
+            rowspan: 2;        
 
-            // Middle Separator
+            // Visual Info
             Rectangle {
-                background: Pallet.navigation-bar-tab-inactive;
-                height: 2px;
-                y: 37px;
-            }
+                y: 0;
+                height: 494px;
+                background: Pallet.panel-background;
+                property <length> panel-width: parent.width / 3;
+                in-out property <visual-info-tab-state> current-tab: visual-info-tab-state.Essential;
 
-            VerticalLayout {
-                // NAVIGATION BAR
-                HorizontalLayout {
-
-                    // ESSENTIAL
-                    VerticalLayout {
-
-                        // Selection Indicator
-                        Rectangle {
-                            width: 90px;
-                            height: 3px;
-                            Rectangle {
-                                height: 3px;
-                                width: 92px;
-                                x: 0px;
-                                background: current-tab == visual-info-tab-state.Essential ? Pallet.primary : transparent;
-                            }
-                        }
-
-                        SimpleButton {
-                            border-radius: 0;
-                            background: current-tab == visual-info-tab-state.Essential ? Pallet.panel-background : transparent;
-                            width: 90px;
-                            height: 36px;
-
-                            Text {
-                                y: 7px;
-                                text: "Essential";
-                                font-size: 16px;
-                                font-weight: 500;
-                                color: current-tab == visual-info-tab-state.Essential ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
-                                vertical-alignment: center;
-                            }
-
-                            clicked => {
-                                current-tab = visual-info-tab-state.Essential;
-                            }
-                        }
-                    }
-
-                    // SEPARATOR
-                    Rectangle {
-                        width: 2px;
-                        height: 34px;
-                        y: 3px;
-                        background: current-tab == visual-info-tab-state.Essential || current-tab == visual-info-tab-state.Doors ? Pallet.navigation-bar-tab-inactive : transparent;
-                    }
-
-                    // DOORS
-                    VerticalLayout {
-
-                        // Selection Indicator
-                        Rectangle {
-                            width: 90px;
-                            Rectangle {
-                                height: 3px;
-                                width: 94px;
-                                background: current-tab == visual-info-tab-state.Doors ? Pallet.primary : transparent;
-                            }
-                        }
-
-                        SimpleButton {
-                            border-radius: 0;
-                            background: current-tab == visual-info-tab-state.Doors ? Pallet.panel-background : transparent;
-                            width: 90px;
-                            height: 36px;
-
-                            Text {
-                                y: 7px;
-                                text: "Doors";
-                                font-size: 16px;
-                                font-weight: 500;
-                                color: current-tab == visual-info-tab-state.Doors ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
-                                vertical-alignment: center;
-                            }
-
-                            clicked => {
-                                current-tab = visual-info-tab-state.Doors;
-                            }
-                        }
-                    }
-
-                    // SEPARATOR
-                    Rectangle {
-                        width: 2px;
-                        height: 34px;
-                        y: 3px;
-                        background: current-tab == visual-info-tab-state.Doors || current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-tab-inactive : transparent;
-                    }
-
-                    // LEVEL
-                    VerticalLayout {
-
-                        // Selection Indicator
-                        Rectangle {
-                            width: 90px;
-                            Rectangle {
-                                height: 3px;
-                                width: 94px;
-                                background: current-tab == visual-info-tab-state.floor ? Pallet.primary : transparent;
-                            }
-                        }
-
-                        SimpleButton {
-                            border-radius: 0;
-                            background: current-tab == visual-info-tab-state.floor ? Pallet.panel-background : transparent;
-                            width: 90px;
-                            height: 36px;
-
-                            Text {
-                                y: 7px;
-                                text: "Floor";
-                                font-size: 16px;
-                                font-weight: 500;
-                                color: current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
-                                vertical-alignment: center;
-                            }
-
-                            clicked => {
-                                current-tab = visual-info-tab-state.floor;
-                            }
-                        }
-                    }
-
-                    // SEPARATOR
-                    Rectangle {
-                        width: 2px;
-                        height: 34px;
-                        y: 3px;
-                        background: current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-tab-inactive : transparent;
-                    }
+                // Middle Separator
+                Rectangle {
+                    background: Pallet.navigation-bar-tab-inactive;
+                    height: 2px;
+                    y: 37px;
                 }
-                // VISUAL INFO
-                GridLayout {
-                    padding: 16px;
-                    spacing: 16px;
-                    Row {
-                        Rectangle {
-                            background: Pallet.child-panel-background;
-                            colspan: 2;
-                        }
-    
-                        Rectangle {
-                            background: Pallet.child-panel-background;
-                        }
-    
-                        Rectangle {
-                            width: (600px - 64px) / 3;
-                            rowspan: 2;
-                            background: Pallet.child-panel-background;
-                        }
-                    }
-    
-                    Row {
-                        Rectangle {
-                            width: (600px - 64px) / 3;
-                            height: self.width;
-                            background: Pallet.child-panel-background;
-                        }
-    
-                        Rectangle {
-                            width: (600px - 64px) / 3;
-                            height: self.width;
-                            background: Pallet.child-panel-background;
-                        }
-                    }
-                }
-            }
 
-        }
-
-        // Console
-        VerticalLayout {
-            col: 1;
-            row: 1;
-            
-            width: 600px;
-            height: 270px;
-            
-            spacing: -1px;
-
-            // HEADER
-            Rectangle {
-                height: 30px;
-                background: Pallet.console-header-background;
-                border-width: 1px;
-                border-color: Pallet.console-border;
-
-                HorizontalLayout {
-                    padding-left: 8px;
-                    padding-right: 8px;
-                    alignment: space-between;
+                VerticalLayout {
+                    // NAVIGATION BAR
                     HorizontalLayout {
-                        spacing: 8px;
-                        SimpleButton {
-                            width: parent.height;
-                            height: parent.height;
-                            background: transparent;
-                            Image {
-                                source: @image-url("../../assets/icons/Console_Bottom.png");
-                                width: 20px;
-                                height: 20px;
-                            }
-                        }
-    
-                        SimpleButton {
-                            width: parent.height;
-                            height: parent.height;
-                            background: transparent;
-                            Image {
-                                source: @image-url("../../assets/icons/Save.png");
-                                width: 20px;
-                                height: 20px;
-                            }
-                        }
-    
-                        SimpleButton {
-                            width: parent.height;
-                            height: parent.height;
-                            background: transparent;
-                            Image {
-                                source: @image-url("../../assets/icons/Erase.png");
-                                width: 20px;
-                                height: 20px;
-                            }
-                            clicked => {
-                                SchindlerPageLogic.output-message = [{time: "", message: ""}];
-                            }
-                        }
-                    }
 
-                    SimpleButton {
-                        width: parent.height;
-                        height: parent.height;
-                        background: transparent;
-                        Image {
-                            source: @image-url("../../assets/icons/Console_Maximize.png");
-                            width: 20px;
-                            height: 20px;
-                            colorize: #d3d3d3;
-                        }
-                    }
-                }
+                        // ESSENTIAL
+                        VerticalLayout {
 
-
-            }
-
-            // CONSOLE
-
-            Rectangle {
-                border-width: 1px;
-                border-color: Pallet.console-border;
-                background: Pallet.console-background;
-                Flickable {
-                    interactive: true;
-                    width: parent.width;
-                    viewport-width: self.width;
-                    viewport-y: {
-                        if (self.viewport-height > self.height) { self.height - self.viewport-height } 
-                        else { 0px }   
-                    };
-    
-                    VerticalLayout {
-                        spacing: 4px;
-                        padding: 8px;
-                        alignment: end;
-    
-                        for output-message[i] in SchindlerPageLogic.output-message : HorizontalLayout {
-                            spacing: 6px;
-                            Text {
-                                y: 0px;
-                                text: SchindlerPageLogic.output-message[i].time;
-                                font-family: "Roboto";
-                                color: Pallet.console-time-text;
-                                horizontal-alignment: center;
-                                vertical-alignment: top;
-                            }
-    
+                            // Selection Indicator
                             Rectangle {
-                                width: i == SchindlerPageLogic.output-message.length - 1 ? 3px : 2px;
+                                width: 90px;
+                                height: 3px;
                                 Rectangle {
-                                    height: parent.height - 4px;
-                                    background: i == SchindlerPageLogic.output-message.length - 1 ? Pallet.primary : Pallet.console-time-text;
+                                    height: 3px;
+                                    width: 92px;
+                                    x: 0px;
+                                    background: current-tab == visual-info-tab-state.Essential ? Pallet.primary : transparent;
                                 }
                             }
-    
-                            Text {
-                                text: SchindlerPageLogic.output-message[i].message;
-                                width: parent.width - 47px - 6px;
-                                color: Pallet.console-main-text;
-                                wrap: word-wrap;
-                                horizontal-alignment: left;
-                                vertical-alignment: top;
-                                font-family: "Roboto";
+
+                            SimpleButton {
+                                border-radius: 0;
+                                background: current-tab == visual-info-tab-state.Essential ? Pallet.panel-background : transparent;
+                                width: 90px;
+                                height: 36px;
+
+                                Text {
+                                    y: 7px;
+                                    text: "Essential";
+                                    font-size: 16px;
+                                    font-weight: 500;
+                                    color: current-tab == visual-info-tab-state.Essential ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                                    vertical-alignment: center;
+                                }
+
+                                clicked => {
+                                    current-tab = visual-info-tab-state.Essential;
+                                }
+                            }
+                        }
+
+                        // SEPARATOR
+                        Rectangle {
+                            width: 2px;
+                            height: 34px;
+                            y: 3px;
+                            background: current-tab == visual-info-tab-state.Essential || current-tab == visual-info-tab-state.Doors ? Pallet.navigation-bar-tab-inactive : transparent;
+                        }
+
+                        // DOORS
+                        VerticalLayout {
+
+                            // Selection Indicator
+                            Rectangle {
+                                width: 90px;
+                                Rectangle {
+                                    height: 3px;
+                                    width: 94px;
+                                    background: current-tab == visual-info-tab-state.Doors ? Pallet.primary : transparent;
+                                }
+                            }
+
+                            SimpleButton {
+                                border-radius: 0;
+                                background: current-tab == visual-info-tab-state.Doors ? Pallet.panel-background : transparent;
+                                width: 90px;
+                                height: 36px;
+
+                                Text {
+                                    y: 7px;
+                                    text: "Doors";
+                                    font-size: 16px;
+                                    font-weight: 500;
+                                    color: current-tab == visual-info-tab-state.Doors ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                                    vertical-alignment: center;
+                                }
+
+                                clicked => {
+                                    current-tab = visual-info-tab-state.Doors;
+                                }
+                            }
+                        }
+
+                        // SEPARATOR
+                        Rectangle {
+                            width: 2px;
+                            height: 34px;
+                            y: 3px;
+                            background: current-tab == visual-info-tab-state.Doors || current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-tab-inactive : transparent;
+                        }
+
+                        // LEVEL
+                        VerticalLayout {
+
+                            // Selection Indicator
+                            Rectangle {
+                                width: 90px;
+                                Rectangle {
+                                    height: 3px;
+                                    width: 94px;
+                                    background: current-tab == visual-info-tab-state.floor ? Pallet.primary : transparent;
+                                }
+                            }
+
+                            SimpleButton {
+                                border-radius: 0;
+                                background: current-tab == visual-info-tab-state.floor ? Pallet.panel-background : transparent;
+                                width: 90px;
+                                height: 36px;
+
+                                Text {
+                                    y: 7px;
+                                    text: "Floor";
+                                    font-size: 16px;
+                                    font-weight: 500;
+                                    color: current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                                    vertical-alignment: center;
+                                }
+
+                                clicked => {
+                                    current-tab = visual-info-tab-state.floor;
+                                }
+                            }
+                        }
+
+                        // SEPARATOR
+                        Rectangle {
+                            width: 2px;
+                            height: 34px;
+                            y: 3px;
+                            background: current-tab == visual-info-tab-state.floor ? Pallet.navigation-bar-tab-inactive : transparent;
+                        }
+                    }
+                    // VISUAL INFO
+                    GridLayout {
+                        padding: 16px;
+                        spacing: 16px;
+                        Row {
+                            Rectangle {
+                                background: Pallet.child-panel-background;
+                                colspan: 2;
+                            }
+        
+                            Rectangle {
+                                background: Pallet.child-panel-background;
+                            }
+        
+                            Rectangle {
+                                width: (600px - 64px) / 3;
+                                rowspan: 2;
+                                background: Pallet.child-panel-background;
+                            }
+                        }
+        
+                        Row {
+                            Rectangle {
+                                width: (600px - 64px) / 3;
+                                height: self.width;
+                                background: Pallet.child-panel-background;
+                            }
+        
+                            Rectangle {
+                                width: (600px - 64px) / 3;
+                                height: self.width;
+                                background: Pallet.child-panel-background;
                             }
                         }
                     }
-                } 
+                }
+
             }
+
+            // Console
+            console-panel := VerticalLayout {
+                y: middle-panel.height - self.height;
+                in-out property <bool> maximized: false;
+
+                
+                width: 600px;
+                height: 270px;
+                
+                spacing: -1px;
+
+                // HEADER
+                Rectangle {
+                    height: 30px;
+                    background: Pallet.console-header-background;
+                    border-width: 1px;
+                    border-color: Pallet.console-border;
+
+                    HorizontalLayout {
+                        padding-left: 8px;
+                        padding-right: 8px;
+                        alignment: space-between;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            SimpleButton {
+                                width: parent.height;
+                                height: parent.height;
+                                background: transparent;
+                                Image {
+                                    source: @image-url("../../assets/icons/Console_Bottom.png");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+
+                                clicked => {
+                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                }
+                            }
+        
+                            SimpleButton {
+                                width: parent.height;
+                                height: parent.height;
+                                background: transparent;
+                                Image {
+                                    source: @image-url("../../assets/icons/Save.png");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                            }
+        
+                            SimpleButton {
+                                width: parent.height;
+                                height: parent.height;
+                                background: transparent;
+                                Image {
+                                    source: @image-url("../../assets/icons/Erase.png");
+                                    width: 20px;
+                                    height: 20px;
+                                }
+                                clicked => {
+                                    SchindlerPageLogic.output-message = [{time: "", message: ""}];
+                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                }
+                            }
+                        }
+
+                        SimpleButton {
+                            width: parent.height;
+                            height: parent.height;
+                            background: transparent;
+                            Image {
+                                source: @image-url("../../assets/icons/Console_Maximize.png");
+                                width: 20px;
+                                height: 20px;
+                                colorize: #d3d3d3;
+                            }
+
+                            clicked => {
+                                if (console-panel.maximized == false) {
+                                    console-panel.maximized = true;
+
+                                    console-panel.height = middle-panel.height ;
+                                    console-panel.y = 0px;
+
+                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                } else {
+                                    console-panel.maximized = false;
+                                    
+                                    console-panel.height = 270px;
+                                    console-panel.y = middle-panel.height - console-panel.height;
+
+                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                }
+
+                            }
+                        }
+                    }
+
+
+                }
+
+                // CONSOLE
+
+                Rectangle {
+                    border-width: 1px;
+                    border-color: Pallet.console-border;
+                    background: Pallet.console-background;
+
+                    console-flickable := Flickable {
+                        interactive: true;
+                        width: parent.width;
+                        viewport-width: self.width;
+                        
+                        viewport-y: {
+                            if (self.viewport-height > self.height) { 0px } 
+                            else { 0px }   
+                        };
+
+                        changed viewport-height => {
+                            debug("Viewport Height: " + self.viewport-height / 1px);
+                            debug("Viewport y: " + self.viewport-y / 1px);
+
+                        }
+        
+                        VerticalLayout {
+                            spacing: 4px;
+                            padding: 8px;
+                            alignment: end;
+
+        
+                            for output-message[i] in SchindlerPageLogic.output-message : HorizontalLayout {
+                                spacing: 6px;
+                                Text {
+                                    y: 0px;
+                                    text: SchindlerPageLogic.output-message[i].time;
+                                    font-family: "Roboto";
+                                    color: Pallet.console-time-text;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: top;
+                                }
+        
+                                Rectangle {
+                                    width: i == SchindlerPageLogic.output-message.length - 1 ? 3px : 2px;
+                                    Rectangle {
+                                        height: parent.height - 4px;
+                                        background: i == SchindlerPageLogic.output-message.length - 1 ? Pallet.primary : Pallet.console-time-text;
+                                    }
+                                }
+        
+                                Text {
+                                    text: SchindlerPageLogic.output-message[i].message;
+                                    width: parent.width - 47px - 6px;
+                                    color: Pallet.console-main-text;
+                                    wrap: word-wrap;
+                                    horizontal-alignment: left;
+                                    vertical-alignment: top;
+                                    font-family: "Roboto";
+                                }
+                            }
+                        }
+                    } 
+                }
+            }
+
         }
         
         // Keypad

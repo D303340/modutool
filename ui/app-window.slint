@@ -1,7 +1,8 @@
 import { ColorScheme, Pallet} from "./components/style.slint";
 
 import { HomePage, HomePageLogic,
-         SchindlerPage, SchindlerPageLogic
+         SchindlerPage, SchindlerPageLogic,
+         StyleTestPage
 } from "./components/pages.slint";
 
 
@@ -17,6 +18,7 @@ export {
 export enum Pages {
     Home,
     SchindlerPage,
+    StyleTestPage,
 }
 
 
@@ -27,8 +29,9 @@ export component AppWindow inherits Window {
     min-width: 1280px;
     min-height: 800px;
 
-    in property <Pages> current-page: Pages.SchindlerPage;
+    in property <Pages> current-page: Pages.StyleTestPage;
 
     if current-page == Pages.Home : HomePage {}
     if current-page == Pages.SchindlerPage : SchindlerPage {}
+    if current-page == Pages.StyleTestPage : StyleTestPage {}
 }
