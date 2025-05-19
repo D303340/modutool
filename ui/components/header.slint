@@ -1,72 +1,403 @@
 import { Pallet } from "./style.slint";
 import { SimpleButton } from "buttons.slint";
 
+export global HeaderLogic {
+    in-out property <bool> maximized: false;
+    
+    callback to-home-page();
+    callback to-settings-page();
+}
+
 export component Header {
     height: 800px;
     width: 50px;
+    x: 0px;
+
+    animate width {
+         duration: 0.5s;
+         easing: ease-out-expo;
+    }
+
+    in property <int> connection-strength: 4;
 
     Rectangle {
         background: Pallet.header-background;
+
+        // To prevent clicking buttons behind the navigation bar
+        TouchArea { width: parent.width; height: parent.height; }
+
+        // When the navigation bar is expanded, if the user clicks outside of it, it will collapse again
+        if HeaderLogic.maximized : TouchArea { 
+            x: parent.width; 
+            height: parent.height; 
+            width: 1280px - 50px;
+
+            clicked => {
+                HeaderLogic.maximized = !HeaderLogic.maximized;
+
+                if (HeaderLogic.maximized) {
+                    root.width = 225px;
+
+                    title-pane.padding = 15px;
+                    title-pane.padding-top = 8px;
+                    
+                    title-pane-icon.width = 50px;
+                    title-pane-icon.height = 50px;
+
+                    title-pane-spacer.y = 10px;
+
+                    navigation-bar-icons.padding = 12px;
+                    navigation-bar-icons.padding-top = 15px;
+                } else {
+                    root.width = 50px;
+
+                    title-pane.padding = 5px;
+                    title-pane.padding-top = 5px;
+
+                    title-pane-icon.width = 40px;
+                    title-pane-icon.height = 40px;
+
+                    title-pane-spacer.y = 0px;
+
+                    navigation-bar-icons.padding = 0px;
+                    navigation-bar-icons.padding-top = 15px;
+                }
+            }
+        }
+
         VerticalLayout {
-            VerticalLayout {
-                spacing: 16px;
-    
-                Rectangle {
-                    width: root.width;
-                    height: root.width;
-                    Image {
-                        source: @image-url("../assets/icons/Logo.png");
-                        width: 42px;
-                        height: 42px;
+            spacing: 4px;
+            
+            title-pane := HorizontalLayout {
+                width: 50px;
+                height: 50px;
+                padding: 5px;
+                padding-top: 5px;
+
+                animate padding, padding-top {
+                    duration: 0.5s;
+                    easing: ease-out-expo;  
+                }
+
+                title-pane-icon := Image {
+                    source: @image-url("../assets/icons/Logo.png");
+                    width: 40px;
+                    height: 40px;       
+                    
+                    animate width, height {
+                        duration: 0.5s;
+                        easing: ease-out-expo;  
                     }
                 }
+
+                Rectangle {
+                    width: 130px;
+                    if HeaderLogic.maximized: Text {
+                        text: "Schindler Bionic 3300";
+                        font-family: "Roboto";
+                        width: 100px;
+                        color: transparent;
+                        y: -7px;
+                        font-size: 18px;
+                        font-weight: 600;
+                        wrap: word-wrap;
+                        horizontal-alignment: left;
+                        vertical-alignment: center;
+    
+                        init => {
+                            self.y = 3px;
+                            self.color = #ffffff;
+                        }
+    
+                        animate y, color {
+                            delay: 0.25s;
+                            duration: 0.5s;
+                            easing: ease-out;
+                        }
+                    }
+                }
+            }
+            
+            // SPACER
+            Rectangle {
+                height: 1px;
+                title-pane-spacer := Rectangle {
+                    width: root.width - 8px;
+                    height: 1px;
+                    x: 4px;
+                    y: 0px;
+                    background: Pallet.header-icon-primary;
+
+                    animate y {
+                         duration: 0.5s;
+                         easing: ease-out-expo;
+                    }
+                }
+            }
+            
+            navigation-bar-icons := VerticalLayout {
+                spacing: 20px;
+                padding: 0px;
+                padding-top: 15px;
+
+                animate padding {
+                     duration: 0.5s;
+                     easing: ease-out-expo;
+                }
+
+                // Home
+                SimpleButton {
+                    width: HeaderLogic.maximized ? parent.width - 24px : parent.width;
+                    height: 50px;
+
+                    background: transparent;
+                    background-select: #222222;
+                    
+                    Image {
+                        source: @image-url("../assets/icons/Home.png");
+                        width: 30px;
+                        height: 30px;
+                        x: parent.height / 2 - self.width / 2;
+                        colorize: Pallet.header-icon-primary;
+                    }
+
+                    if HeaderLogic.maximized: Text {
+                        text: "Home";
+                        font-family: "Roboto";
+                        x: 60px;
+                        y: 4px;
+                        color: transparent;
+                        font-size: 18px;
+                        font-weight: 200;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+
+                        init => {
+                            self.y = self.height/2;
+                            self.color = Pallet.header-text;
+                        }
+
+                        animate y, color {
+                            delay: 0.25s;
+                            duration: 0.5s;
+                            easing: ease-out;
+                        }
+                    }
+
+                    clicked => {
+                        HeaderLogic.maximized = false;
+                        HeaderLogic.to-home-page();
+                    }
+                }
+
+                // Connection Bars
+                SimpleButton {
+                    width: HeaderLogic.maximized ? parent.width - 24px : parent.width;
+                    height: 50px;
+
+                    background: transparent;
+                    background-select: #222222;
+
+                    HorizontalLayout {
+                        width: 50px;
+                        x: 0px;
+                        alignment: space-between;
+                        padding: 8px;
+
+                        property <length> bar-spacing: 2px;
+                        property <length> bar-border-radius: 2px;
+
+                        Rectangle {
+                            width: 34px / 4 - bar-spacing;
+                            height: 34px;
+                            Rectangle {
+                                background: connection-strength >= 1 ? Pallet.primary : Pallet.header-icon-primary;
+                                height: (34px / 4) * 1;
+                                y: 34px - self.height;
+                                border-radius: bar-border-radius;
+                            }
+                        }
+                        Rectangle {
+                            width: 34px / 4 - bar-spacing;
+                            height: 34px;
+                            Rectangle {
+                                background: connection-strength >= 2 ? Pallet.primary : Pallet.header-icon-primary;
+                                height: (34px / 4) * 2;
+                                y: 34px - self.height;
+                                border-radius: bar-border-radius;
+                            }
+                        }
+                        Rectangle {
+                            width: 34px / 4 - bar-spacing;
+                            height: 34px;
+                            Rectangle {
+                                background: connection-strength >= 3 ? Pallet.primary : Pallet.header-icon-primary;
+                                height: (34px / 4) * 3;
+                                y: 34px - self.height;
+                                border-radius: bar-border-radius;
+                            }
+                        }
+                        Rectangle {
+                            width: 34px / 4 - bar-spacing;
+                            height: 34px;
+                            Rectangle {
+                                background: connection-strength >= 4 ? Pallet.primary : Pallet.header-icon-primary;
+                                height: 34px;
+                                y: 34px - self.height;
+                                border-radius: bar-border-radius;
+                            }
+                        }
+
+                    }
+
+                    if HeaderLogic.maximized: Text {
+                        text: "Connection";
+                        font-family: "Roboto";
+                        x: 60px;
+                        y: 4px;
+                        color: transparent;
+                        font-size: 18px;
+                        font-weight: 200;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+
+                        init => {
+                            self.y = self.height/2;
+                            self.color = Pallet.header-text;
+                        }
+
+                        animate y, color {
+                            delay: 0.25s + 0.1s;
+                            duration: 0.5s;
+                            easing: ease-out;
+                        }
+                    }
+                }
+
+                // Settings
+                SimpleButton {
+                    width: HeaderLogic.maximized ? parent.width - 24px : parent.width;
+                    height: 50px;
+
+                    background: transparent;
+                    background-select: #222222;
+
+                    Image {
+                        source: @image-url("../assets/icons/Settings.png");
+                        width: 33px;
+                        height: 33px;
+                        x: parent.height / 2 - self.width / 2;
+                        colorize: Pallet.header-icon-primary;
+                    }
+
+                    if HeaderLogic.maximized: Text {
+                        text: "Settings";
+                        font-family: "Roboto";
+                        x: 60px;
+                        y: 4px;
+                        color: transparent;
+                        font-size: 18px;
+                        font-weight: 200;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+
+                        init => {
+                            self.y = self.height/2;
+                            self.color = Pallet.header-text;
+                        }
+
+                        animate y, color {
+                            delay: 0.25s + 0.2s;
+                            duration: 0.5s;
+                            easing: ease-out;
+                        }
+                    }
+                }
+            }
+
+            
+            
+            VerticalLayout {
+                alignment: end;
+                padding-bottom: 16px;
+                spacing: 12px;
 
                 // SPACER
                 Rectangle {
                     width: root.width - 8px;
                     height: 1px;
                     x: 4px;
-                    background: #4c4c4c;
+                    background: Pallet.header-icon-primary;
                 }
 
-                Rectangle {
-                    width: root.width;
-                    height: root.width;
-                    Image {
-                        source: @image-url("../assets/icons/Home.png");
-                        width: 30px;
-                        height: 30px;
+                SimpleButton {
+                    width: root.width - 8px;
+                    height: 40px;
+                    x: 5px;
+
+                    background: transparent;
+                    background-select: #222222;
+
+                    clicked => {
+                        HeaderLogic.maximized = !HeaderLogic.maximized;
+
+                        if (HeaderLogic.maximized) {
+                            root.width = 225px;
+
+                            title-pane.padding = 15px;
+                            title-pane.padding-top = 8px;
+                            
+                            title-pane-icon.width = 50px;
+                            title-pane-icon.height = 50px;
+
+                            title-pane-spacer.y = 10px;
+
+                            navigation-bar-icons.padding = 12px;
+                            navigation-bar-icons.padding-top = 15px;
+                        } else {
+                            root.width = 50px;
+
+                            title-pane.padding = 5px;
+                            title-pane.padding-top = 5px;
+
+                            title-pane-icon.width = 40px;
+                            title-pane-icon.height = 40px;
+
+                            title-pane-spacer.y = 0px;
+
+                            navigation-bar-icons.padding = 0px;
+                            navigation-bar-icons.padding-top = 15px;
+                        }
                     }
-                }
-                Rectangle {
-                    width: root.width;
-                    height: root.width;
-                    Image {
-                        source: @image-url("../assets/icons/Settings.png");
-                        width: 33px;
-                        height: 33px;
-                    }
-                }
-                Rectangle {
-                    width: root.width;
-                    height: root.width;
-                    Image {
-                        source: @image-url("../assets/icons/Help.png");
-                        width: 31px;
-                        height: 31px;
-                    }
-                }
-    
-            }
-            
-            VerticalLayout {
-                alignment: end;
-                padding-bottom: 16px;
-                Rectangle {
+
                     Image {
                         source: @image-url("../assets/icons/SideBar_Minimize.png");
                         width: 28px;
                         height: 30px;
+                        x: 6px;
+                    }
+                    
+                    if HeaderLogic.maximized: Text {
+                        text: "Collapse";
+                        font-family: "Roboto";
+                        x: 60px;
+                        y: 4px;
+                        color: transparent;
+                        font-size: 18px;
+                        font-weight: 200;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+
+                        init => {
+                            self.y = self.height/2;
+                            self.color = Pallet.header-text;
+                        }
+
+                        animate y, color {
+                            delay: 0.25s + 0.4s;
+                            duration: 0.5s;
+                            easing: ease-out;
+                        }
                     }
                 }
             }

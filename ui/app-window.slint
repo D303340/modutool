@@ -1,6 +1,7 @@
 import { ColorScheme, Pallet} from "./components/style.slint";
 
-import { HomePage, HomePageLogic,
+import { Header, HeaderLogic,
+         HomePage, HomePageLogic,
          SchindlerPage, SchindlerPageLogic,
          StyleTestPage
 } from "./components/pages.slint";
@@ -8,7 +9,7 @@ import { HomePage, HomePageLogic,
 
 // This is so Rust has access to global components
 // Reëxport every imported component you want access inside Rust
-export { ColorScheme, Pallet }
+export { ColorScheme, Pallet, HeaderLogic }
 export { 
     HomePageLogic,
     SchindlerPageLogic

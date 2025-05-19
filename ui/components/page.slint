@@ -11,15 +11,19 @@ export component Page {
     
     
     GridLayout {
-        // Header
-        Header {
-            col: 0;
-        }
+        
         // Main content of the page
         Rectangle {
             col: 1;
+            width: 1280px - 50px;
             background: root.background;
             @children
+        }
+        // Header
+        Rectangle {
+            width: 50px;
+            col: 0;
+            Header { }
         }
     }
 }
