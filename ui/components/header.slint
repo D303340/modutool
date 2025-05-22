@@ -1,4 +1,4 @@
-import { Pallet } from "./style.slint";
+import { Pallet, OnlineNetworkIcon } from "./style.slint";
 import { SimpleButton } from "buttons.slint";
 
 export global HeaderLogic {
@@ -6,6 +6,62 @@ export global HeaderLogic {
     
     callback to-home-page();
     callback to-settings-page();
+}
+
+component HeaderItem inherits SimpleButton {
+    in-out property <int> id;
+
+    in property <image> icon;
+    in property <length> icon-width: 30px;
+    in property <length> icon-height: 30px;
+    in property <brush> colorize: transparent;
+
+    in property <string> title : "Title";
+
+    callback on-clicked();
+    
+    in property <length> parent-width: 50px;
+    
+    width: HeaderLogic.maximized ? parent-width - 24px : parent-width;
+    height: 50px;
+
+    background: transparent;
+    background-select: #222222;
+    
+    Image {
+        source: icon;
+        width: icon-width;
+        height: icon-height;
+        x: parent.height / 2 - self.width / 2;
+        colorize: root.colorize;
+    }
+
+    if HeaderLogic.maximized: Text {
+        text: title;
+        font-family: "Roboto";
+        x: 60px;
+        y: 4px;
+        color: transparent;
+        font-size: 18px;
+        font-weight: 200;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+
+        init => {
+            self.y = self.height/2;
+            self.color = Pallet.header-text;
+        }
+
+        animate y, color {
+            delay: 0.25s + (0.1s * id);
+            duration: 0.5s;
+            easing: ease-out;
+        }
+    }
+
+    clicked => {
+        on-clicked();
+    }
 }
 
 export component Header {
@@ -19,6 +75,7 @@ export component Header {
     }
 
     in property <int> connection-strength: 4;
+    in property <string> title;
 
     Rectangle {
         background: Pallet.header-background;
@@ -93,7 +150,7 @@ export component Header {
                 Rectangle {
                     width: 130px;
                     if HeaderLogic.maximized: Text {
-                        text: "Schindler Bionic 3300";
+                        text: title;
                         font-family: "Roboto";
                         width: 100px;
                         color: transparent;
@@ -120,7 +177,7 @@ export component Header {
             
             // SPACER
             Rectangle {
-                height: 1px;
+                height: 20px;
                 title-pane-spacer := Rectangle {
                     width: root.width - 8px;
                     height: 1px;
@@ -146,172 +203,66 @@ export component Header {
                 }
 
                 // Home
-                SimpleButton {
-                    width: HeaderLogic.maximized ? parent.width - 24px : parent.width;
-                    height: 50px;
-
-                    background: transparent;
-                    background-select: #222222;
-                    
-                    Image {
-                        source: @image-url("../assets/icons/Home.png");
-                        width: 30px;
-                        height: 30px;
-                        x: parent.height / 2 - self.width / 2;
-                        colorize: Pallet.header-icon-primary;
-                    }
-
-                    if HeaderLogic.maximized: Text {
-                        text: "Home";
-                        font-family: "Roboto";
-                        x: 60px;
-                        y: 4px;
-                        color: transparent;
-                        font-size: 18px;
-                        font-weight: 200;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
-
-                        init => {
-                            self.y = self.height/2;
-                            self.color = Pallet.header-text;
-                        }
-
-                        animate y, color {
-                            delay: 0.25s;
-                            duration: 0.5s;
-                            easing: ease-out;
-                        }
-                    }
-
-                    clicked => {
-                        HeaderLogic.maximized = false;
+                HeaderItem {
+                    id: 0;
+                    icon: @image-url("../assets/icons/Home.png");
+                    colorize: Pallet.header-icon-primary;
+                    parent-width: parent.width;
+                    title: "Home";
+                    on-clicked => {
                         HeaderLogic.to-home-page();
                     }
                 }
 
-                // Connection Bars
-                SimpleButton {
-                    width: HeaderLogic.maximized ? parent.width - 24px : parent.width;
+                HeaderItem {
+                    id: 1;
+                    parent-width: parent.width;
+                    title: "Local network";
                     height: 50px;
-
-                    background: transparent;
-                    background-select: #222222;
-
-                    HorizontalLayout {
-                        width: 50px;
-                        x: 0px;
-                        alignment: space-between;
-                        padding: 8px;
-
-                        property <length> bar-spacing: 2px;
-                        property <length> bar-border-radius: 2px;
-
-                        Rectangle {
-                            width: 34px / 4 - bar-spacing;
-                            height: 34px;
-                            Rectangle {
-                                background: connection-strength >= 1 ? Pallet.primary : Pallet.header-icon-primary;
-                                height: (34px / 4) * 1;
-                                y: 34px - self.height;
-                                border-radius: bar-border-radius;
-                            }
-                        }
-                        Rectangle {
-                            width: 34px / 4 - bar-spacing;
-                            height: 34px;
-                            Rectangle {
-                                background: connection-strength >= 2 ? Pallet.primary : Pallet.header-icon-primary;
-                                height: (34px / 4) * 2;
-                                y: 34px - self.height;
-                                border-radius: bar-border-radius;
-                            }
-                        }
-                        Rectangle {
-                            width: 34px / 4 - bar-spacing;
-                            height: 34px;
-                            Rectangle {
-                                background: connection-strength >= 3 ? Pallet.primary : Pallet.header-icon-primary;
-                                height: (34px / 4) * 3;
-                                y: 34px - self.height;
-                                border-radius: bar-border-radius;
-                            }
-                        }
-                        Rectangle {
-                            width: 34px / 4 - bar-spacing;
-                            height: 34px;
-                            Rectangle {
-                                background: connection-strength >= 4 ? Pallet.primary : Pallet.header-icon-primary;
-                                height: 34px;
-                                y: 34px - self.height;
-                                border-radius: bar-border-radius;
-                            }
-                        }
-
-                    }
-
-                    if HeaderLogic.maximized: Text {
-                        text: "Connection";
-                        font-family: "Roboto";
-                        x: 60px;
-                        y: 4px;
-                        color: transparent;
-                        font-size: 18px;
-                        font-weight: 200;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
-
-                        init => {
-                            self.y = self.height/2;
-                            self.color = Pallet.header-text;
-                        }
-
-                        animate y, color {
-                            delay: 0.25s + 0.1s;
-                            duration: 0.5s;
-                            easing: ease-out;
-                        }
-                    }
+                    icon: @image-url("../assets/icons/OnlineNetworkIcon_NoConnection.png");
                 }
 
-                // Settings
-                SimpleButton {
-                    width: HeaderLogic.maximized ? parent.width - 24px : parent.width;
+                HeaderItem {
+                    id: 1;
+                    parent-width: parent.width;
+                    title: "Online network";
                     height: 50px;
+                    icon: @image-url("../assets/icons/LocalNetworkIcon_NoConnection.png");
+                    icon-width: 35px;
+                    icon-height: 35px;
+                }
 
-                    background: transparent;
-                    background-select: #222222;
+                HeaderItem {
+                    id: 2;
+                    parent-width: parent.width;
+                    title: "Bluetooth";
+                    height: 50px;
+                    icon: @image-url("../assets/icons/Bluetooth.png");
+                    icon-width: 40px;
+                    icon-height: 40px;
+                    colorize: Pallet.header-icon-primary;
+                }
 
-                    Image {
-                        source: @image-url("../assets/icons/Settings.png");
-                        width: 33px;
-                        height: 33px;
-                        x: parent.height / 2 - self.width / 2;
-                        colorize: Pallet.header-icon-primary;
-                    }
+                HeaderItem {
+                    id: 2;
+                    parent-width: parent.width;
+                    title: "Settings";
+                    height: 50px;
+                    icon: @image-url("../assets/icons/Settings.png");
+                    icon-width: 35px;
+                    icon-height: 35px;
+                    colorize: Pallet.header-icon-primary;
+                }
 
-                    if HeaderLogic.maximized: Text {
-                        text: "Settings";
-                        font-family: "Roboto";
-                        x: 60px;
-                        y: 4px;
-                        color: transparent;
-                        font-size: 18px;
-                        font-weight: 200;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
-
-                        init => {
-                            self.y = self.height/2;
-                            self.color = Pallet.header-text;
-                        }
-
-                        animate y, color {
-                            delay: 0.25s + 0.2s;
-                            duration: 0.5s;
-                            easing: ease-out;
-                        }
-                    }
+                HeaderItem {
+                    id: 3;
+                    parent-width: parent.width;
+                    title: "Language";
+                    height: 50px;
+                    icon: @image-url("../assets/icons/Language.png");
+                    icon-width: 32px;
+                    icon-height: 32px;
+                    colorize: Pallet.header-icon-primary;
                 }
             }
 
@@ -330,73 +281,60 @@ export component Header {
                     background: Pallet.header-icon-primary;
                 }
 
-                SimpleButton {
-                    width: root.width - 8px;
-                    height: 40px;
-                    x: 5px;
+                collapse-button := HorizontalLayout {
+                    padding: 0px;
+                    padding-top: 0px;
+                    padding-bottom: 0px;
 
-                    background: transparent;
-                    background-select: #222222;
-
-                    clicked => {
-                        HeaderLogic.maximized = !HeaderLogic.maximized;
-
-                        if (HeaderLogic.maximized) {
-                            root.width = 225px;
-
-                            title-pane.padding = 15px;
-                            title-pane.padding-top = 8px;
-                            
-                            title-pane-icon.width = 50px;
-                            title-pane-icon.height = 50px;
-
-                            title-pane-spacer.y = 10px;
-
-                            navigation-bar-icons.padding = 12px;
-                            navigation-bar-icons.padding-top = 15px;
-                        } else {
-                            root.width = 50px;
-
-                            title-pane.padding = 5px;
-                            title-pane.padding-top = 5px;
-
-                            title-pane-icon.width = 40px;
-                            title-pane-icon.height = 40px;
-
-                            title-pane-spacer.y = 0px;
-
-                            navigation-bar-icons.padding = 0px;
-                            navigation-bar-icons.padding-top = 15px;
-                        }
+                    animate padding, padding-top, padding-bottom {
+                        duration: 0.5s;
+                        easing: ease-out-expo;    
                     }
+                    HeaderItem {
+                        id: 4;
+                        icon: @image-url("../assets/icons/SideBar_Minimize.png");
+                        title: "Collapse";
+                        parent-width: parent.width;
+                        on-clicked => {
+                            HeaderLogic.maximized = !HeaderLogic.maximized;
+                            debug(HeaderLogic.maximized);
+    
+                            if (HeaderLogic.maximized) {
+                                root.width = 225px;
+    
+                                title-pane.padding = 15px;
+                                title-pane.padding-top = 8px;
+                                
+                                title-pane-icon.width = 50px;
+                                title-pane-icon.height = 50px;
+    
+                                title-pane-spacer.y = 10px;
+    
+    
+                                navigation-bar-icons.padding = 12px;
+                                navigation-bar-icons.padding-top = 15px;
 
-                    Image {
-                        source: @image-url("../assets/icons/SideBar_Minimize.png");
-                        width: 28px;
-                        height: 30px;
-                        x: 6px;
-                    }
-                    
-                    if HeaderLogic.maximized: Text {
-                        text: "Collapse";
-                        font-family: "Roboto";
-                        x: 60px;
-                        y: 4px;
-                        color: transparent;
-                        font-size: 18px;
-                        font-weight: 200;
-                        horizontal-alignment: center;
-                        vertical-alignment: center;
+                                collapse-button.padding = 15px;
+                                collapse-button.padding-top = 0px;
+                                collapse-button.padding-bottom = 0px;
+    
+    
+                            } else {
+                                root.width = 50px;
+    
+                                title-pane.padding = 5px;
+                                title-pane.padding-top = 5px;
+    
+                                title-pane-icon.width = 40px;
+                                title-pane-icon.height = 40px;
+    
+                                title-pane-spacer.y = 0px;
+    
+                                navigation-bar-icons.padding = 0px;
+                                navigation-bar-icons.padding-top = 15px;
 
-                        init => {
-                            self.y = self.height/2;
-                            self.color = Pallet.header-text;
-                        }
-
-                        animate y, color {
-                            delay: 0.25s + 0.4s;
-                            duration: 0.5s;
-                            easing: ease-out;
+                                collapse-button.padding = 0px;
+                            }
                         }
                     }
                 }

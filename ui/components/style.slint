@@ -89,3 +89,59 @@ export global Pallet {
     out property <brush> header-icon-secondary: dark-mode ? #6E87C9 : #6E87C9;
     out property <brush> header-text: dark-mode ? #C6D5FF : #484d5d;
 }
+
+export component OnlineNetworkIcon {
+    in-out property <int> connection-strength: 0;
+
+    HorizontalLayout {
+        width: 50px;
+        x: 0px;
+        alignment: space-between;
+        padding: 8px;
+
+        property <length> bar-spacing: 2px;
+        property <length> bar-border-radius: 2px;
+
+        Rectangle {
+            width: 34px / 4 - bar-spacing;
+            height: 34px;
+            Rectangle {
+                background: connection-strength >= 1 ? Pallet.primary : Pallet.header-icon-primary;
+                height: (34px / 4) * 1;
+                y: 34px - self.height;
+                border-radius: bar-border-radius;
+            }
+        }
+        Rectangle {
+            width: 34px / 4 - bar-spacing;
+            height: 34px;
+            Rectangle {
+                background: connection-strength >= 2 ? Pallet.primary : Pallet.header-icon-primary;
+                height: (34px / 4) * 2;
+                y: 34px - self.height;
+                border-radius: bar-border-radius;
+            }
+        }
+        Rectangle {
+            width: 34px / 4 - bar-spacing;
+            height: 34px;
+            Rectangle {
+                background: connection-strength >= 3 ? Pallet.primary : Pallet.header-icon-primary;
+                height: (34px / 4) * 3;
+                y: 34px - self.height;
+                border-radius: bar-border-radius;
+            }
+        }
+        Rectangle {
+            width: 34px / 4 - bar-spacing;
+            height: 34px;
+            Rectangle {
+                background: connection-strength >= 4 ? Pallet.primary : Pallet.header-icon-primary;
+                height: 34px;
+                y: 34px - self.height;
+                border-radius: bar-border-radius;
+            }
+        }
+
+    }
+}
