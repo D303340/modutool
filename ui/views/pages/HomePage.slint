@@ -1,71 +1,344 @@
 import { Page } from "../../components/page.slint";
 import { Pallet } from "../../components/style.slint";
-import { SimpleButton } from "../../components/buttons.slint";
+import { SimpleButton, 
+         SlotMachineSelector, ButtonInfo,
+         ButtonList } from "../../components/buttons.slint";
 
 
 export global HomePageLogic {
     // Every property and/or callback you want to 
     // expose to Rust must be declared here...
     callback to-schindler();
+    
+    in-out property <[ButtonInfo]> brands: [{ id: 0, text: "Modu-Soft ORA" }, 
+                                            { id: 1, text: "Modu-Soft OTS" },  
+                                            { id: 2, text: "Modu-Soft SCH" },
+                                            { id: 3, text: "Modu-Soft KNE" },
+                                            { id: 4, text: "Modu-Soft THY" }];
+    
+    in-out property <[ButtonInfo]> types_SCH: [{id: 0, mode: 0, text: "SCIC 2", active: false}, 
+                                                {id: 1, mode: 0, text: "SCIC 3", active: false},
+                                                {id: 2, mode: 0, text: "SCIC 5", active: false},
+                                                {id: 3, mode: 0, text: "SCPU / 3300", active: false},
+                                                {id: 4, mode: 0, text: "SCPU / 6300", active: false}];
 }
 
 export component HomePage inherits Page {
-    // your code here...
-
-    width: 1280px;
-    height: 800px;
-    background: Pallet.background;
+    // your code here...background: Pallet.background;
     title: "Home";
+    background: Pallet.background;
 
-    Text {
-        text: "Welcome to ModuSystem!";
-        property <length> offset: 20px;
-        y: 800px / 2 - self.height / 2 - offset;
-        font-size: 20px;
-        horizontal-alignment: center;
-        vertical-alignment: center;
-        color: transparent;
+    GridLayout {
+        padding: 12px;
 
-        animate y, color {
-             duration: 1s;
-             easing: ease-out-sine;
+        spacing-horizontal: 12px;
+        spacing-vertical: 12px;
+
+        Rectangle {
+            col: 0; row: 0;
+            rowspan: 2;
+            width: 800px;
+            height: root.height - 24px;
+            background: Pallet.panel-background;
+
+            Rectangle {
+                background: Pallet.panel-background.darker(0.2);
+                width: parent.width - 40px;
+                height: 325px;
+                y: 20px;
+
+                HorizontalLayout {
+                    width: parent.width - 80px;
+                    height: parent.height - 80px;
+
+                    x: parent.width / 2 - self.width / 2;
+                    y: parent.height / 2 - self.height / 2;
+
+                    Image {
+                        source: @image-url("../../assets/icons/Empty img.png");
+                        width: parent.height; height: parent.height;
+                        y: parent.height / 2 - self.height / 2;
+                        image-rendering: pixelated;
+                    }
+
+                    VerticalLayout {
+                        padding-left: 25px;
+                        alignment: space-between;
+                        VerticalLayout {
+                            height: 70px;
+                            new-connection-title := Text {
+                                text: "Modu-Soft SCH";
+                                font-family: "Roboto";
+                                font-weight: 700;
+                                font-size: 32px;
+                            }
+    
+                            new-connection-type := Text {
+                                text: "SCIC 2";
+                                font-family: "Roboto";
+                                font-weight: 500;
+                                font-size: 18px;
+                            }
+                        }
+
+                        SimpleButton {
+                            width: 175px;
+                            height: 50px;
+
+                            Text {
+                                text: "Connect";
+                                font-family: "Roboto";
+                                font-weight: 500;
+                                font-size: 24px;
+                                x: 12px;
+                            }
+
+                            Image {
+                                source: @image-url("../../assets/icons/Connect.png");
+                                width: 28px;
+                                height: 28px;
+                                x: parent.width - self.width - 10px;
+                            }
+
+                            clicked => {
+                                HomePageLogic.to-schindler();
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            HorizontalLayout {
+                padding: 48px;
+                width: 800px;
+                height: 350px;
+                y: parent.height - self.height - 75px;
+                alignment: space-between;
+
+                elevator-brands := SlotMachineSelector{
+                    y: parent.height / 2;
+
+                    button-height: 80px;
+                    button-width: 325px;
+                    
+                    height: 320px;
+                    width: 325px;
+                    
+                    elevators: HomePageLogic.brands;
+                    current-elevator: HomePageLogic.brands[2];
+                }
+
+                Rectangle {
+                    width: 2px;
+                    y: 0px;
+                    height: parent.height;
+                    background: Pallet.panel-background.brighter(0.2);
+                }
+
+                elevator-types := SlotMachineSelector{
+                    button-background-active: Pallet.slot-machine-button-green-active;
+                    button-background: Pallet.slot-machine-button-green;
+
+                    y: parent.height / 2;
+
+                     button-height: 80px;
+                    button-width: 325px;
+                    
+                    height: 320px;
+                    width: 325px;
+                    
+                    elevators: HomePageLogic.types_SCH;
+                    current-elevator: HomePageLogic.brands[2];
+                }
+            }
         }
 
-        init => { 
-            self.y = self.y + offset;
-            self.color = @linear-gradient(90deg, Pallet.text, #3788be);
+        Rectangle {
+            col: 1; row: 0;
+            background: Pallet.panel-background;
+            height: 448px;
+            
+            GridLayout {
+                padding: 24px;
+
+
+                spacing-horizontal: 8px;
+                spacing-vertical: 8px;
+
+                Text {
+                    row: 0; col: 0;
+                    colspan: 2;
+                    height: 50px;
+
+                    text: "Modu Views";
+                    font-family: "Roboto";
+                    font-weight: 700;
+                    font-size: 24px;
+                }
+
+                VerticalLayout {
+                    row: 1; col: 0;
+                    spacing: 8px;
+
+                    for i in 4 : Rectangle {
+                        GridLayout {
+                            Image {
+                                col: 0;
+                                row: 0;
+                                rowspan: 4;
+                                source: @image-url("../../assets/icons/Empty img.png");
+                                width: 64px; height: 64px;
+                                image-rendering: pixelated;
+                            }
+
+                            VerticalLayout {
+                                padding-left: 10px;
+                                col: 1;
+                                Text {
+                                    text: "Modu-View " + (i + 1);
+                                    font-family: "Roboto";
+                                    font-weight: 700;
+                                    font-size: 16px;
+                                }
+                            }
+
+                            VerticalLayout {
+                                col: 1;
+                                row: 1;
+                                height: 20px;
+                                padding-top: 10px;
+                                padding-left: 10px;
+                                Text {
+                                    text: "ID: ABC123!@# ";
+                                    font-family: "Roboto";
+                                    font-weight: 500;
+                                    font-size: 12px;
+                                }
+                                Text {
+                                    text: "Last: 10/10/2025 ";
+                                    font-family: "Roboto";
+                                    font-weight: 500;
+                                    font-size: 12px;
+                                }
+                            }
+                        }
+                    }
+                }
+                VerticalLayout {
+                    row: 1; col: 1;
+                    spacing: 8px;
+
+                    for i in 4 : Rectangle {
+                        GridLayout {
+                            Image {
+                                col: 0;
+                                row: 0;
+                                rowspan: 4;
+                                source: @image-url("../../assets/icons/Empty img.png");
+                                width: 64px; height: 64px;
+                                image-rendering: pixelated;
+                            }
+
+                            VerticalLayout {
+                                padding-left: 10px;
+                                col: 1;
+                                Text {
+                                    text: "Modu-View " + (i + 1);
+                                    font-family: "Roboto";
+                                    font-weight: 700;
+                                    font-size: 16px;
+                                }
+                            }
+
+                            VerticalLayout {
+                                col: 1;
+                                row: 1;
+                                height: 20px;
+                                padding-top: 10px;
+                                padding-left: 10px;
+                                Text {
+                                    text: "ID: ABC123!@# ";
+                                    font-family: "Roboto";
+                                    font-weight: 500;
+                                    font-size: 12px;
+                                }
+                                Text {
+                                    text: "Last: 10/10/2025 ";
+                                    font-family: "Roboto";
+                                    font-weight: 500;
+                                    font-size: 12px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-    }
 
-    SimpleButton {
-        background: transparent;
-        width: 130px;
-        height: 50px;
-        border-radius: 5px;
-        y: (800px / 2 - self.height / 2) + 50px;
+        Rectangle {
+            col: 1; row: 1;
+            height: self.width - 80px;
+            background: Pallet.panel-background;
 
-        Text {
-            text: "Schindler";
-            color: #000000;
-            font-size: 16px;
-            font-weight: 600;
-            horizontal-alignment: center;
-            vertical-alignment: center;
-        }
+            GridLayout {
+                padding: 24px;
 
-        clicked => {
-            HomePageLogic.to-schindler();
-        }
+                spacing-horizontal: 8px;
+                spacing-vertical: 8px;
 
-        property <length> offset: 20px;
+                Text {
+                    row: 0; col: 0;
+                    colspan: 2;
+                    height: 50px;
 
-        animate y, background {
-            duration: 1s;
-            easing: ease-out-sine;
-        }
-        init => { 
-            self.y = self.y + offset;
-            self.background = #53c5fe;
+                    text: "Help";
+                    font-family: "Roboto";
+                    font-weight: 700;
+                    font-size: 24px;
+                }
+
+                SimpleButton { 
+                    row: 1; col: 0; 
+                    background: Pallet.panel-background.brighter(0.4);
+                    Text {
+                        text: "Option 1";
+                        font-family: "Roboto";
+                        font-weight: 700;
+                        font-size: 18px;
+                    }
+                }
+                SimpleButton { 
+                    row: 1; col: 1; 
+                    background: Pallet.panel-background.brighter(0.4);
+                    Text {
+                        text: "Option 2";
+                        font-family: "Roboto";
+                        font-weight: 700;
+                        font-size: 18px;
+                    }
+                }
+                SimpleButton { 
+                    row: 2; col: 0; 
+                    background: Pallet.panel-background.brighter(0.4);
+                    Text {
+                        text: "Option 3";
+                        font-family: "Roboto";
+                        font-weight: 700;
+                        font-size: 18px;
+                    }
+                }
+                SimpleButton { 
+                    row: 2; col: 1; 
+                    background: Pallet.panel-background.brighter(0.4);
+                    Text {
+                        text: "Option 4";
+                        font-family: "Roboto";
+                        font-weight: 700;
+                        font-size: 18px;
+                    }
+                }
+            }
         }
     }
 }

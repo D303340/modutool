@@ -144,9 +144,15 @@ export component ToggleSlide {
     }
 }
 
-export struct RadioMatrixButton {
+export struct MatrixRadioButton {
     id: int,
     mode: int,
+    text: string,
+    active: bool,
+}
+
+export struct ButtonInfo {
+    id: int,
     text: string,
     active: bool,
 }
@@ -155,8 +161,8 @@ export component MatrixRadio{
     min-width: 200px;
     min-height: 100px;
 
-    in-out property <[RadioMatrixButton]> buttons: [ {id: 0, mode: 1, text: "A", active: false}];
-    in-out property <RadioMatrixButton> active;
+    in-out property <[MatrixRadioButton]> buttons: [ {id: 0, text: "A", active: false}];
+    in-out property <MatrixRadioButton> active;
 
     in property <length> button-width: 40px;
     in property <length> button-height: 40px;
@@ -220,4 +226,136 @@ export component MatrixRadio{
         }
     }
 
+}
+
+export component ButtonList {
+    in property <length> button-width: 40px;
+    in property <length> button-height: 40px;
+    in property <length> button-spacing: 4px;
+
+    in property <brush> button-background: Pallet.toggle-button;
+    in property <brush> button-background-active: Pallet.toggle-button-active;
+
+    in-out property <[ButtonInfo]> buttons: [  {id: 0, text: "A", active: false}, 
+                                               {id: 1, text: "B", active: false},
+                                               {id: 2, text: "C", active: false}];
+    in-out property <ButtonInfo> current-button;
+
+    VerticalLayout {
+        spacing: button-spacing;
+        
+        for radio in buttons: SimpleButton {
+            width: button-width;
+            height: button-height;
+    
+            background: radio.id == current-button.id ? button-background-active : button-background;
+
+            Text {
+                text: radio.text;
+                font-family: "Roboto";
+                font-weight: 700;
+                color: radio.id == current-button.id ? Pallet.toggle-button-active-text : Pallet.toggle-button-text;
+            }
+
+            clicked => {
+                current-button = radio;
+            }
+        }
+    }
+}
+
+export struct elevator {
+    id: int,
+    brand: string,
+    types: [string],
+}
+
+export component SlotMachineSelector inherits Rectangle {
+    width: 200px;
+    height: 225px;
+    clip: true;
+
+
+    in property <length> button-height: 50px;
+    in property <length> button-width: 250px;
+    in property <length> button-spacing: 10px;
+
+    in property <brush> button-background: Pallet.slot-machine-button-blue;
+    in property <brush> button-background-active: Pallet.slot-machine-button-blue-active; 
+
+    in property <brush> button-text: Pallet.slot-machine-button-text; 
+    in property <brush> button-text-active: Pallet.slot-machine-button-text-active; 
+
+    in property <[ButtonInfo]> elevators: [ { id: 0, text: "Elevator 1"},
+                                            { id: 1, text: "Elevator 2"},
+                                            { id: 2, text: "Elevator 3"},
+                                            { id: 3, text: "Elevator 4"},
+                                            { id: 4, text: "Elevator 5"}];
+
+    in-out property <ButtonInfo> current-elevator;
+
+    
+
+    container := Rectangle {
+        y: (parent.height / 2) - ((button-height + button-spacing) / 2) + (1px - (button-height + button-spacing) * current-elevator.id);
+        animate y {
+            duration: 0.5s;
+            easing: ease-out-expo;
+        }
+
+        
+        for elevator in elevators: SimpleButton {
+            width: button-width + Math.abs(current-elevator.id - elevator.id) * -20px;
+            height: button-height;
+
+
+            // x: 20px;
+
+            animate y, width, background {
+                duration: 0.5s;
+                easing: ease-out-expo;
+            }
+
+
+            y: (self.height + button-spacing ) * elevator.id;
+            
+            background: elevator.id == current-elevator.id ? button-background-active : button-background;
+            background-select: self.background;
+
+            Text {
+                text: elevator.text;
+                font-family: "Roboto";
+                horizontal-alignment: left;
+                x: 12px;
+                font-size: elevator.id == current-elevator.id ? 18px : 14px;
+                font-weight: 700;
+                color: elevator.id == current-elevator.id ? Pallet.slot-machine-button-text-active : Pallet.slot-machine-button-text;
+
+                animate color, font-size {
+                    duration: 0.5s;
+                    easing: ease-out-expo;
+                }
+            }
+            
+            clicked => {
+                current-elevator = elevator;
+            }
+        }
+    }
+
+    Rectangle {
+        y: 0;
+        width: parent.width;
+        height: 50px;
+
+        background: @linear-gradient(0deg, transparent 0%, Pallet.panel-background 100%);
+    }
+
+    Rectangle {
+        y: container.height - self.height;
+        width: parent.width;
+        height: 50px;
+
+        background: @linear-gradient(180deg, transparent 0%, Pallet.panel-background 100%);
+    }
 }
