@@ -271,7 +271,7 @@ export struct elevator {
 }
 
 export component SlotMachineSelector inherits Rectangle {
-    width: 200px;
+    width: 300px;
     height: 225px;
     clip: true;
 
@@ -295,20 +295,23 @@ export component SlotMachineSelector inherits Rectangle {
     in-out property <ButtonInfo> current-elevator;
 
     
+    
 
     container := Rectangle {
-        y: (parent.height / 2) - ((button-height + button-spacing) / 2) + (1px - (button-height + button-spacing) * current-elevator.id);
+        property <length> y-pos: (parent.height / 2) - ((button-height + button-spacing) / 2) + (1px - (button-height + button-spacing) * current-elevator.id);
+        
+        y: y-pos;
+        
         animate y {
             duration: 0.5s;
             easing: ease-out-expo;
         }
 
-        
+        // Main Elevator Button
         for elevator in elevators: SimpleButton {
             width: button-width + Math.abs(current-elevator.id - elevator.id) * -20px;
             height: button-height;
-
-
+            
             // x: 20px;
 
             animate y, width, background {
@@ -357,5 +360,45 @@ export component SlotMachineSelector inherits Rectangle {
         height: 50px;
 
         background: @linear-gradient(180deg, transparent 0%, Pallet.panel-background 100%);
+    }
+
+    ta := TouchArea {
+
+        property <int> pressed-value: 0;
+
+        pointer-event(event) => {
+            if(event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
+                debug("\n\npressed\npressed-value: " + pressed-value + 
+                      "\npressed-x: " + ta.pressed-x / 1px + "\n" + 
+                      "\npressed-y: " + ta.pressed-y / 1px + "\n\n");
+            }
+        }
+        
+        property <float> distance;
+        property <float> offset;
+        moved => {
+            if(self.enabled && self.pressed){
+                // distance = Math.clamp((ta.mouse-y - ta.pressed-y) / 1px, -50 * (elevators.length/2), 70 * (elevators.length/2));
+                distance = (ta.mouse-y - ta.pressed-y) / 1px;
+                debug("\n\nmoved\npressed-value: " + pressed-value +
+                    "\ndy: " + distance + "\n\n");
+            }
+            else {
+                offset = 0;
+            }
+
+            if(distance >= offset + 70) {
+                if(current-elevator.id > 0) {
+                    current-elevator.id -= 1;
+                    offset += 70;
+                }
+            }
+            else if(distance <= offset - 70) {
+                if(current-elevator.id < elevators.length - 1) {
+                    current-elevator.id += 1;
+                    offset -= 70;
+                }
+            }
+        }
     }
 }
