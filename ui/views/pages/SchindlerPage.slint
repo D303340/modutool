@@ -243,7 +243,8 @@ export component SchindlerPage inherits Page {
                                 height: 25px;
 
                                 clicked => {
-                                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                                    // SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                                    SchindlerPageLogic.Send_Command("fake");
                                 }
                             }
                         }
@@ -263,7 +264,7 @@ export component SchindlerPage inherits Page {
                                 height: 25px;
 
                                 clicked => {
-                                    SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
+                                    SchindlerPageLogic.Send_Command("schindler");
                                 }
                             }
                         }
@@ -283,7 +284,7 @@ export component SchindlerPage inherits Page {
                                 height: 25px;
 
                                 clicked => {
-                                    SchindlerPageLogic.Send_Command_Number("SHOW_LAST_ERR:=", 2);
+                                    SchindlerPageLogic.Send_Command("");
                                 }
                             }
                         }

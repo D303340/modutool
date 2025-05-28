@@ -42,7 +42,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     let mut mqtt_worker = MqttWorker::new(
         client,
         eventloop,
-        vec!["output".to_string()], // initial subscriptions
+        vec!["output".to_string(), "input".to_string()], // initial subscriptions
     );
 
     // 3) Take the incoming‐message receiver
@@ -97,7 +97,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     let publish_chan = mqtt_worker.channel.clone();
     ui.global::<SchindlerPageLogic>().on_keypad_enter(move |keypad_value| {
         let _ = publish_chan.send(MqttMessage::Publish {
-            topic: "c/sch/input".to_string(),
+            topic: "input".to_string(),
             payload: keypad_value.to_string(),
         });
     });
@@ -116,7 +116,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     ui.global::<SchindlerPageLogic>().on_Send_Command_Number(move |command, value| {
         let combined = format!("{}{}", command, value);
         let _ = publish_chan.send(MqttMessage::Publish {
-            topic: "test/sch/input".to_string(),
+            topic: "input".to_string(),
             payload: combined,
         });
     });
@@ -127,7 +127,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
         let hex_str = format!("{:X}", value);
         let combined = format!("{}{}", command, hex_str);
         let _ = publish_chan.send(MqttMessage::Publish {
-            topic: "test/sch/input".to_string(),
+            topic: "input".to_string(),
             payload: combined,
         });
     });
