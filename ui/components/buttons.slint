@@ -171,7 +171,8 @@ export component MatrixRadio{
     in property <length> button-spacing: 10px;
 
     in property <length> button-padding: 20px;
-
+    
+    in property <length> text-size: 16px;
 
     in property <brush> active-color: Pallet.toggle-button-active;
     in property <brush> inactive-color: Pallet.toggle-button;
@@ -211,6 +212,7 @@ export component MatrixRadio{
                         text: buttons[idx].text;
                         font-family: "Roboto";
                         font-weight: 700;
+                        font-size: root.text-size;
                         color: buttons[idx].active ? Pallet.toggle-button-active-text : Pallet.toggle-button-text;
                     }
 
@@ -286,19 +288,18 @@ export component SlotMachineSelector inherits Rectangle {
     in property <brush> button-text: Pallet.slot-machine-button-text; 
     in property <brush> button-text-active: Pallet.slot-machine-button-text-active; 
 
-    in property <[ButtonInfo]> elevators: [ { id: 0, text: "Elevator 1"},
-                                            { id: 1, text: "Elevator 2"},
-                                            { id: 2, text: "Elevator 3"},
-                                            { id: 3, text: "Elevator 4"},
-                                            { id: 4, text: "Elevator 5"}];
+    in property <[ButtonInfo]> items: [ { id: 0, text: "Elevator 1"},
+                                        { id: 1, text: "Elevator 2"},
+                                        { id: 2, text: "Elevator 3"},
+                                        { id: 3, text: "Elevator 4"},
+                                        { id: 4, text: "Elevator 5"}];
 
-    in-out property <ButtonInfo> current-elevator;
+    in-out property <ButtonInfo> current-item;
+    in-out property <string> current-item-text;
 
     
-    
-
     container := Rectangle {
-        property <length> y-pos: (parent.height / 2) - ((button-height + button-spacing) / 2) + (1px - (button-height + button-spacing) * current-elevator.id);
+        property <length> y-pos: (parent.height / 2) - ((button-height + button-spacing) / 2) + (1px - (button-height + button-spacing) * current-item.id);
         
         y: y-pos;
         
@@ -308,8 +309,8 @@ export component SlotMachineSelector inherits Rectangle {
         }
 
         // Main Elevator Button
-        for elevator in elevators: SimpleButton {
-            width: button-width + Math.abs(current-elevator.id - elevator.id) * -20px;
+        for elevator in items: SimpleButton {
+            width: button-width + Math.abs(current-item.id - elevator.id) * -20px;
             height: button-height;
             
             // x: 20px;
@@ -322,7 +323,7 @@ export component SlotMachineSelector inherits Rectangle {
 
             y: (self.height + button-spacing ) * elevator.id;
             
-            background: elevator.id == current-elevator.id ? button-background-active : button-background;
+            background: elevator.id == current-item.id ? button-background-active : button-background;
             background-select: self.background;
 
             Text {
@@ -330,9 +331,9 @@ export component SlotMachineSelector inherits Rectangle {
                 font-family: "Roboto";
                 horizontal-alignment: left;
                 x: 12px;
-                font-size: elevator.id == current-elevator.id ? 18px : 14px;
+                font-size: elevator.id == current-item.id ? 18px : 14px;
                 font-weight: 700;
-                color: elevator.id == current-elevator.id ? Pallet.slot-machine-button-text-active : Pallet.slot-machine-button-text;
+                color: elevator.id == current-item.id ? Pallet.slot-machine-button-text-active : Pallet.slot-machine-button-text;
 
                 animate color, font-size {
                     duration: 0.5s;
@@ -341,7 +342,7 @@ export component SlotMachineSelector inherits Rectangle {
             }
             
             clicked => {
-                current-elevator = elevator;
+                current-item = elevator;
             }
         }
     }
@@ -368,37 +369,55 @@ export component SlotMachineSelector inherits Rectangle {
 
         pointer-event(event) => {
             if(event.button == PointerEventButton.left && event.kind == PointerEventKind.down) {
-                debug("\n\npressed\npressed-value: " + pressed-value + 
-                      "\npressed-x: " + ta.pressed-x / 1px + "\n" + 
-                      "\npressed-y: " + ta.pressed-y / 1px + "\n\n");
+                debug("\n\n-------------PRESSED-------------");
+                debug("pressed-value: " + pressed-value);
+                debug("pressed-x: " + ta.pressed-x / 1px);
+                debug("pressed-y: " + ta.pressed-y / 1px);
+                debug("-------------------------------------\n\n");
+            }
+
+            if(event.button == PointerEventButton.left && event.kind == PointerEventKind.up) {
+                debug("\n\n-------------RELEASED-------------\n");
+                last-offset = offset;
             }
         }
+
+
+        // DEBUG
+        // Text {
+        //     x: 10px;
+        //     y: 10px;
+        //     text: "Distance           : " + distance + 
+        //           "\nOffset           : " + offset;
+        // }
         
         property <float> distance;
         property <float> offset;
+        property <float> last-offset;
+        property <bool> is-set: false;
+
         moved => {
-            if(self.enabled && self.pressed){
-                // distance = Math.clamp((ta.mouse-y - ta.pressed-y) / 1px, -50 * (elevators.length/2), 70 * (elevators.length/2));
-                distance = (ta.mouse-y - ta.pressed-y) / 1px;
-                debug("\n\nmoved\npressed-value: " + pressed-value +
-                    "\ndy: " + distance + "\n\n");
+
+            if(self.enabled && self.pressed) {
+                distance = ((ta.mouse-y - ta.pressed-y + last-offset * 1px) / 1px); 
             }
-            else {
-                offset = 0;
+      
+
+            if(distance >= offset + 100px / 1px) {
+                if(current-item.id > 0) {
+                    current-item.id -= 1;
+                    offset += 100;
+                    debug("\noffset: " + offset);
+                }
+            }
+            else if(distance <= offset - 100px / 1px) {
+                if(current-item.id < items.length - 1) {
+                    current-item.id += 1;
+                    offset -= 100;
+                }
             }
 
-            if(distance >= offset + 70) {
-                if(current-elevator.id > 0) {
-                    current-elevator.id -= 1;
-                    offset += 70;
-                }
-            }
-            else if(distance <= offset - 70) {
-                if(current-elevator.id < elevators.length - 1) {
-                    current-elevator.id += 1;
-                    offset -= 70;
-                }
-            }
+            current-item-text = items[current-item.id].text;
         }
     }
 }
