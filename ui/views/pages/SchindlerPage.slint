@@ -663,6 +663,8 @@ export component SchindlerPage inherits Page {
                 in-out property <bool> maximized: false;
                 in-out property <bool> autoscroll: false;
 
+                property <length> console-font-size: 16px;
+
                 
                 height: 270px;
                 
@@ -725,6 +727,40 @@ export component SchindlerPage inherits Page {
                                 clicked => {
                                     SchindlerPageLogic.output-message = [{time: "", message: ""}];
                                     log-view.viewport-y = log-view.height - log-view.viewport-height;
+                                }
+                            }
+
+                            
+
+                            SimpleButton {
+                                width: parent.height;
+                                height: parent.height;
+
+                                Text {
+                                    text: "-";
+                                    font-size: 30px;
+                                    y: -3px;
+                                    x: self.width / 2 + 7px;
+                                }
+                            
+                                clicked => {
+                                    console-font-size -= 1px;
+                                }
+                            }
+
+                            SimpleButton {
+                                width: parent.height;
+                                height: parent.height;
+
+                                Text {
+                                    text: "+";
+                                    font-size: 30px;
+                                    y: -3px;
+                                    x: self.width / 2 - 1px;
+                                }
+                            
+                                clicked => {
+                                    console-font-size += 1px;
                                 }
                             }
                         }
@@ -807,11 +843,11 @@ export component SchindlerPage inherits Page {
         
                             for output-message[i] in SchindlerPageLogic.output-message : HorizontalLayout {
                                 spacing: 6px;
-                                Text {
+                                output-message-time := Text {
                                     y: 0px;
                                     text: SchindlerPageLogic.output-message[i].time;
                                     font-family: "Roboto";
-                                    font-size: 14px;
+                                    font-size: console-font-size;
                                     color: Pallet.console-time-text;
                                     horizontal-alignment: center;
                                     vertical-alignment: top;
@@ -825,7 +861,7 @@ export component SchindlerPage inherits Page {
                                     }
                                 }
         
-                                Text {
+                                output-message-main := Text {
                                     text: SchindlerPageLogic.output-message[i].message;
                                     width: parent.width - 47px - 6px;
                                     color: Pallet.console-main-text;
@@ -833,7 +869,7 @@ export component SchindlerPage inherits Page {
                                     horizontal-alignment: left;
                                     vertical-alignment: top;
                                     font-family: "Roboto";
-                                    font-size: 14px;
+                                    font-size: console-font-size;
                                 }
                             }
                         }
