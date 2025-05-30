@@ -115,26 +115,24 @@ component keypad-led-indicator inherits VerticalLayout {
 }
 
 component child-panel {
-    width: 254px;
+    // width: 254px;
     // min-height: 200px;
     
     in property <string> title: "Child Panel";
-    in property <length> title-padding-x: 13px;
-    in property <length> title-padding-y: 11px;
+    in property <length> title-padding-x: 0px;
+    in property <length> title-padding-y: 0px;
 
     in property <length> title-content-spacing: 10px;
     
-    in property <length> content-padding: 16px;
+    in property <length> content-padding: 4px;
 
 
     // Background
     Rectangle {
-        background: Pallet.child-panel-background;
-        
         // Title
         title-component := Text {
             text: title;
-            font-size: 18px;
+            font-size: 28px;
             font-weight: 700;
             color: Pallet.child-panel-title;
             x: title-padding-x;
@@ -164,7 +162,8 @@ export component SchindlerPage inherits Page {
         Rectangle {
             background: Pallet.panel-background;
             rowspan: 2;
-            width: 286px;
+            width: 400px;
+            height: 776px;
             clip: true;
 
             VerticalLayout {
@@ -173,23 +172,24 @@ export component SchindlerPage inherits Page {
 
                 // List Mode
                 child-panel {
-                    title: "List Mode:";
-                    height: 220px;
+                    title: "List Mode";
+                    height: 270px;
+                    content-padding: 12px;
+
                     VerticalLayout {
-                        spacing: 15px;
+                        spacing: 20px;
                         HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 70px;
+                            padding-right: 23px;
                             Text { 
-                                text: "Enabled:";
+                                text: "ListMode Enabled:";
                                 font-weight: 700;
-                                font-size: 13px;
+                                font-size: 18px;
                                 vertical-alignment: center;
                                 color: Pallet.default-text;
                             }
                             list-mode-enabled := ToggleSlide {
-                                width: 50px;
-                                height: 25px;
+                                width: 60px;
+                                height: 30px;
                                 clicked => {
                                     SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.toggled == true ? mode.active.mode : 0);
                                 }
@@ -197,10 +197,12 @@ export component SchindlerPage inherits Page {
                         }
 
                         mode := MatrixRadio { 
-                            button-height: 35px;
-                            button-width: 65px;
+                            button-height: 45px;
+                            button-width: 110px;
                             button-padding: 0px;
                             button-spacing: 0px;
+                            button-radius: 3px;
+                            inactive-color: #3D3D3D;
 
                             buttons: [  
                             {id: 0, mode: 1, text: "Common", active: true},
@@ -222,221 +224,112 @@ export component SchindlerPage inherits Page {
                     }   
                 }
 
+
+                // Seperator
+                Rectangle {
+                    height: 2px;
+                    width: parent.width - parent.padding * 2;
+                    background: Pallet.navigation-bar-tab-inactive;
+                }
+
+
                 // SYSTEM INFO
                 child-panel {
-                    title: "System Information";
-                    height: 220px;
+                    title: "Data Dumps";
+                    height: 200px;
                     VerticalLayout {
                         spacing: 8px;
-                        HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 50px;
+                        padding-left: 12px;
+                        
+                        SimpleButton {
+                            width: 184px;
+                            height: 37px;
                             Text { 
-                                text: "System Info:";
+                                x: 12px;
+                                text: "Show System Info:";
                                 font-weight: 700;
-                                font-size: 13px;
+                                font-size: 18px;
                                 color: Pallet.default-text;
                                 vertical-alignment: center;
                             }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-
-                                clicked => {
-                                    // SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
-                                    SchindlerPageLogic.Send_Command("fake");
-                                }
+                            
+                            clicked => {
+                                SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
                             }
                         }
-
-                        HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 50px;
+                        
+                        SimpleButton {
+                            width: 154px;
+                            height: 37px;
                             Text { 
+                                x: 12px;
                                 text: "Read Sim Card:";
                                 font-weight: 700;
-                                font-size: 13px;
+                                font-size: 18px;
                                 color: Pallet.default-text;
                                 vertical-alignment: center;
                             }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command("schindler");
-                                }
+                            
+                            clicked => {
+                                SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
                             }
                         }
 
-                        HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 50px;
+                        SimpleButton {
+                            width: 194px;
+                            height: 37px;
                             Text { 
-                                text: "Last Error:";
+                                x: 12px;
+                                text: "Show EEPROM Info:";
                                 font-weight: 700;
-                                font-size: 13px;
+                                font-size: 18px;
                                 color: Pallet.default-text;
                                 vertical-alignment: center;
                             }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command("");
-                                }
+                            
+                            clicked => {
+                                SchindlerPageLogic.Send_Command_Number("SHOW_EEPROM_INFO:=", 1);
+                                // SchindlerPageLogic.Send_Command("fake");
                             }
                         }
-
-                        HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 50px;
-                            Text { 
-                                text: "COP Hardware:";
-                                font-weight: 700;
-                                font-size: 13px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command("COP_IDENTIFY_HW");
-                                }
-                            }
-                        }
-
-                        HorizontalLayout {
-                            padding-left: 10px;
-                            padding-right: 50px;
-                            Text { 
-                                text: "COP Software:";
-                                font-weight: 700;
-                                font-size: 13px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command("?");
-                                }
-                            }
-                        }
+                        
                     }   
+                }
+
+
+                // Seperator
+                Rectangle {
+                    height: 2px;
+                    width: parent.width - parent.padding * 2;
+                    background: Pallet.navigation-bar-tab-inactive;
                 }
 
                 // Traffic Sim 
                 child-panel {
-                    title: "Traffic Simulation";
+                    title: "Calibration";
                     height: 130px;
 
                     VerticalLayout {
                         spacing: 8px;
-                        HorizontalLayout {
-                            spacing: 8px;
-                            Text {
-                                text: "Floor Call:";
+                        padding-left: 12px;
+                        SimpleButton {
+                            width: 186px;
+                            height: 37px;
+                            Text { 
+                                x: 12px;
+                                text: "Load-cell Ram Cal.";
                                 font-weight: 700;
-                                font-size: 13px;
+                                font-size: 18px;
                                 color: Pallet.default-text;
                                 vertical-alignment: center;
                             }
-
-                            floor-calls := NumberInput {
-                                value: 6;
-                                width: 96px;
-                                height: 28px;
-                            }
-
-                            SimpleButton {
-                                width: 28px;
-                                height: self.width;
-                                background: Pallet.toggle-button-active;
-                                background-select: Pallet.toggle-button-active.brighter(0.5);
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command_Number("SIM_FLOOR_CALL:=", floor-calls.value);
-                                }
-                            }
-                        }
-
-                        HorizontalLayout {
-                            spacing: 8px;
-                            Text {
-                                text: "Rand. Call:";
-                                font-weight: 700;
-                                font-size: 13px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-
-                            rand-calls := NumberInput {
-                                value: 6;
-                                width: 96px;
-                                height: 28px;
-                            }
-
-                            SimpleButton {
-                                width: 28px;
-                                height: self.width;
-                                background: Pallet.toggle-button-active;
-                                background-select: Pallet.toggle-button-active.brighter(0.5);
-
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command_HEX("SIM_FLOOR_CALL:=", rand-calls.value);
-                                }
+                            
+                            clicked => {
+                                // SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                                SchindlerPageLogic.Send_Command("fake");
                             }
                         }
                     }
-                }
-
-                // I/O Diagnostics
-                child-panel {
-                    title: "System Information";
-                    height: 120px;
-                    VerticalLayout {
-                        spacing: 8px;
-                        HorizontalLayout {
-                            alignment: space-between;
-                            padding-left: 10px;
-                            padding-right: 10px;
-                            Text { 
-                                text: "Controller I/O Status";
-                                font-weight: 700;
-                                font-size: 13px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-                            }
-                        }
-
-                        HorizontalLayout {
-                            alignment: space-between;
-                            padding-left: 10px;
-                            padding-right: 10px;
-
-                            Text { 
-                                text: "Car I/O Status";
-                                font-weight: 700;
-                                font-size: 13px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            SimpleButton {
-                                width: 50px;
-                                height: 25px;
-                            }
-                        }
-                    }   
                 }
             }
         }
@@ -638,21 +531,24 @@ export component SchindlerPage inherits Page {
 
             // Console
             console-panel := VerticalLayout {
+                x: middle-panel.width - self.width;
                 y: middle-panel.height - self.height;
                 in-out property <bool> maximized: false;
+                in-out property <bool> autoscroll: false;
 
                 
-                width: 600px;
                 height: 270px;
                 
                 spacing: -1px;
 
                 // HEADER
                 Rectangle {
-                    height: 30px;
+                    height: 40px;
                     background: Pallet.console-header-background;
                     border-width: 1px;
                     border-color: Pallet.console-border;
+
+                    
 
                     HorizontalLayout {
                         padding-left: 8px;
@@ -664,14 +560,16 @@ export component SchindlerPage inherits Page {
                                 width: parent.height;
                                 height: parent.height;
                                 background: transparent;
+                                background-select: transparent;
                                 Image {
                                     source: @image-url("../../assets/icons/Console_Bottom.png");
-                                    width: 20px;
-                                    height: 20px;
+                                    width: 25px;
+                                    height: 25px;
                                 }
 
                                 clicked => {
-                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                    // log-view.viewport-y = log-view.height - log-view.viewport-height;
+                                    autoscroll = true;
                                 }
                             }
         
@@ -679,10 +577,11 @@ export component SchindlerPage inherits Page {
                                 width: parent.height;
                                 height: parent.height;
                                 background: transparent;
+                                background-select: transparent;
                                 Image {
                                     source: @image-url("../../assets/icons/Save.png");
-                                    width: 20px;
-                                    height: 20px;
+                                    width: 25px;
+                                    height: 25px;
                                 }
                             }
         
@@ -690,14 +589,15 @@ export component SchindlerPage inherits Page {
                                 width: parent.height;
                                 height: parent.height;
                                 background: transparent;
+                                background-select: transparent;
                                 Image {
                                     source: @image-url("../../assets/icons/Erase.png");
-                                    width: 20px;
-                                    height: 20px;
+                                    width: 25px;
+                                    height: 25px;
                                 }
                                 clicked => {
                                     SchindlerPageLogic.output-message = [{time: "", message: ""}];
-                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                    log-view.viewport-y = log-view.height - log-view.viewport-height;
                                 }
                             }
                         }
@@ -706,10 +606,11 @@ export component SchindlerPage inherits Page {
                             width: parent.height;
                             height: parent.height;
                             background: transparent;
+                            background-select: transparent;
                             Image {
                                 source: @image-url("../../assets/icons/Console_Maximize.png");
-                                width: 20px;
-                                height: 20px;
+                                width: 25px;
+                                height: 25px;
                                 colorize: #d3d3d3;
                             }
 
@@ -720,14 +621,14 @@ export component SchindlerPage inherits Page {
                                     console-panel.height = middle-panel.height ;
                                     console-panel.y = 0px;
 
-                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                    log-view.viewport-y = log-view.height - log-view.viewport-height;
                                 } else {
                                     console-panel.maximized = false;
                                     
                                     console-panel.height = 270px;
                                     console-panel.y = middle-panel.height - console-panel.height;
 
-                                    console-flickable.viewport-y = console-flickable.height - console-flickable.viewport-height;
+                                    log-view.viewport-y = log-view.height - log-view.viewport-height;
                                 }
 
                             }
@@ -738,13 +639,20 @@ export component SchindlerPage inherits Page {
                 }
 
                 // CONSOLE
-
                 Rectangle {
                     border-width: 1px;
                     border-color: Pallet.console-border;
                     background: Pallet.console-background;
 
-                    console-flickable := Flickable {
+                    autoscroll_timer := Timer {
+                        interval: 100ms;
+                        running: autoscroll;
+                        triggered() => {
+                            log_view.viewport-y = min(0px, - log_view.viewport-height + log_view.height);
+                        }
+                    }
+
+                    log-view := Flickable {
                         interactive: true;
                         width: parent.width;
                         viewport-width: self.width;
@@ -757,7 +665,6 @@ export component SchindlerPage inherits Page {
                         changed viewport-height => {
                             debug("Viewport Height: " + self.viewport-height / 1px);
                             debug("Viewport y: " + self.viewport-y / 1px);
-
                         }
         
                         VerticalLayout {
@@ -802,222 +709,222 @@ export component SchindlerPage inherits Page {
 
         }
         
-        // Keypad
-        Rectangle {
-            width: 296px;
+        // // Keypad
+        // Rectangle {
+        //     width: 296px;
             
-            col: 2;
-            row: 0;
-            rowspan: 2;
+        //     col: 2;
+        //     row: 0;
+        //     rowspan: 2;
             
             
-            VerticalLayout {
-                spacing: 12px;
+        //     VerticalLayout {
+        //         spacing: 12px;
 
-                // TOP
-                Rectangle {
-                    height: 258px;
-                    background: Pallet.panel-background;
-                }
+        //         // TOP
+        //         Rectangle {
+        //             height: 258px;
+        //             background: Pallet.panel-background;
+        //         }
 
-                // BOTTOM
-                Rectangle {
-                    background: Pallet.panel-background;
-                    height: 506px;
+        //         // BOTTOM
+        //         Rectangle {
+        //             background: Pallet.panel-background;
+        //             height: 506px;
 
-                    VerticalLayout {
-                        alignment: space-between;
-                        padding-top: 25px;
+        //             VerticalLayout {
+        //                 alignment: space-between;
+        //                 padding-top: 25px;
 
-                        keypad-value := KeypadInput {
-                            x: parent.width / 2 - self.width / 2;
-                            width: 240px;
-                            height: 60px;
-                        }
+        //                 keypad-value := KeypadInput {
+        //                     x: parent.width / 2 - self.width / 2;
+        //                     width: 240px;
+        //                     height: 60px;
+        //                 }
     
-                        GridLayout {
-                            x: parent.width / 2 - self.width / 2;
-                            width: 260px;
-                            padding-bottom: 30px;
-                            spacing: 10px;
+        //                 GridLayout {
+        //                     x: parent.width / 2 - self.width / 2;
+        //                     width: 260px;
+        //                     padding-bottom: 30px;
+        //                     spacing: 10px;
 
 
-                            Row {
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "1"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    } 
+        //                     Row {
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "1"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             } 
 
-                                    clicked => {
-                                        keypad-value.value += "1";
-                                    }
-                                }
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "2"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                             clicked => {
+        //                                 keypad-value.value += "1";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "2"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "2";
-                                    }
-                                }
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "3"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                             clicked => {
+        //                                 keypad-value.value += "2";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "3"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "3";
-                                    }
-                                }
-                            }
+        //                             clicked => {
+        //                                 keypad-value.value += "3";
+        //                             }
+        //                         }
+        //                     }
     
-                            Row {
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "4"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                     Row {
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "4"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "4";
-                                    }
-                                }
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "5"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                             clicked => {
+        //                                 keypad-value.value += "4";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "5"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "5";
-                                    }
-                                }
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "6"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                             clicked => {
+        //                                 keypad-value.value += "5";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "6"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "6";
-                                    }
-                                }
-                            }
+        //                             clicked => {
+        //                                 keypad-value.value += "6";
+        //                             }
+        //                         }
+        //                     }
     
-                            Row {
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "7"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    } 
+        //                     Row {
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "7"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             } 
 
-                                    clicked => {
-                                        keypad-value.value += "7";
-                                    }
-                                }
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "8"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                             clicked => {
+        //                                 keypad-value.value += "7";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "8"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "8";
-                                    }
-                                }
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "9"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                             clicked => {
+        //                                 keypad-value.value += "8";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "9"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "9";
-                                    }
-                                }
-                            }
+        //                             clicked => {
+        //                                 keypad-value.value += "9";
+        //                             }
+        //                         }
+        //                     }
     
-                            Row {
-                                SimpleButton { 
-                                    width: 80px;
-                                    height: 80px;
-                                    background: Pallet.keypad-button;
-                                    background-select: Pallet.keypad-button-pressed;
-                                    Text { 
-                                        text: "0"; 
-                                        color: Pallet.keypad-text; 
-                                        font-size: 30px;
-                                    }
+        //                     Row {
+        //                         SimpleButton { 
+        //                             width: 80px;
+        //                             height: 80px;
+        //                             background: Pallet.keypad-button;
+        //                             background-select: Pallet.keypad-button-pressed;
+        //                             Text { 
+        //                                 text: "0"; 
+        //                                 color: Pallet.keypad-text; 
+        //                                 font-size: 30px;
+        //                             }
 
-                                    clicked => {
-                                        keypad-value.value += "0";
-                                    }
-                                }
-                                SimpleButton { 
-                                    colspan: 2;
-                                    height: 80px;
-                                    background: Pallet.primary;
-                                    background-select: Pallet.primary;
-                                    clicked => {
-                                        SchindlerPageLogic.keypad-enter(keypad-value.value);
-                                        keypad-value.value = "";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        //                             clicked => {
+        //                                 keypad-value.value += "0";
+        //                             }
+        //                         }
+        //                         SimpleButton { 
+        //                             colspan: 2;
+        //                             height: 80px;
+        //                             background: Pallet.primary;
+        //                             background-select: Pallet.primary;
+        //                             clicked => {
+        //                                 SchindlerPageLogic.keypad-enter(keypad-value.value);
+        //                                 keypad-value.value = "";
+        //                             }
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
             
-        }
+        // }
     }
 }

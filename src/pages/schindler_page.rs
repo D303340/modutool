@@ -3,6 +3,8 @@
 use slint::{ModelRc, SharedString, VecModel};
 use std::rc::Rc;
 use rumqttc::v5::{MqttOptions, AsyncClient, EventLoop};
+use rumqttc::v5::mqttbytes::v5::{LastWill, Packet};
+use rumqttc::v5::mqttbytes::QoS;
 use slint::Model;
 use tokio::time::Duration;
 use serde_json::from_str;
@@ -31,9 +33,13 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     // let username = "ali";
     // let password = "ooxeej0J";
 
+    let will = LastWill::new("ui", "0", QoS::AtMostOnce, false, None);
+
     let mut mqtt_options = MqttOptions::new(client_id, host, port);
     mqtt_options.clean_start();
     mqtt_options.set_keep_alive(Duration::from_secs(10));
+    mqtt_options.set_last_will(will);
+
 
     // Build AsyncClient + EventLoop
     let (client, eventloop) = AsyncClient::new(mqtt_options, 10);
@@ -42,8 +48,11 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     let mut mqtt_worker = MqttWorker::new(
         client,
         eventloop,
-        vec!["output".to_string(), "input".to_string()], // initial subscriptions
+        vec!["output".to_string(), "input".to_string(), "ui".to_string()], // initial subscriptions
     );
+
+    let publish_chan = mqtt_worker.channel.clone();
+    let _ = publish_chan.send(MqttMessage::Publish { topic: ("ui".to_string()), payload: ("1".to_string()) });
 
     // 3) Take the incoming‐message receiver
     if let Some(mut events_rx) = mqtt_worker.take_event_receiver() {
@@ -89,6 +98,8 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
         });
     }
 
+    
+
     // ───────────
     // 5) Hook up Slint callbacks to publish to whatever topics you want
     // ───────────
@@ -106,7 +117,7 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     let publish_chan = mqtt_worker.channel.clone();
     ui.global::<SchindlerPageLogic>().on_Send_Command(move |command| {
         let _ = publish_chan.send(MqttMessage::Publish {
-            topic: "c".to_string(),
+            topic: "input".to_string(),
             payload: command.to_string(),
         });
     });
