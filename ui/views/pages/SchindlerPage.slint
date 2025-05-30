@@ -122,7 +122,7 @@ component child-panel {
     in property <length> title-padding-x: 0px;
     in property <length> title-padding-y: 0px;
 
-    in property <length> title-content-spacing: 10px;
+    in property <length> title-content-spacing: 20px;
     
     in property <length> content-padding: 4px;
 
@@ -132,7 +132,8 @@ component child-panel {
         // Title
         title-component := Text {
             text: title;
-            font-size: 28px;
+            font-family: "Arial";
+            font-size: 26px;
             font-weight: 700;
             color: Pallet.child-panel-title;
             x: title-padding-x;
@@ -147,6 +148,93 @@ component child-panel {
             y: parent.height - self.height - content-padding;
 
             @children
+        }
+    }
+}
+
+
+struct tab {
+    name: string,
+    id: int
+}
+component tab-navigation-bar inherits HorizontalLayout{
+    spacing: 2px;
+
+    in-out property <[tab]> tabs: [{name: "Essential", id: 0}, 
+                                   {name: "Doors", id: 1}, 
+                                   {name: "Floor", id: 2}];
+    
+    in-out property <int> current-tab;
+    in property <length> parent-width: 200px;
+
+    for tab[i] in tabs : Rectangle {
+        VerticalLayout {
+            // Selection Indicator
+            Rectangle {
+                width: parent-width / tabs.length;
+                height: 3px;
+                Rectangle {
+                    height: 3px;
+                    width: parent-width / tabs.length + 2px;
+                    x: 0;
+                    background: current-tab == tab.id ? Pallet.primary : transparent;
+                }
+            }
+
+            SimpleButton {
+                border-radius: 0;
+                background: current-tab == tab.id ? Pallet.panel-background : transparent;
+                width: parent-width / tabs.length;
+                height: 36px;
+
+                Text {
+                    y: 7px;
+                    text: tab.name;
+                    font-size: 16px;
+                    font-weight: 500;
+                    color: current-tab == tab.id ? Pallet.navigation-bar-text-active : Pallet.navigation-bar-tab-inactive;
+                    vertical-alignment: center;
+                }
+
+                clicked => {
+                    current-tab = tab.id;
+                }
+            }
+        }
+
+        // SEPARATOR LEFT
+        Rectangle {
+            width: 2px;
+            height: 34px;
+            background: transparent;
+
+            x: 0;
+            y: 3px;
+            
+            states [
+                active when (i == 0 || i == tabs.length) : {
+                    background: transparent;
+                }
+                active when (current-tab == i) : {
+                    background: Pallet.navigation-bar-tab-inactive;
+                }
+            ]
+        }
+
+        // SEPARATOR Right
+        Rectangle {
+            width: 2px;
+            height: 34px;
+            background: transparent;
+
+            x: parent-width / tabs.length;
+            y: 3px;
+            
+            states [
+                active when (current-tab == i) : {
+                    background: Pallet.navigation-bar-tab-inactive;
+                }
+            ]
         }
     }
 }
@@ -166,172 +254,350 @@ export component SchindlerPage inherits Page {
             height: 776px;
             clip: true;
 
-            VerticalLayout {
-                padding: 16px;
-                spacing: 16px;
-
-                // List Mode
-                child-panel {
-                    title: "List Mode";
-                    height: 270px;
-                    content-padding: 12px;
-
-                    VerticalLayout {
-                        spacing: 20px;
-                        HorizontalLayout {
-                            padding-right: 23px;
-                            Text { 
-                                text: "ListMode Enabled:";
-                                font-weight: 700;
-                                font-size: 18px;
-                                vertical-alignment: center;
-                                color: Pallet.default-text;
-                            }
-                            list-mode-enabled := ToggleSlide {
-                                width: 60px;
-                                height: 30px;
-                                clicked => {
-                                    SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.toggled == true ? mode.active.mode : 0);
-                                }
-                            }
+        
+            
+            command-panel := GridLayout {
+                Rectangle {
+                    row: 0;
+                    Rectangle {
+                        height: 2px;
+                        y: 35px;
+                        Rectangle {
+                            height: 2px;
+                            width: parent.width;
+                            background: Pallet.navigation-bar-tab-inactive;
                         }
+                    }
+                    tab-navigation-bar {
+                        y: 0px;
+                        tabs: [{name: "Config", id: 0},
+                                {name: "I/O", id: 1},
+                                {name: "Errors", id: 2},
+                                {name: "Traffic", id: 3},
+                                {name: "Keypad", id: 4}];
+                        parent-width: self.width;
+        
+                    }
+                }
 
-                        mode := MatrixRadio { 
-                            button-height: 45px;
-                            button-width: 110px;
-                            button-padding: 0px;
-                            button-spacing: 0px;
-                            button-radius: 3px;
-                            inactive-color: #3D3D3D;
+                VerticalLayout {
+                    row: 1;
+                    padding: 16px;
+                    spacing: 16px;
+                    alignment: start;
 
-                            buttons: [  
-                            {id: 0, mode: 1, text: "Common", active: true},
-                            {id: 1, mode: 2, text: "Door", active: false},
-                            {id: 2, mode: 3, text: "Drive", active: false},
-                            {id: 3, mode: 4, text: "Cabin", active: false},
-                            {id: 4, mode: 5, text: "Panels", active: false},
-                            {id: 5, mode: 6, text: "BIO-BUS", active: false},
-                            {id: 6, mode: 7, text: "CAN-BUS", active: false},
-                            {id: 7, mode: 8, text: "Busilog", active: false},
-                            {id: 8, mode: 9, text: "All", active: false} ];
-                            
-                            changed active => { 
-                                if list-mode-enabled.toggled == true {
-                                    SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.active.mode); 
+                    // List Mode
+                    child-panel {
+                        title: "List Mode";
+                        height: 270px;
+                        content-padding: 12px;
+    
+                        VerticalLayout {
+                            spacing: 20px;
+                            HorizontalLayout {
+                                padding-right: 23px;
+                                Text { 
+                                    text: "ListMode Enabled:";
+                                    font-weight: 700;
+                                    font-size: 18px;
+                                    vertical-alignment: center;
+                                    color: Pallet.default-text;
+                                }
+                                list-mode-enabled := ToggleSlide {
+                                    width: 60px;
+                                    height: 30px;
+                                    clicked => {
+                                        SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.toggled == true ? mode.active.mode : 0);
+                                    }
                                 }
                             }
+    
+                            mode := MatrixRadio { 
+                                button-height: 45px;
+                                button-width: 110px;
+                                button-padding: 0px;
+                                button-spacing: 0px;
+                                button-radius: 3px;
+                                inactive-color: #3D3D3D;
+    
+                                buttons: [  
+                                {id: 0, mode: 1, text: "Common", active: true},
+                                {id: 1, mode: 2, text: "Door", active: false},
+                                {id: 2, mode: 3, text: "Drive", active: false},
+                                {id: 3, mode: 4, text: "Cabin", active: false},
+                                {id: 4, mode: 5, text: "Panels", active: false},
+                                {id: 5, mode: 6, text: "BIO-BUS", active: false},
+                                {id: 6, mode: 7, text: "CAN-BUS", active: false},
+                                {id: 7, mode: 8, text: "Busilog", active: false},
+                                {id: 8, mode: 9, text: "All", active: false} ];
+                                
+                                changed active => { 
+                                    if list-mode-enabled.toggled == true {
+                                        SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.active.mode); 
+                                    }
+                                }
+                            }   
                         }   
-                    }   
-                }
+                    }
 
 
-                // Seperator
-                Rectangle {
-                    height: 2px;
-                    width: parent.width - parent.padding * 2;
-                    background: Pallet.navigation-bar-tab-inactive;
-                }
+                    // Seperator
+                    Rectangle {
+                        height: 2px;
+                        width: command-panel.width - parent.padding * 2;
+                        background: Pallet.navigation-bar-tab-inactive;
+                    }
 
 
-                // SYSTEM INFO
-                child-panel {
-                    title: "Data Dumps";
-                    height: 200px;
-                    VerticalLayout {
-                        spacing: 8px;
-                        padding-left: 12px;
-                        
-                        SimpleButton {
-                            width: 184px;
-                            height: 37px;
-                            Text { 
-                                x: 12px;
-                                text: "Show System Info:";
-                                font-weight: 700;
-                                font-size: 18px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
+                    // SYSTEM INFO
+                    child-panel {
+                        title: "Data Dumps";
+                        height: 200px;
+                        VerticalLayout {
+                            spacing: 8px;
+                            padding-left: 12px;
+                            
+                            SimpleButton {
+                                width: 184px;
+                                height: 37px;
+                                Text { 
+                                    x: 12px;
+                                    text: "Show System Info:";
+                                    font-weight: 500;
+                                    font-size: 17px;
+                                    font-family: "Roboto";
+                                    color: Pallet.default-text;
+                                    vertical-alignment: center;
+                                }
+                                
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                                }
                             }
                             
-                            clicked => {
-                                SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                            SimpleButton {
+                                width: 154px;
+                                height: 37px;
+                                Text { 
+                                    x: 12px;
+                                    text: "Read Sim Card:";
+                                    font-weight: 500;
+                                    font-size: 17px;
+                                    font-family: "Roboto";
+                                    color: Pallet.default-text;
+                                    vertical-alignment: center;
+                                }
+                                
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
+                                }
                             }
-                        }
-                        
-                        SimpleButton {
-                            width: 154px;
-                            height: 37px;
-                            Text { 
-                                x: 12px;
-                                text: "Read Sim Card:";
-                                font-weight: 700;
-                                font-size: 18px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            
-                            clicked => {
-                                SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
-                            }
-                        }
 
-                        SimpleButton {
-                            width: 194px;
-                            height: 37px;
-                            Text { 
-                                x: 12px;
-                                text: "Show EEPROM Info:";
-                                font-weight: 700;
-                                font-size: 18px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            
-                            clicked => {
-                                SchindlerPageLogic.Send_Command_Number("SHOW_EEPROM_INFO:=", 1);
-                                // SchindlerPageLogic.Send_Command("fake");
-                            }
-                        }
-                        
-                    }   
-                }
+                            SimpleButton {
+                                width: 194px;
+                                height: 37px;
+                                Text { 
+                                    x: 12px;
+                                    text: "Show EEPROM Info:";
+                                    font-weight: 500;
+                                    font-size: 17px;
+                                    font-family: "Roboto";
+                                    color: Pallet.default-text;
+                                    vertical-alignment: center;
+                                }
+                                
+                                clicked => {
+                                    SchindlerPageLogic.Send_Command_Number("SHOW_EEPROM_INFO:=", 1);
+                                    // SchindlerPageLogic.Send_Command("fake");
+                                }
+                            }    
+                        }   
+                    }
 
 
-                // Seperator
-                Rectangle {
-                    height: 2px;
-                    width: parent.width - parent.padding * 2;
-                    background: Pallet.navigation-bar-tab-inactive;
-                }
+                    // Seperator
+                    Rectangle {
+                        height: 2px;
+                        width: command-panel.width - parent.padding * 2;
+                        background: Pallet.navigation-bar-tab-inactive;
+                    }
 
-                // Traffic Sim 
-                child-panel {
-                    title: "Calibration";
-                    height: 130px;
 
-                    VerticalLayout {
-                        spacing: 8px;
-                        padding-left: 12px;
-                        SimpleButton {
-                            width: 186px;
-                            height: 37px;
-                            Text { 
-                                x: 12px;
-                                text: "Load-cell Ram Cal.";
-                                font-weight: 700;
-                                font-size: 18px;
-                                color: Pallet.default-text;
-                                vertical-alignment: center;
-                            }
-                            
-                            clicked => {
-                                // SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
-                                SchindlerPageLogic.Send_Command("fake");
+                    // Traffic Sim 
+                    child-panel {
+                        title: "Calibration";
+                        height: 130px;
+    
+                        VerticalLayout {
+                            spacing: 8px;
+                            padding-left: 12px;
+                            SimpleButton {
+                                width: 186px;
+                                height: 37px;
+                                Text { 
+                                    x: 12px;
+                                    text: "Load-cell Ram Cal.";
+                                    font-weight: 500;
+                                    font-size: 17px;
+                                    font-family: "Roboto";
+                                    color: Pallet.default-text;
+                                    vertical-alignment: center;
+                                }
+                                
+                                clicked => {
+                                    // SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                                    SchindlerPageLogic.Send_Command("fake");
+                                }
                             }
                         }
                     }
                 }
+
+
+
             }
+
+
+            // VerticalLayout {
+            //     padding: 16px;
+            //     spacing: 16px;
+
+            //     // List Mode
+            //     // child-panel {
+            //     //     title: "List Mode";
+            //     //     height: 270px;
+            //     //     content-padding: 12px;
+
+            //     //     VerticalLayout {
+            //     //         spacing: 20px;
+            //     //         HorizontalLayout {
+            //     //             padding-right: 23px;
+            //     //             Text { 
+            //     //                 text: "ListMode Enabled:";
+            //     //                 font-weight: 700;
+            //     //                 font-size: 18px;
+            //     //                 vertical-alignment: center;
+            //     //                 color: Pallet.default-text;
+            //     //             }
+            //     //             list-mode-enabled := ToggleSlide {
+            //     //                 width: 60px;
+            //     //                 height: 30px;
+            //     //                 clicked => {
+            //     //                     SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.toggled == true ? mode.active.mode : 0);
+            //     //                 }
+            //     //             }
+            //     //         }
+
+            //     //         mode := MatrixRadio { 
+            //     //             button-height: 45px;
+            //     //             button-width: 110px;
+            //     //             button-padding: 0px;
+            //     //             button-spacing: 0px;
+            //     //             button-radius: 3px;
+            //     //             inactive-color: #3D3D3D;
+
+            //     //             buttons: [  
+            //     //             {id: 0, mode: 1, text: "Common", active: true},
+            //     //             {id: 1, mode: 2, text: "Door", active: false},
+            //     //             {id: 2, mode: 3, text: "Drive", active: false},
+            //     //             {id: 3, mode: 4, text: "Cabin", active: false},
+            //     //             {id: 4, mode: 5, text: "Panels", active: false},
+            //     //             {id: 5, mode: 6, text: "BIO-BUS", active: false},
+            //     //             {id: 6, mode: 7, text: "CAN-BUS", active: false},
+            //     //             {id: 7, mode: 8, text: "Busilog", active: false},
+            //     //             {id: 8, mode: 9, text: "All", active: false} ];
+                            
+            //     //             changed active => { 
+            //     //                 if list-mode-enabled.toggled == true {
+            //     //                     SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.active.mode); 
+            //     //                 }
+            //     //             }
+            //     //         }   
+            //     //     }   
+            //     // }
+
+
+            //     // Seperator
+            //     Rectangle {
+            //         height: 2px;
+            //         width: parent.width - parent.padding * 2;
+            //         background: Pallet.navigation-bar-tab-inactive;
+            //     }
+
+
+            //     // SYSTEM INFO
+            //     child-panel {
+            //         title: "Data Dumps";
+            //         height: 200px;
+            //         VerticalLayout {
+            //             spacing: 8px;
+            //             padding-left: 12px;
+                        
+            //             SimpleButton {
+            //                 width: 184px;
+            //                 height: 37px;
+            //                 Text { 
+            //                     x: 12px;
+            //                     text: "Show System Info:";
+            //                     font-family: "Roboto";
+            //                     font-weight: 300;
+            //                     font-size: 18px;
+            //                     color: Pallet.default-text;
+            //                     vertical-alignment: center;
+            //                 }
+                            
+            //                 clicked => {
+            //                     SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+            //                 }
+            //             }
+                        
+            //             SimpleButton {
+            //                 width: 154px;
+            //                 height: 37px;
+            //                 Text { 
+            //                     x: 12px;
+            //                     text: "Read Sim Card:";
+            //                     font-weight: 700;
+            //                     font-size: 18px;
+            //                     color: Pallet.default-text;
+            //                     vertical-alignment: center;
+            //                 }
+                            
+            //                 clicked => {
+            //                     SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
+            //                 }
+            //             }
+
+            //             SimpleButton {
+            //                 width: 194px;
+            //                 height: 37px;
+            //                 Text { 
+            //                     x: 12px;
+            //                     text: "Show EEPROM Info:";
+            //                     font-weight: 700;
+            //                     font-size: 18px;
+            //                     color: Pallet.default-text;
+            //                     vertical-alignment: center;
+            //                 }
+                            
+            //                 clicked => {
+            //                     SchindlerPageLogic.Send_Command_Number("SHOW_EEPROM_INFO:=", 1);
+            //                     // SchindlerPageLogic.Send_Command("fake");
+            //                 }
+            //             }    
+            //         }   
+            //     }
+
+
+            //     // Seperator
+            //     Rectangle {
+            //         height: 2px;
+            //         width: parent.width - parent.padding * 2;
+            //         background: Pallet.navigation-bar-tab-inactive;
+            //     }
+
+                
+            // }
         }
 
 

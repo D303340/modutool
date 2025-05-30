@@ -54,6 +54,9 @@ pub async fn schindler_page(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     let publish_chan = mqtt_worker.channel.clone();
     let _ = publish_chan.send(MqttMessage::Publish { topic: ("ui".to_string()), payload: ("1".to_string()) });
 
+    let publish_chan = mqtt_worker.channel.clone();
+    let _ = publish_chan.send(MqttMessage::Publish { topic: ("c".to_string()), payload: ("schindler".to_string()) });
+
     // 3) Take the incoming‐message receiver
     if let Some(mut events_rx) = mqtt_worker.take_event_receiver() {
         let ui_weak_clone = ui_weak.clone();
