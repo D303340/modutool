@@ -255,7 +255,7 @@ export component SchindlerPage inherits Page {
             clip: true;
 
         
-            
+            // Command Panel
             command-panel := GridLayout {
                 Rectangle {
                     row: 0;
@@ -349,22 +349,24 @@ export component SchindlerPage inherits Page {
                     }
 
 
-                    // SYSTEM INFO
+                    // Data Dumps
                     child-panel {
                         title: "Data Dumps";
-                        height: 200px;
+                        height: 220px;
                         VerticalLayout {
-                            spacing: 8px;
+                            spacing: 12px;
                             padding-left: 12px;
                             
                             SimpleButton {
-                                width: 184px;
-                                height: 37px;
+                                width: 200px;
+                                height: 45px;
+                                border-width: 1.5px;
+                                border-color: self.background.brighter(0.5);
                                 Text { 
                                     x: 12px;
                                     text: "Show System Info:";
                                     font-weight: 500;
-                                    font-size: 17px;
+                                    font-size: 18px;
                                     font-family: "Roboto";
                                     color: Pallet.default-text;
                                     vertical-alignment: center;
@@ -376,13 +378,15 @@ export component SchindlerPage inherits Page {
                             }
                             
                             SimpleButton {
-                                width: 154px;
-                                height: 37px;
+                                width: 200px;
+                                height: 45px;
+                                border-width: 1.5px;
+                                border-color: self.background.brighter(0.5);
                                 Text { 
                                     x: 12px;
                                     text: "Read Sim Card:";
                                     font-weight: 500;
-                                    font-size: 17px;
+                                    font-size: 18px;
                                     font-family: "Roboto";
                                     color: Pallet.default-text;
                                     vertical-alignment: center;
@@ -394,13 +398,15 @@ export component SchindlerPage inherits Page {
                             }
 
                             SimpleButton {
-                                width: 194px;
-                                height: 37px;
+                                width: 200px;
+                                height: 45px;
+                                border-width: 1.5px;
+                                border-color: self.background.brighter(0.5);
                                 Text { 
                                     x: 12px;
                                     text: "Show EEPROM Info:";
                                     font-weight: 500;
-                                    font-size: 17px;
+                                    font-size: 18px;
                                     font-family: "Roboto";
                                     color: Pallet.default-text;
                                     vertical-alignment: center;
@@ -423,7 +429,7 @@ export component SchindlerPage inherits Page {
                     }
 
 
-                    // Traffic Sim 
+                    // Calibration
                     child-panel {
                         title: "Calibration";
                         height: 130px;
@@ -432,13 +438,15 @@ export component SchindlerPage inherits Page {
                             spacing: 8px;
                             padding-left: 12px;
                             SimpleButton {
-                                width: 186px;
-                                height: 37px;
+                                width: 200px;
+                                height: 45px;
+                                border-width: 1.5px;
+                                border-color: self.background.brighter(0.5);
                                 Text { 
                                     x: 12px;
                                     text: "Load-cell Ram Cal.";
                                     font-weight: 500;
-                                    font-size: 17px;
+                                    font-size: 18px;
                                     font-family: "Roboto";
                                     color: Pallet.default-text;
                                     vertical-alignment: center;
@@ -452,152 +460,7 @@ export component SchindlerPage inherits Page {
                         }
                     }
                 }
-
-
-
             }
-
-
-            // VerticalLayout {
-            //     padding: 16px;
-            //     spacing: 16px;
-
-            //     // List Mode
-            //     // child-panel {
-            //     //     title: "List Mode";
-            //     //     height: 270px;
-            //     //     content-padding: 12px;
-
-            //     //     VerticalLayout {
-            //     //         spacing: 20px;
-            //     //         HorizontalLayout {
-            //     //             padding-right: 23px;
-            //     //             Text { 
-            //     //                 text: "ListMode Enabled:";
-            //     //                 font-weight: 700;
-            //     //                 font-size: 18px;
-            //     //                 vertical-alignment: center;
-            //     //                 color: Pallet.default-text;
-            //     //             }
-            //     //             list-mode-enabled := ToggleSlide {
-            //     //                 width: 60px;
-            //     //                 height: 30px;
-            //     //                 clicked => {
-            //     //                     SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.toggled == true ? mode.active.mode : 0);
-            //     //                 }
-            //     //             }
-            //     //         }
-
-            //     //         mode := MatrixRadio { 
-            //     //             button-height: 45px;
-            //     //             button-width: 110px;
-            //     //             button-padding: 0px;
-            //     //             button-spacing: 0px;
-            //     //             button-radius: 3px;
-            //     //             inactive-color: #3D3D3D;
-
-            //     //             buttons: [  
-            //     //             {id: 0, mode: 1, text: "Common", active: true},
-            //     //             {id: 1, mode: 2, text: "Door", active: false},
-            //     //             {id: 2, mode: 3, text: "Drive", active: false},
-            //     //             {id: 3, mode: 4, text: "Cabin", active: false},
-            //     //             {id: 4, mode: 5, text: "Panels", active: false},
-            //     //             {id: 5, mode: 6, text: "BIO-BUS", active: false},
-            //     //             {id: 6, mode: 7, text: "CAN-BUS", active: false},
-            //     //             {id: 7, mode: 8, text: "Busilog", active: false},
-            //     //             {id: 8, mode: 9, text: "All", active: false} ];
-                            
-            //     //             changed active => { 
-            //     //                 if list-mode-enabled.toggled == true {
-            //     //                     SchindlerPageLogic.Send_Command_Number("List_Mode:=", self.active.mode); 
-            //     //                 }
-            //     //             }
-            //     //         }   
-            //     //     }   
-            //     // }
-
-
-            //     // Seperator
-            //     Rectangle {
-            //         height: 2px;
-            //         width: parent.width - parent.padding * 2;
-            //         background: Pallet.navigation-bar-tab-inactive;
-            //     }
-
-
-            //     // SYSTEM INFO
-            //     child-panel {
-            //         title: "Data Dumps";
-            //         height: 200px;
-            //         VerticalLayout {
-            //             spacing: 8px;
-            //             padding-left: 12px;
-                        
-            //             SimpleButton {
-            //                 width: 184px;
-            //                 height: 37px;
-            //                 Text { 
-            //                     x: 12px;
-            //                     text: "Show System Info:";
-            //                     font-family: "Roboto";
-            //                     font-weight: 300;
-            //                     font-size: 18px;
-            //                     color: Pallet.default-text;
-            //                     vertical-alignment: center;
-            //                 }
-                            
-            //                 clicked => {
-            //                     SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
-            //                 }
-            //             }
-                        
-            //             SimpleButton {
-            //                 width: 154px;
-            //                 height: 37px;
-            //                 Text { 
-            //                     x: 12px;
-            //                     text: "Read Sim Card:";
-            //                     font-weight: 700;
-            //                     font-size: 18px;
-            //                     color: Pallet.default-text;
-            //                     vertical-alignment: center;
-            //                 }
-                            
-            //                 clicked => {
-            //                     SchindlerPageLogic.Send_Command_Number("READ_SIM_CARD:=", 1);
-            //                 }
-            //             }
-
-            //             SimpleButton {
-            //                 width: 194px;
-            //                 height: 37px;
-            //                 Text { 
-            //                     x: 12px;
-            //                     text: "Show EEPROM Info:";
-            //                     font-weight: 700;
-            //                     font-size: 18px;
-            //                     color: Pallet.default-text;
-            //                     vertical-alignment: center;
-            //                 }
-                            
-            //                 clicked => {
-            //                     SchindlerPageLogic.Send_Command_Number("SHOW_EEPROM_INFO:=", 1);
-            //                     // SchindlerPageLogic.Send_Command("fake");
-            //                 }
-            //             }    
-            //         }   
-            //     }
-
-
-            //     // Seperator
-            //     Rectangle {
-            //         height: 2px;
-            //         width: parent.width - parent.padding * 2;
-            //         background: Pallet.navigation-bar-tab-inactive;
-            //     }
-
-                
-            // }
         }
 
 
@@ -628,9 +491,7 @@ export component SchindlerPage inherits Page {
                     // NAVIGATION BAR
                     HorizontalLayout {
 
-                        // ESSENTIAL
                         VerticalLayout {
-
                             // Selection Indicator
                             Rectangle {
                                 width: 90px;
@@ -771,7 +632,7 @@ export component SchindlerPage inherits Page {
                             }
         
                             Rectangle {
-                                width: (600px - 64px) / 3;
+                                // width: (600px - 64px) / 3;
                                 rowspan: 2;
                                 background: Pallet.child-panel-background;
                             }
@@ -932,6 +793,11 @@ export component SchindlerPage inherits Page {
                             debug("Viewport Height: " + self.viewport-height / 1px);
                             debug("Viewport y: " + self.viewport-y / 1px);
                         }
+
+                        flicked => {
+                            debug("Flicked");
+                            autoscroll = false;
+                        }
         
                         VerticalLayout {
                             spacing: 4px;
@@ -945,6 +811,7 @@ export component SchindlerPage inherits Page {
                                     y: 0px;
                                     text: SchindlerPageLogic.output-message[i].time;
                                     font-family: "Roboto";
+                                    font-size: 14px;
                                     color: Pallet.console-time-text;
                                     horizontal-alignment: center;
                                     vertical-alignment: top;
@@ -966,6 +833,7 @@ export component SchindlerPage inherits Page {
                                     horizontal-alignment: left;
                                     vertical-alignment: top;
                                     font-family: "Roboto";
+                                    font-size: 14px;
                                 }
                             }
                         }
