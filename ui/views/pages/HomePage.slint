@@ -21,6 +21,11 @@ export global HomePageLogic {
                                                 {id: 2, mode: 0, text: "SCIC 5", active: false},
                                                 {id: 3, mode: 0, text: "SCPU / 3300", active: false},
                                                 {id: 4, mode: 0, text: "SCPU / 6300", active: false}];
+
+    in-out property <string> selected-brand: "Modu-Soft SCH";
+    in-out property <string> selected-type: "SCIC 2";
+
+    in property <ButtonInfo> current-elevator;
 }
 
 export component HomePage inherits Page {
@@ -67,7 +72,7 @@ export component HomePage inherits Page {
                         VerticalLayout {
                             height: 70px;
                             new-connection-title := Text {
-                                text: "Modu-Soft SCH";
+                                text: HomePageLogic.selected-brand;
                                 font-family: "Roboto";
                                 color: #ffffff;
                                 font-weight: 700;
@@ -75,7 +80,7 @@ export component HomePage inherits Page {
                             }
     
                             new-connection-type := Text {
-                                text: "SCIC 2";
+                                text: HomePageLogic.selected-type;
                                 font-family: "Roboto";
                                 color: #ffffff;
                                 font-weight: 500;
@@ -128,8 +133,13 @@ export component HomePage inherits Page {
                     height: 320px;
                     width: 325px;
                     
-                    elevators: HomePageLogic.brands;
-                    current-elevator: HomePageLogic.brands[2];
+                    items: HomePageLogic.brands;
+                    current-item: HomePageLogic.brands[2];
+
+                    property <string> selected-brand: HomePageLogic.brands[self.current-item.id].text;
+                    changed current-item => {
+                        HomePageLogic.selected-brand = self.current-item-text;
+                    }
                 }
 
                 Rectangle {
@@ -151,8 +161,12 @@ export component HomePage inherits Page {
                     height: 320px;
                     width: 325px;
                     
-                    elevators: HomePageLogic.types_SCH;
-                    current-elevator: HomePageLogic.brands[2];
+                    items: HomePageLogic.types_SCH;
+                    current-item: HomePageLogic.types_SCH[2];
+
+                    changed current-item => {
+                        HomePageLogic.selected-type = self.current-item-text;
+                    }
                 }
             }
         }
