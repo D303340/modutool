@@ -258,6 +258,10 @@ export component Header {
                     icon-width: 35px;
                     icon-height: 35px;
                     colorize: Pallet.header-icon-primary;
+
+                    clicked => {
+                        HeaderLogic.to-settings-page();
+                    }
                 }
 
                 HeaderItem {

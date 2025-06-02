@@ -884,18 +884,19 @@ component command-panel-keypad inherits command-panel {
     alignment: start;
     command-panel-width: 400px;
 
-    GridLayout {
+    VerticalLayout {
         padding-top: 48px;
 
 
         // Input Field
         Rectangle {
-            row: 0;
-
+            height: 75px;
             Rectangle {
                 width: 300px;
                 height: 75px;
-                background: Pallet.input-keypad-background;
+            
+                background: red;
+                // background: Pallet.input-keypad-background;
                 HorizontalLayout {
                     spacing: 10px;
                     padding-right: self.height / 8;
@@ -941,53 +942,64 @@ component command-panel-keypad inherits command-panel {
 
         // Keypad
         Rectangle {
-            row: 1;
+            Rectangle {
+                property <length> button-width: 80px;
+                property <length> button-height: 80px;
 
-            property <length> button-width: 80px;
-            property <length> button-height: 80px;
+                property <length> keypad-width: 240px;
+                property <length> keypad-spacing: 6px;
+    
+                width: keypad-width + (keypad-spacing * 2); 
+                height: keypad-width + (keypad-spacing * 2); 
+    
+                VerticalLayout {
+                    spacing: keypad-spacing;
+                    HorizontalLayout {
+                        spacing: keypad-spacing;
 
-            VerticalLayout {
-                HorizontalLayout {
-                    SimpleButton { width: button-width; height: button-height;
-                        Text { text: "1"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
-                        clicked => {
-                            input-field-text.text += "1";
-                            SchindlerPageLogic.keypad-clicked("1");
+                        SimpleButton { width: keypad-width / 3; height: keypad-width / 3;
+                            Text { text: "1"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                input-field-text.text += "1";
+                                SchindlerPageLogic.keypad-clicked("1");
+                            }
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                            Text { text: "2"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                input-field-text.text += "2";
+                                SchindlerPageLogic.keypad-clicked("2");
+                            }
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+    
                         }
                     }
-                    SimpleButton { width: button-width; height: button-height;
-                        Text { text: "2"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
-                        clicked => {
-                            input-field-text.text += "2";
-                            SchindlerPageLogic.keypad-clicked("2");
+    
+                    HorizontalLayout {
+                        spacing: keypad-spacing;
+                        SimpleButton { width: button-width; height: button-height;
+                        
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                        
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                        
                         }
                     }
-                    SimpleButton { width: button-width; height: button-height;
-
-                    }
-                }
-
-                HorizontalLayout {
-                    SimpleButton { width: button-width; height: button-height;
-                    
-                    }
-                    SimpleButton { width: button-width; height: button-height;
-                    
-                    }
-                    SimpleButton { width: button-width; height: button-height;
-                    
-                    }
-                }
-
-                HorizontalLayout {
-                    SimpleButton { width: button-width; height: button-height;
-                    
-                    }
-                    SimpleButton { width: button-width; height: button-height;
-                    
-                    }
-                    SimpleButton { width: button-width; height: button-height;
-                    
+    
+                    HorizontalLayout {
+                        spacing: keypad-spacing;
+                        SimpleButton { width: button-width; height: button-height;
+                        
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                        
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                        
+                        }
                     }
                 }
             }

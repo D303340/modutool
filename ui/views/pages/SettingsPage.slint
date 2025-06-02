@@ -1,0 +1,252 @@
+import { Page } from "../../components/page.slint";
+import { Pallet } from "../../components/style.slint";
+import { SimpleButton } from "../../components/buttons.slint";
+import { Modal, ModalType } from "../../components/input.slint";
+
+export component SettingsPage inherits Page {
+    title: "Settings";
+
+    background: Pallet.background;
+
+    property <length> console-font-size: Math.clamp(12px, 1px, 100px);
+    property <bool> can-open-modal: false;
+
+
+    VerticalLayout {
+        padding: 12px;
+        Rectangle {
+            background: Pallet.panel-background;
+
+            VerticalLayout {
+                padding: 40px;
+                padding-left: 100px;
+                padding-right: 100px;
+                spacing: 32px;
+                alignment: start;
+        
+                Text {
+                    text: "Settings";
+                    font-family: "Roboto";
+                    color: #ffffff;
+                    font-weight: 700;
+                    font-size: 38px;
+                }
+        
+                VerticalLayout {
+                    spacing: 4px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    HorizontalLayout {
+                        width: 600px;
+                        VerticalLayout {
+                            alignment: start;
+                            Text {
+                                text: "Text";
+                                font-family: "Roboto";
+                                color: #ffffff;
+                                font-weight: 700;
+                                font-size: 28px;
+                            }
+                    
+                            Text {
+                                text: "Change the text size for the logger.";
+                                font-family: "Roboto";
+                                color: #ffffff;
+                                font-weight: 500;
+                                font-size: 16px;
+                            }
+                        }
+            
+                        HorizontalLayout {
+                            spacing: 8px;
+                            SimpleButton {
+                                width: 50px; height: 50px; 
+                                background: #020202;
+                                
+                                Image {
+                                    source: @image-url("../../assets/icons/input_plus.png");
+                                    image-rendering: pixelated;
+                                    width: 24px;
+                                    height: 24px;
+                                    x: 14px;
+                                    y: 14px;
+                                }
+
+                                clicked => {
+                                    console-font-size = Math.clamp(console-font-size + 1px, 1px, 100px);
+                                }
+            
+                            }
+                            SimpleButton {
+                                width: 50px; height: 50px; 
+                                background: #020202;
+                                
+                                Image {
+                                    source: @image-url("../../assets/icons/input_minus.png");
+                                    image-rendering: pixelated;
+                                    width: 24px;
+                                    height: 24px;
+                                    x: 14px;
+                                    y: 14px;
+                                }
+                                
+                                clicked => {
+                                    console-font-size = Math.clamp(console-font-size - 1px, 1px, 100px);
+                                }
+                            }
+            
+                            Rectangle {
+                                background: #020202;
+                                width: 100px;
+                                height: 50px;
+                                border-radius: 4px;
+                                Text {
+                                    text: console-font-size/1px + "px";
+                                    font-family: "Roboto";
+                                    color: #ffffff;
+                                    font-weight: 500;
+                                    font-size: 18px;
+                                }
+                            }
+                        }
+                    }
+    
+                    Rectangle {
+                        background: Pallet.console-background;
+                        border-width: 1px;
+                        border-color: Pallet.console-border;
+                        width: 600px;
+                        height: 200px;
+            
+                        VerticalLayout {
+                            padding: 8px;
+                            spacing: 4px;
+                            alignment: start;
+            
+                            HorizontalLayout {
+                                alignment: start;
+                                spacing: 12px;
+                                // height: 20px;
+                                Text {
+                                    text: "00:00:00";
+                                    font-family: "Roboto";
+                                    color: Pallet.console-time-text;
+                                    font-weight: 500;
+                                    font-size: console-font-size;
+                                }
+                
+                                Rectangle {
+                                    width: 2px;
+                                    Rectangle {
+                                        height: parent.height - 4px;
+                                        background: Pallet.console-time-text;
+                                    }
+                                }
+                    
+                                Text {
+                                    text: "Successfully set ListMode:= 1";
+                                    font-family: "Roboto";
+                                    wrap: word-wrap;
+                                    color: Pallet.console-main-text;
+                                    font-weight: 500;
+                                    font-size: console-font-size;
+                                }
+                            }
+            
+                            HorizontalLayout {
+                                alignment: start;
+                                spacing: 12px;
+                                // height: 20px;
+                                Text {
+                                    text: "00:00:00";
+                                    font-family: "Roboto";
+                                    color: Pallet.console-time-text;
+                                    font-weight: 500;
+                                    font-size: console-font-size;
+                                }
+                
+                                Rectangle {
+                                    width: 2px;
+                                    Rectangle {
+                                        height: parent.height - 4px;
+                                        background: Pallet.console-time-text;
+                                    }
+                                }
+                    
+                                Text {
+                                    text: "Successfully set ListMode:= 0";
+                                    font-family: "Roboto";
+                                    wrap: word-wrap;
+                                    color: Pallet.console-main-text;
+                                    font-weight: 500;
+                                    font-size: console-font-size;
+                                }
+                            }
+            
+                            HorizontalLayout {
+                                alignment: start;
+                                spacing: 12px;
+                                // height: 20px;
+                                Text {
+                                    text: "00:00:00";
+                                    font-family: "Roboto";
+                                    color: Pallet.console-time-text;
+                                    font-weight: 500;
+                                    font-size: console-font-size;
+                                }
+                
+                                Rectangle {
+                                    width: 2px;
+                                    Rectangle {
+                                        height: parent.height - 4px;
+                                        background: Pallet.console-time-text;
+                                    }
+                                }
+                    
+                                Text {
+                                    text: "ERROR 0001 : ELEVATOR FATAL ERROR";
+                                    font-family: "Roboto";
+                                    wrap: word-wrap;
+                                    color: Pallet.console-main-text;
+                                    font-weight: 500;
+                                    font-size: console-font-size;
+                                }
+                            }
+                        }
+                    }
+
+                    SimpleButton {
+                        width: 125px; height: 50px;
+                        Text {
+                            text: "Save Settings";
+                            font-size: 16px;
+                        }
+
+                        clicked => {
+                            can-open-modal = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    // MODAL LOGIC
+    if can-open-modal : Modal {
+        type: ModalType.CONFIRM;
+
+        title: "Save Settings";
+        message: "Are you sure you want to save these settings?";
+
+        run-after-confirm => {
+            can-open-modal = false;
+            console-font-size = 12px;
+        }
+
+        run-after-cancle => {
+            can-open-modal = false;
+            console-font-size = 12px;
+        }
+    }
+}

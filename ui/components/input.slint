@@ -140,3 +140,188 @@ export component KeypadInput {
     }
 }
 
+
+
+export enum ModalType {
+    INFO,
+    ERROR,
+    CONFIRM
+}
+
+export component Modal {
+    width: 1280px;
+    height: 800px;
+    in property <ModalType> type: ModalType.CONFIRM;
+
+    in property <string> title: "Modal Title";
+    in property <string> message: "Some text to display in the modal. are you sure you want to do this?";
+
+    in property <bool> show: false;
+    in-out property <int> confirmed: 0; // 0 = nothing, 1 = confirmed, -1 = cancelled
+
+    callback run-after-confirm();
+    callback run-after-cancle();
+
+    // SCREEN DARKENING
+    Rectangle {
+        width: 1280px;
+        height: 800px;
+
+        x: 0px;
+        y: 0px;
+
+        background: #000000;
+        opacity: 0;
+
+        init => {
+            self.opacity = 0.8;
+        }
+
+        animate background {
+            duration: 200ms;
+            easing: ease-out;
+        }
+    }
+    
+    // MODAL
+    main-modal := Rectangle {
+        width: 600px;
+        height: 325px;
+
+        x: (1280px - self.width) / 2;
+        y: (720px - self.height) / 2;
+
+        border-radius: 8px;
+
+        background: #363636;
+
+        opacity: 0;
+
+        init => {
+            self.opacity = 1;
+        }
+
+        animate background {
+            duration: 200ms;
+            easing: ease-out;
+        }
+
+        // EXIT BUTTON
+        if type != ModalType.CONFIRM && type != ModalType.ERROR : SimpleButton {
+            width: 40px;
+            height: 40px;
+
+            x: parent.width - self.width - 8px;
+            y: 8px;
+
+            border-radius: Math.max(self.width / 2, self.height / 2);
+
+            background: transparent;
+            background-select: parent.background.brighter(0.3); 
+
+            Image {
+                source: @image-url("../assets/icons/X.png");
+                width: 20px;
+                height: 20px;
+            }
+
+            clicked => {
+                confirmed = 0;
+            }
+        }
+
+
+        // CONFIRM
+        if type == ModalType.CONFIRM : confirm-modal := Rectangle {
+
+            VerticalLayout {
+                y: 32px;
+                alignment: start;
+                spacing: 32px;
+                // Title
+                Text {
+                    text: title;
+                    font-family: "Roboto";
+                    color: #ffffff;
+                    font-weight: 700;
+                    font-size: 38px;
+                    x: 38px;
+                }
+    
+                // Message
+                Text {
+                    text: message;
+                    font-family: "Roboto";
+                    color: #ffffff;
+                    font-weight: 500;
+                    font-size: 16px;
+                    x: 38px;
+                    width: parent.width - 76px;
+                    height: parent.height - 128px;
+                }
+            } 
+            HorizontalLayout {
+                height: 50px;
+                alignment: center;
+                y: parent.height - self.height - 40px;
+
+                spacing: 64px;
+                SimpleButton {
+                    width: 175px;
+                    height: parent.height;
+
+                    background: main-modal.background.brighter(0.5);
+                    background-select: main-modal.background.brighter(0.8);
+        
+                    HorizontalLayout {
+                        Text {
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                            text: "Cancel";
+                            font-family: "Roboto";
+                            color: #ffffff;
+                            font-weight: 500;
+                            font-size: 24px;
+                        }
+                    }
+
+                    clicked => {
+                        confirmed = -1;
+                    }
+                }
+
+                SimpleButton {
+                    width: 175px;
+                    height: parent.height;
+        
+                    HorizontalLayout {
+                        Text {
+                            vertical-alignment: center;
+                            horizontal-alignment: center;
+                            text: "Confirm";
+                            font-family: "Roboto";
+                            color: #ffffff;
+                            font-weight: 500;
+                            font-size: 24px;
+                        }
+                    }
+
+                    clicked => {
+                        confirmed = 1;
+                    }
+                }
+            }
+
+        }
+    }
+
+    changed confirmed => {
+        if (confirmed == 1) {
+            run-after-confirm();
+        }
+        else if (confirmed == -1) {
+            run-after-cancle();
+        };
+    }
+}
+
