@@ -421,3 +421,102 @@ export component SlotMachineSelector inherits Rectangle {
         }
     }
 }
+
+
+export component DropDown {
+    in-out property <length> button-width: 200px;
+    in-out property <length> button-height: 40px;
+
+    in-out property <length> font-size: 16px;
+    in-out property <brush> font-color: white;
+
+    in-out property <bool> go-up: false;
+
+    in-out property <[ButtonInfo]> items: [{id: 0, text: "Item 1", active: false},
+                                    {id: 1, text: "Item 2", active: false},
+                                    {id: 2, text: "Item 3", active: false},
+                                    {id: 3, text: "Item 4", active: false},
+                                    {id: 4, text: "Item 5", active: false},];
+
+    in-out property <int> current-item-id: 0;
+    in-out property <bool> isExpanded: false;
+
+    width:  button-width;
+    height: 300px;
+
+
+    // Current Item Selected
+    SimpleButton {
+        y: go-up? root.height - button-height : 0px;
+        width: button-width;
+        height: button-height;
+        background: Pallet.input-background;
+        border-color: Pallet.input-border;
+        border-radius: 0px;
+        border-width: 1px;
+    
+        Text {
+            text: items[current-item-id].text;
+            font-family: "Roboto";
+            font-weight: 700;
+            font-size: root.font-size;
+            color: root.font-color;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        clicked => {
+            isExpanded = !isExpanded;
+            // root.height = root.button-height * (items.length + 1);
+        }
+    } 
+    
+
+    // Item dropdown list
+    if isExpanded : Rectangle {
+        border-radius: 0px;
+        border-width: 1px;
+        border-color: Pallet.input-border;
+        background: Pallet.input-background.darker(0.2);
+
+        height: (button-height * items.length) + (4px * items.length) - 4px;
+
+        y: go-up ? root.height - self.height - button-height + 1px : button-height -1px;
+        x: parent.width / 2 - button-width / 2;
+
+        VerticalLayout {
+            spacing: 4px;
+    
+            for item[i] in items : SimpleButton {
+                width: button-width ;
+                height: button-height;
+    
+                background: transparent;
+                background-select: transparent;
+
+            
+                Text {
+                    text: item.text;
+                    font-family: "Roboto";
+                    font-weight: 500;
+                    font-size: root.font-size;
+                    color: root.font-color.darker(0.5);
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+    
+                clicked => {
+                    current-item-id = item.id;
+                    isExpanded = false;
+                }
+
+                if i < items.length - 1 : Rectangle {
+                    height: 1px;
+                    width: parent.width - 30px;
+                    background: Pallet.input-border.darker(0.9);
+                    y: button-height - 1px;
+                }
+            }
+        }
+    }
+}

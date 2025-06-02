@@ -10,7 +10,9 @@ export component NumberInput {
     in property <length> border-width: 1px;
     in property <brush> border-color: Pallet.input-border;
 
-    in property <length> image-size: 15px;
+    in property <length> image-size: 18px;
+    in property <length> image-x: 14px;
+    in property <length> image-y: 14px;
 
     in-out property <int> value: 1;
     in property <int> min: 0;
@@ -41,8 +43,8 @@ export component NumberInput {
                 source: @image-url("../assets/icons/input_minus.png");
                 image-rendering: pixelated;
                 colorize: Pallet.input-border;
-                x: self.width - 10px;
-                y: self.height - 8px;
+                x: image-x;
+                y: image-y;
                 width: image-size;
                 height: image-size;
             }
@@ -75,8 +77,8 @@ export component NumberInput {
                 source: @image-url("../assets/icons/input_plus.png");
                 image-rendering: pixelated;
                 colorize: Pallet.input-border;
-                x: self.width - 7px;
-                y: self.height - 8px;
+                x: image-x;
+                y: image-y;
                 width: image-size;
                 height: image-size;
             }
