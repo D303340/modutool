@@ -224,6 +224,7 @@ export component SettingsPage inherits Page {
 
                         clicked => {
                             can-open-modal = true;
+                            confirm-modal.show();
                         }
                     }
                 }
@@ -233,7 +234,7 @@ export component SettingsPage inherits Page {
 
 
     // MODAL LOGIC
-    if can-open-modal : Modal {
+    confirm-modal := Modal {
         type: ModalType.CONFIRM;
 
         title: "Save Settings";

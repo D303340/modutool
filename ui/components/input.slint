@@ -148,7 +148,7 @@ export enum ModalType {
     CONFIRM
 }
 
-export component Modal {
+export component Modal inherits PopupWindow {
     width: 1280px;
     height: 800px;
     in property <ModalType> type: ModalType.CONFIRM;
@@ -156,7 +156,7 @@ export component Modal {
     in property <string> title: "Modal Title";
     in property <string> message: "Some text to display in the modal. are you sure you want to do this?";
 
-    in property <bool> show: false;
+    // in property <bool> show: false;
     in-out property <int> confirmed: 0; // 0 = nothing, 1 = confirmed, -1 = cancelled
 
     callback run-after-confirm();
@@ -311,7 +311,6 @@ export component Modal {
                     }
                 }
             }
-
         }
     }
 
