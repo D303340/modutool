@@ -885,59 +885,14 @@ component command-panel-keypad inherits command-panel {
     command-panel-width: 400px;
 
     VerticalLayout {
-        padding-top: 48px;
-
+        padding-top: 32px;
+        spacing: 16px;
 
         // Input Field
-        Rectangle {
-            height: 75px;
-            Rectangle {
-                width: 300px;
-                height: 75px;
-            
-                background: red;
-                // background: Pallet.input-keypad-background;
-                HorizontalLayout {
-                    spacing: 10px;
-                    padding-right: self.height / 8;
-                    input-field-text := Text {
-                        // width: parent.width - 20px;
-                        font-family: "Roboto";
-                        font-size: 32px;
-                        color: Pallet.default-text;
-                        text: "1234567890";
-                        vertical-alignment: center;
-                        horizontal-alignment: right;
-                    }
-
-
-                    // Spacer
-                    Rectangle {
-                        width: 2px;
-                        height: 48px;
-                        y: parent.height/2 - self.height/2;
-                        background: Pallet.input-border.darker(0.8);
-                        border-radius: 0;
-                    }
-    
-                    SimpleButton {
-                        width: parent.height/2;
-                        height: parent.height/2;
-                        y: parent.height/2 - self.height/2;
-                        background: transparent;
-                        background-select: Pallet.input-keypad-background.brighter(0.2);
-                        Image {
-                            source: @image-url("../../assets/icons/X.png");
-                            width: 20px;
-                            height: 20px;
-                        }
-
-                        clicked => {
-                            input-field-text.text = "";
-                        }
-                    }
-                }
-            }
+        keypad := KeypadInput {
+            width: 254px;
+            height: 70px;
+            x: parent.width / 2 - self.width / 2;
         }
 
         // Keypad
@@ -958,47 +913,127 @@ component command-panel-keypad inherits command-panel {
                         spacing: keypad-spacing;
 
                         SimpleButton { width: keypad-width / 3; height: keypad-width / 3;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
                             Text { text: "1"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
                             clicked => {
-                                input-field-text.text += "1";
+                                keypad.value += "1";
                                 SchindlerPageLogic.keypad-clicked("1");
                             }
                         }
                         SimpleButton { width: button-width; height: button-height;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
                             Text { text: "2"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
                             clicked => {
-                                input-field-text.text += "2";
+                                keypad.value += "2";
                                 SchindlerPageLogic.keypad-clicked("2");
                             }
                         }
                         SimpleButton { width: button-width; height: button-height;
-    
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "3"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "3";
+                                SchindlerPageLogic.keypad-clicked("3");
+                            }
                         }
                     }
     
                     HorizontalLayout {
                         spacing: keypad-spacing;
-                        SimpleButton { width: button-width; height: button-height;
                         
+                        SimpleButton { width: keypad-width / 3; height: keypad-width / 3;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "4"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "4";
+                                SchindlerPageLogic.keypad-clicked("4");
+                            }
                         }
                         SimpleButton { width: button-width; height: button-height;
-                        
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "5"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "5";
+                                SchindlerPageLogic.keypad-clicked("5");
+                            }
                         }
                         SimpleButton { width: button-width; height: button-height;
-                        
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "6"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "6";
+                                SchindlerPageLogic.keypad-clicked("6");
+                            }
                         }
                     }
     
                     HorizontalLayout {
                         spacing: keypad-spacing;
-                        SimpleButton { width: button-width; height: button-height;
                         
+                        SimpleButton { width: keypad-width / 3; height: keypad-width / 3;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "7"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "7";
+                                SchindlerPageLogic.keypad-clicked("7");
+                            }
                         }
                         SimpleButton { width: button-width; height: button-height;
-                        
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "8"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "8";
+                                SchindlerPageLogic.keypad-clicked("8");
+                            }
                         }
                         SimpleButton { width: button-width; height: button-height;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "9"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "9";
+                                SchindlerPageLogic.keypad-clicked("9");
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: keypad-spacing;
                         
+                        SimpleButton { width: keypad-width / 3; height: keypad-width / 3;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "<>"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "<>";
+                                SchindlerPageLogic.keypad-clicked("<>");
+                            }
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "0"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "0";
+                                SchindlerPageLogic.keypad-clicked("0");
+                            }
+                        }
+                        SimpleButton { width: button-width; height: button-height;
+                            background: Pallet.keypad-button;
+                            background-select: Pallet.keypad-button-pressed;
+                            Text { text: "><"; font-size: 24px; font-weight: 500; color: Pallet.default-text; vertical-alignment: center; }
+                            clicked => {
+                                keypad.value += "><";
+                                SchindlerPageLogic.keypad-clicked("><");
+                            }
                         }
                     }
                 }
@@ -1046,7 +1081,7 @@ export component SchindlerPage inherits Page {
                                 {name: "Errors", id: 2, width: 80px},
                                 {name: "Traffic", id: 3, width: 80px},
                                 {name: "Keypad", id: 4, width: 92px}];
-                        current-tab: 4;
+                        current-tab: 0;
                         parent-width: self.width;
         
                     }

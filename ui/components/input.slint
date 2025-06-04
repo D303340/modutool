@@ -103,20 +103,26 @@ export component KeypadInput {
         background: Pallet.input-keypad-background;
         HorizontalLayout {
             padding-left: 8px;
+            padding-right: 3px;
+            spacing: 4px;
             Text {
                 text: value;
                 color: Pallet.input-text;
                 vertical-alignment: center;
+                horizontal-alignment: right;
                 font-family: "Roboto";
                 font-size: 24px;
                 font-weight: 500;
             }
 
             SimpleButton {
+                
                 background: transparent;
+                background-select: Pallet.input-keypad-background.brighter(0.2);
                 border-radius: 0;
                 width: 42px;
-                height: parent.height;
+                height: 42px;
+                y: parent.height / 2 - self.height / 2;
 
                 Image {
                     source: @image-url("../assets/icons/X.png");
@@ -127,8 +133,8 @@ export component KeypadInput {
                 Rectangle {
                     background: Pallet.input-border;
                     border-radius: 0;
-                    width: 1px;
-                    height: parent.height - 16px;
+                    width: 2px;
+                    height: 28px;
                     x: -1px;
                 }
 

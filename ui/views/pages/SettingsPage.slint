@@ -260,11 +260,13 @@ export component SettingsPage inherits Page {
 
             // Update values
             SettingsPageLogic.console-main-size = Fonts.console-main-text.font-size;
+            SettingsPageLogic.console-time-size = Fonts.console-time-text.font-size;
         }
-
+        
         run-after-cancle => {
             can-open-modal = false;
             SettingsPageLogic.console-main-size = Fonts.console-main-text.font-size;
+            SettingsPageLogic.console-time-size = Fonts.console-time-text.font-size;
         }
     }
 }
