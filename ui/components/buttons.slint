@@ -384,12 +384,12 @@ export component SlotMachineSelector inherits Rectangle {
 
 
         // DEBUG
-        // Text {
-        //     x: 10px;
-        //     y: 10px;
-        //     text: "Distance           : " + distance + 
-        //           "\nOffset           : " + offset;
-        // }
+        Text {
+            x: 10px;
+            y: 10px;
+            text: "Distance           : " + distance + 
+                  "\nOffset           : " + offset;
+        }
         
         property <float> distance;
         property <float> offset;
@@ -403,14 +403,14 @@ export component SlotMachineSelector inherits Rectangle {
             }
       
 
-            if(distance >= offset + 100px / 1px) {
+            if(distance >= offset + 50px / 1px) {
                 if(current-item.id > 0) {
                     current-item.id -= 1;
                     offset += 100;
                     debug("\noffset: " + offset);
                 }
             }
-            else if(distance <= offset - 100px / 1px) {
+            else if(distance <= offset - 50px / 1px) {
                 if(current-item.id < items.length - 1) {
                     current-item.id += 1;
                     offset -= 100;
