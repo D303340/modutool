@@ -1,5 +1,5 @@
 import { Page } from "../../components/page.slint";
-import { Pallet } from "../../components/style.slint";
+import { Pallet, Fonts } from "../../components/style.slint";
 import { SimpleButton, ToggleSlide, ToggleButton, MatrixRadio, DropDown } from "../../components/buttons.slint";
 import { NumberInput, KeypadInput } from "../../components/input.slint";
 import { LineGraph } from "../../components/graphs.slint";
@@ -1010,7 +1010,7 @@ component command-panel-keypad inherits command-panel {
 // ---------------------- Schindler Page ---------------------- //
 
 export component SchindlerPage inherits Page {
-    title: "Schindler Bionic 3300";
+    title: "Schindler Bionic 3300"; 
     background: Pallet.background;
     GridLayout {
         spacing: 12px;
@@ -1644,11 +1644,13 @@ export component SchindlerPage inherits Page {
                                 output-message-time := Text {
                                     y: 0px;
                                     text: SchindlerPageLogic.output-message[i].time;
-                                    font-family: "Roboto";
-                                    font-size: console-font-size;
-                                    color: Pallet.console-time-text;
                                     horizontal-alignment: center;
                                     vertical-alignment: top;
+
+                                    font-family: Fonts.console-time-text.font-family;
+                                    font-size: Fonts.console-time-text.font-size;
+                                    font-weight: Fonts.console-time-text.font-weight;
+                                    color: Fonts.console-time-text.font-color;
                                 }
         
                                 Rectangle {
@@ -1662,12 +1664,14 @@ export component SchindlerPage inherits Page {
                                 output-message-main := Text {
                                     text: SchindlerPageLogic.output-message[i].message;
                                     width: parent.width - 47px - 6px;
-                                    color: Pallet.console-main-text;
                                     wrap: word-wrap;
                                     horizontal-alignment: left;
                                     vertical-alignment: top;
-                                    font-family: "Roboto";
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-main-text.font-family;
+                                    font-size: Fonts.console-main-text.font-size;
+                                    font-weight: Fonts.console-main-text.font-weight;
+                                    color: Fonts.console-main-text.font-color;
                                 }
                             }
                         }

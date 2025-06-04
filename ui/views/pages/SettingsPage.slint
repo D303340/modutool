@@ -1,14 +1,20 @@
 import { Page } from "../../components/page.slint";
-import { Pallet } from "../../components/style.slint";
+import { Pallet, Fonts } from "../../components/style.slint";
 import { SimpleButton } from "../../components/buttons.slint";
 import { Modal, ModalType } from "../../components/input.slint";
+
+export global SettingsPageLogic {
+    callback save-settings();
+
+    in-out property <length> console-main-size: Math.clamp(Fonts.console-main-text.font-size, 1px, 100px) ;
+    in-out property <length> console-time-size: Math.clamp(Fonts.console-main-text.font-size, 1px, 100px) ;
+}
 
 export component SettingsPage inherits Page {
     title: "Settings";
 
     background: Pallet.background;
 
-    property <length> console-font-size: Math.clamp(12px, 1px, 100px);
     property <bool> can-open-modal: false;
 
 
@@ -73,7 +79,8 @@ export component SettingsPage inherits Page {
                                 }
 
                                 clicked => {
-                                    console-font-size = Math.clamp(console-font-size + 1px, 1px, 100px);
+                                    SettingsPageLogic.console-main-size = Math.clamp(SettingsPageLogic.console-main-size + 1px, 1px, 100px);
+                                    SettingsPageLogic.console-time-size = Math.clamp(SettingsPageLogic.console-time-size + 1px, 1px, 100px);
                                 }
             
                             }
@@ -91,7 +98,8 @@ export component SettingsPage inherits Page {
                                 }
                                 
                                 clicked => {
-                                    console-font-size = Math.clamp(console-font-size - 1px, 1px, 100px);
+                                    SettingsPageLogic.console-main-size = Math.clamp(SettingsPageLogic.console-main-size - 1px, 1px, 100px);
+                                    SettingsPageLogic.console-time-size = Math.clamp(SettingsPageLogic.console-time-size - 1px, 1px, 100px);
                                 }
                             }
             
@@ -101,7 +109,7 @@ export component SettingsPage inherits Page {
                                 height: 50px;
                                 border-radius: 4px;
                                 Text {
-                                    text: console-font-size/1px + "px";
+                                    text: SettingsPageLogic.console-main-size/1px + "px";
                                     font-family: "Roboto";
                                     color: #ffffff;
                                     font-weight: 500;
@@ -129,10 +137,11 @@ export component SettingsPage inherits Page {
                                 // height: 20px;
                                 Text {
                                     text: "00:00:00";
-                                    font-family: "Roboto";
-                                    color: Pallet.console-time-text;
-                                    font-weight: 500;
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-time-text.font-family;
+                                    font-size: SettingsPageLogic.console-time-size;
+                                    font-weight: Fonts.console-time-text.font-weight;
+                                    color: Fonts.console-time-text.font-color;
                                 }
                 
                                 Rectangle {
@@ -145,11 +154,12 @@ export component SettingsPage inherits Page {
                     
                                 Text {
                                     text: "Successfully set ListMode:= 1";
-                                    font-family: "Roboto";
                                     wrap: word-wrap;
-                                    color: Pallet.console-main-text;
-                                    font-weight: 500;
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-main-text.font-family;
+                                    font-size: SettingsPageLogic.console-main-size;
+                                    font-weight: Fonts.console-main-text.font-weight;
+                                    color: Fonts.console-main-text.font-color;
                                 }
                             }
             
@@ -159,10 +169,11 @@ export component SettingsPage inherits Page {
                                 // height: 20px;
                                 Text {
                                     text: "00:00:00";
-                                    font-family: "Roboto";
-                                    color: Pallet.console-time-text;
-                                    font-weight: 500;
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-time-text.font-family;
+                                    font-size: SettingsPageLogic.console-time-size;
+                                    font-weight: Fonts.console-time-text.font-weight;
+                                    color: Fonts.console-time-text.font-color;
                                 }
                 
                                 Rectangle {
@@ -174,42 +185,46 @@ export component SettingsPage inherits Page {
                                 }
                     
                                 Text {
-                                    text: "Successfully set ListMode:= 0";
-                                    font-family: "Roboto";
+                                    text: "Successfully set ListMode:= 1";
                                     wrap: word-wrap;
-                                    color: Pallet.console-main-text;
-                                    font-weight: 500;
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-main-text.font-family;
+                                    font-size: SettingsPageLogic.console-main-size;
+                                    font-weight: Fonts.console-main-text.font-weight;
+                                    color: Fonts.console-main-text.font-color;
                                 }
                             }
-            
+
                             HorizontalLayout {
                                 alignment: start;
                                 spacing: 12px;
                                 // height: 20px;
                                 Text {
                                     text: "00:00:00";
-                                    font-family: "Roboto";
-                                    color: Pallet.console-time-text;
-                                    font-weight: 500;
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-time-text.font-family;
+                                    font-size: SettingsPageLogic.console-time-size;
+                                    font-weight: Fonts.console-time-text.font-weight;
+                                    color: Fonts.console-time-text.font-color;
                                 }
                 
                                 Rectangle {
-                                    width: 2px;
+                                    width: 4px;
                                     Rectangle {
                                         height: parent.height - 4px;
-                                        background: Pallet.console-time-text;
+                                        x: -1px;
+                                        background: Pallet.primary;
                                     }
                                 }
                     
                                 Text {
-                                    text: "ERROR 0001 : ELEVATOR FATAL ERROR";
-                                    font-family: "Roboto";
+                                    text: "Successfully set ListMode:= 1";
                                     wrap: word-wrap;
-                                    color: Pallet.console-main-text;
-                                    font-weight: 500;
-                                    font-size: console-font-size;
+
+                                    font-family: Fonts.console-main-text.font-family;
+                                    font-size: SettingsPageLogic.console-main-size;
+                                    font-weight: Fonts.console-main-text.font-weight;
+                                    color: Fonts.console-main-text.font-color;
                                 }
                             }
                         }
@@ -240,13 +255,16 @@ export component SettingsPage inherits Page {
         message: "Are you sure you want to save these settings?";
 
         run-after-confirm => {
+            SettingsPageLogic.save-settings();
             can-open-modal = false;
-            console-font-size = 12px;
+
+            // Update values
+            SettingsPageLogic.console-main-size = Fonts.console-main-text.font-size;
         }
 
         run-after-cancle => {
             can-open-modal = false;
-            console-font-size = 12px;
+            SettingsPageLogic.console-main-size = Fonts.console-main-text.font-size;
         }
     }
 }

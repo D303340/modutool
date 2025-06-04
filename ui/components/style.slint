@@ -10,6 +10,14 @@ export enum ColorScheme {
     dark
 }
 
+export struct font-style {
+    font-family: string,
+    font-size: length,
+    font-weight: int,
+    font-italic: bool,
+    font-color: brush
+}
+
 //    Guide for making a new Color: 
 //    out property <brush> color-name: dark-mode ? dark-color : light-color;
 
@@ -99,6 +107,13 @@ export global Pallet {
     out property <brush> header-icon-secondary: dark-mode ? #6E87C9 : #6E87C9;
     out property <brush> header-text: dark-mode ? #C6D5FF : #484d5d;
 }
+
+
+export global Fonts {
+    in-out property <font-style> console-main-text: { font-family: "Roboto", font-size: 12px, font-weight: 500, font-italic: false, font-color: Pallet.console-main-text };
+    in-out property <font-style> console-time-text: { font-family: "Roboto", font-size: 12px, font-weight: 500, font-italic: false, font-color: Pallet.console-time-text };
+}
+
 
 export component OnlineNetworkIcon {
     in-out property <int> connection-strength: 0;

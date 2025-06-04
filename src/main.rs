@@ -19,12 +19,15 @@ use slint_ui::*;
 async fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
     let ui_weak = ui.as_weak();
+
     slint_ui::HeaderLogic(&ui, ui_weak.clone());
-
+    
     ui.global::<Pallet>().set_color_scheme(ColorScheme::Dark);
-
+    
     pages::home_page::home_page(&ui, ui_weak.clone());
     pages::schindler_page::schindler_page(&ui, ui_weak.clone()).await;
+    slint_ui::SettingsPageLogic(&ui, ui_weak.clone());
+    slint_ui::load_pallet(&ui, ui_weak); // loads the pallet from the settings.json
 
     ui.run()?;
 
