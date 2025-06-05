@@ -720,7 +720,7 @@ component command-panel-errors inherits command-panel {
                     }
 
                     clicked => {
-                        SchindlerPageLogic.Send_Command_Number("SHOW_LAST_ERROR:=", number.value);
+                        SchindlerPageLogic.Send_Command_Number("SHOW_LAST_ERR:=", number.value);
                     }
                 }
             }
@@ -810,7 +810,7 @@ component command-panel-errors inherits command-panel {
                 }
                 
                 clicked => {
-                    SchindlerPageLogic.Send_Command_Number("clr_persistent:=", 1);
+                    SchindlerPageLogic.Send_Command_Number("CLR_PERSISTENT:=", 1);
                 }
             }
         }   
