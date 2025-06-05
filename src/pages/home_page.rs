@@ -6,7 +6,7 @@ use crate::slint_ui::*;
 pub fn to_kollmorgen(ui: &AppWindow, ui_weak: slint::Weak<AppWindow>) {
     let ui_weak = ui_weak.clone();
     if let Some(ui) = ui_weak.upgrade() {
-        if let Err(e) = open::that("https://www.google.com") {
+        if let Err(e) = open::that("https://192.168.100.1") {
             eprintln!("Failed to open URL: {}", e);
         }
     }
