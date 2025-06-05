@@ -9,6 +9,7 @@ export global HomePageLogic {
     // Every property and/or callback you want to 
     // expose to Rust must be declared here...
     callback to-schindler();
+    callback to-kollmorgen();
     
     in-out property <[ButtonInfo]> brands: [{ id: 0, text: "Modu-Soft ORA" }, 
                                             { id: 1, text: "Modu-Soft OTS" },  
@@ -28,6 +29,44 @@ export global HomePageLogic {
     in property <ButtonInfo> current-elevator;
 }
 
+
+export component HomePageChildPanel {
+    // width: 600px;
+    // height: 300px;
+    in-out property <string> title: "title";
+
+    GridLayout {
+        spacing: 10px;
+        Rectangle {
+            row: 0;
+            height: 20px;
+            VerticalLayout {
+                padding: 14px;
+                padding-left: 6px;
+
+                title := Text {
+                    text: root.title;
+                    font-family: "Roboto";
+                    color: #838383;
+                    font-weight: 100;
+                    font-size: 18px;
+                    
+                    // width: parent.width;
+                    horizontal-alignment: left;
+                }
+            }
+        }
+
+        VerticalLayout {
+            padding: 20px;
+            row: 1;
+            @children
+        }
+    }
+}
+
+
+
 export component HomePage inherits Page {
     // your code here...background: Pallet.background;
     title: "Home";
@@ -39,335 +78,638 @@ export component HomePage inherits Page {
         spacing-horizontal: 12px;
         spacing-vertical: 12px;
 
+        // New Connection
         Rectangle {
-            col: 0; row: 0;
-            rowspan: 2;
-            width: 800px;
-            height: root.height - 24px;
+            col: 0; row: 1;
+            colspan: 3;
             background: Pallet.panel-background;
 
-            Rectangle {
-                background: Pallet.panel-background.darker(0.2);
-                width: parent.width - 40px;
-                height: 325px;
-                y: 20px;
+            HomePageChildPanel {
+                title: "New Connection";
+                HorizontalLayout {
+                    alignment: space-between;
+                    spacing: 125px;
+
+                    HorizontalLayout {
+                        Image {
+                            source: @image-url("../../assets/icons/Empty_img.png");
+                            image-fit: cover;
+    
+                            width: 200px;
+                            height: 300px; 
+                        }
+    
+                        VerticalLayout {
+                            height: 300px;
+                            padding-left: 25px;
+
+                            VerticalLayout {
+                                alignment: start;
+
+                                Text {
+                                    text: "Modu-Soft SCH";
+                                    font-family: "Roboto";
+                                    font-size: 38px;
+                                    color: #ffffff;
+                                }
+                                Text {
+                                    text: "SCIC 3300";
+                                    font-family: "Roboto";
+                                    font-size: 18px;
+                                    color: #ffffff;
+                                }
+                            }
+                            
+
+                            Rectangle {
+                                
+                                Text {
+                                    x: 0;
+                                    y: 30px;
+                                    width: 250px;
+                                    text: "To connect to the Modu-Soft SCH, connect the";
+                                    font-family: "Roboto";
+                                    font-size: 16px;
+                                    color: #949494;
+                                }
+
+                                Text {
+                                    x: 89px;
+                                    y: 49px;
+                                    width: 250px;
+                                    text: "Green";
+                                    font-family: "Roboto";
+                                    font-weight: 800;
+                                    font-size: 16px;
+                                    color: #39FF5E;
+                                }
+
+                                Text {
+                                    x: 135px;
+                                    y: 49px;
+                                    width: 250px;
+                                    text: "Wire";
+                                    font-family: "Roboto";
+                                    font-size: 16px;
+                                    color: #949494;
+                                }
+                            }
+                            
+                            
+                            SimpleButton {
+                                width: 160px;
+                                height: 50px;
+                                padding-bottom: 210px;
+    
+                                Text {
+                                    text: "Connect";
+                                    font-family: "Roboto";
+                                    color: #ffffff;
+                                    font-weight: 500;
+                                    font-size: 24px;
+                                    x: 12px;
+                                }
+    
+                                Image {
+                                    source: @image-url("../../assets/icons/Connect.png");
+                                    width: 24px;
+                                    height: 24px;
+                                    x: parent.width - self.width - 12px;
+                                }
+                            }
+                        }
+                    }
+
+                    HorizontalLayout {
+                        spacing: 24px;
+
+                        SlotMachineSelector{    
+                            button-height: 80px;
+                            button-width: 250px;
+                            
+                            height: 320px;
+                            width: 250px;
+                            
+                            items: HomePageLogic.brands;
+                            current-item: HomePageLogic.brands[2];
+    
+                            property <string> selected-brand: HomePageLogic.brands[self.current-item.id].text;
+                            changed current-item => {
+                                HomePageLogic.selected-brand = self.current-item-text;
+                            }
+                        }
+
+                        SlotMachineSelector{
+                            button-background-active: Pallet.slot-machine-button-green-active;
+                            button-background: Pallet.slot-machine-button-green;
+
+                            button-height: 80px;
+                            button-width: 250px;
+                            
+                            height: 320px;
+                            width: 250px;
+                            
+                            items: HomePageLogic.types_SCH;
+                            current-item: HomePageLogic.types_SCH[2];
+
+                            changed current-item => {
+                                HomePageLogic.selected-type = self.current-item-text;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            row: 0;
+            col: 0;
+            background: Pallet.panel-background;
+
+            HomePageChildPanel {
+                title: "Last Connection";
+                HorizontalLayout {
+                    padding-left: 20px;
+                        Image {
+                            source: @image-url("../../assets/icons/Empty_img.png");
+                            image-fit: cover;
+    
+                            width: 200px;
+                            height: 280px; 
+                        }
+    
+                        VerticalLayout {
+                            height: 300px;
+                            padding-left: 25px;
+                            padding-right: 75px;
+                            padding: 20px;
+
+                            VerticalLayout {
+                                alignment: start;
+
+                                Text {
+                                    text: "Modu-Soft SCH";
+                                    font-family: "Roboto";
+                                    font-size: 38px;
+                                    color: #ffffff;
+                                }
+                                Text {
+                                    text: "SCIC 3300";
+                                    font-family: "Roboto";
+                                    font-size: 18px;
+                                    color: #ffffff;
+                                }
+                            }
+                            
+
+                            Rectangle {
+                                
+                                Text {
+                                    x: 0;
+                                    y: 30px;
+                                    width: 250px;
+                                    text: "To connect to the Modu-Soft SCH, make sure the";
+                                    font-family: "Roboto";
+                                    font-size: 16px;
+                                    color: #949494;
+                                }
+
+                                Text {
+                                    x: 184px;
+                                    y: 49px;
+                                    width: 250px;
+                                    text: "and";
+                                    font-family: "Roboto";
+                                    font-size: 16px;
+                                    color: #949494;
+                                }
+
+                                Text {
+                                    x: 85px;
+                                    y: 69px;
+                                    width: 250px;
+                                    text: "are connected";
+                                    font-family: "Roboto";
+                                    font-size: 16px;
+                                    color: #949494;
+                                }
+
+                                Text {
+                                    x: 106px;
+                                    y: 49px;
+                                    width: 250px;
+                                    text: "modu-tool";
+                                    font-family: "Roboto";
+                                    font-weight: 800;
+                                    font-size: 16px;
+                                    color: #39dbff;
+                                }
+
+                                Text {
+                                    x: 0px;
+                                    y: 69px;
+                                    width: 250px;
+                                    text: "modu-view";
+                                    font-family: "Roboto";
+                                    font-weight: 800;
+                                    font-size: 16px;
+                                    color: #39dbff;
+                                }
+                            }
+                            
+                            
+                            SimpleButton {
+                                width: 185px;
+                                height: 50px;
+                                padding-bottom: 210px;
+                                background: #00B26E;
+    
+                                Text {
+                                    text: "Reconnect";
+                                    font-family: "Roboto";
+                                    color: #ffffff;
+                                    font-weight: 500;
+                                    font-size: 24px;
+                                    x: 12px;
+                                }
+    
+                                Image {
+                                    source: @image-url("../../assets/icons/Connect.png");
+                                    width: 24px;
+                                    height: 24px;
+                                    x: parent.width - self.width - 12px;
+                                }
+
+                                clicked => {
+                                    HomePageLogic.to-kollmorgen();
+                                }
+                            }
+                        }
+                    }
+            }
+        }
+
+        Rectangle {
+            row: 0; 
+            col: 1;
+            background: Pallet.panel-background;
+            width: 280px;
+
+            HomePageChildPanel {
+                title: "Modu-View";
 
                 HorizontalLayout {
-                    width: parent.width - 80px;
-                    height: parent.height - 80px;
-
-                    x: parent.width / 2 - self.width / 2;
-                    y: parent.height / 2 - self.height / 2;
-
-                    Image {
-                        source: @image-url("../../assets/icons/Empty_img.png");
-                        width: parent.height; height: parent.height;
-                        y: parent.height / 2 - self.height / 2;
-                        image-rendering: pixelated;
+                    Text {
+                        text: "Modu-View";
+                        font-family: "Roboto";
+                        font-size: 38px;
+                        color: #ffffff;
                     }
+                }
+            }
+        }
+        
+        Rectangle {
+            row: 0; 
+            col: 2;
+            background: Pallet.panel-background;
+            width: 280px;
 
-                    VerticalLayout {
-                        padding-left: 25px;
-                        alignment: space-between;
-                        VerticalLayout {
-                            height: 70px;
-                            new-connection-title := Text {
-                                text: HomePageLogic.selected-brand;
-                                font-family: "Roboto";
-                                color: #ffffff;
-                                font-weight: 700;
-                                font-size: 32px;
-                            }
+            HomePageChildPanel {
+                title: "Help?";
+            }
+        }
+
+
+        // Rectangle {
+        //     col: 0; row: 0;
+        //     rowspan: 2;
+        //     width: 800px;
+        //     height: root.height - 24px;
+        //     background: Pallet.panel-background;
+
+        //     Rectangle {
+        //         background: Pallet.panel-background.darker(0.2);
+        //         width: parent.width - 40px;
+        //         height: 325px;
+        //         y: 20px;
+
+        //         HorizontalLayout {
+        //             width: parent.width - 80px;
+        //             height: parent.height - 80px;
+
+        //             x: parent.width / 2 - self.width / 2;
+        //             y: parent.height / 2 - self.height / 2;
+
+        //             Image {
+        //                 source: @image-url("../../assets/icons/Empty_img.png");
+        //                 width: parent.height; height: parent.height;
+        //                 y: parent.height / 2 - self.height / 2;
+        //                 image-rendering: pixelated;
+        //             }
+
+        //             VerticalLayout {
+        //                 padding-left: 25px;
+        //                 alignment: space-between;
+        //                 VerticalLayout {
+        //                     height: 70px;
+        //                     new-connection-title := Text {
+        //                         text: HomePageLogic.selected-brand;
+        //                         font-family: "Roboto";
+        //                         color: #ffffff;
+        //                         font-weight: 700;
+        //                         font-size: 32px;
+        //                     }
     
-                            new-connection-type := Text {
-                                text: HomePageLogic.selected-type;
-                                font-family: "Roboto";
-                                color: #ffffff;
-                                font-weight: 500;
-                                font-size: 18px;
-                            }
-                        }
+        //                     new-connection-type := Text {
+        //                         text: HomePageLogic.selected-type;
+        //                         font-family: "Roboto";
+        //                         color: #ffffff;
+        //                         font-weight: 500;
+        //                         font-size: 18px;
+        //                     }
+        //                 }
 
-                        SimpleButton {
-                            width: 175px;
-                            height: 50px;
+        //                 SimpleButton {
+        //                     width: 175px;
+        //                     height: 50px;
 
-                            Text {
-                                text: "Connect";
-                                font-family: "Roboto";
-                                color: #ffffff;
-                                font-weight: 500;
-                                font-size: 24px;
-                                x: 12px;
-                            }
+        //                     Text {
+        //                         text: "Connect";
+        //                         font-family: "Roboto";
+        //                         color: #ffffff;
+        //                         font-weight: 500;
+        //                         font-size: 24px;
+        //                         x: 12px;
+        //                     }
 
-                            Image {
-                                source: @image-url("../../assets/icons/Connect.png");
-                                width: 28px;
-                                height: 28px;
-                                x: parent.width - self.width - 10px;
-                            }
+        //                     Image {
+        //                         source: @image-url("../../assets/icons/Connect.png");
+        //                         width: 28px;
+        //                         height: 28px;
+        //                         x: parent.width - self.width - 10px;
+        //                     }
 
-                            clicked => {
-                                HomePageLogic.to-schindler();
-                            }
-                        }
-                    }
-                }
-            }
+        //                     clicked => {
+        //                         HomePageLogic.to-schindler();
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
 
 
-            HorizontalLayout {
-                padding: 48px;
-                width: 800px;
-                height: 350px;
-                y: parent.height - self.height - 75px;
-                alignment: space-between;
+        //     HorizontalLayout {
+        //         padding: 48px;
+        //         width: 800px;
+        //         height: 350px;
+        //         y: parent.height - self.height - 75px;
+        //         alignment: space-between;
 
-                elevator-brands := SlotMachineSelector{
-                    y: parent.height / 2;
+        //         elevator-brands := SlotMachineSelector{
+        //             y: parent.height / 2;
 
-                    button-height: 80px;
-                    button-width: 325px;
+        //             button-height: 80px;
+        //             button-width: 325px;
                     
-                    height: 320px;
-                    width: 325px;
+        //             height: 320px;
+        //             width: 325px;
                     
-                    items: HomePageLogic.brands;
-                    current-item: HomePageLogic.brands[2];
+        //             items: HomePageLogic.brands;
+        //             current-item: HomePageLogic.brands[2];
 
-                    property <string> selected-brand: HomePageLogic.brands[self.current-item.id].text;
-                    changed current-item => {
-                        HomePageLogic.selected-brand = self.current-item-text;
-                    }
-                }
+        //             property <string> selected-brand: HomePageLogic.brands[self.current-item.id].text;
+        //             changed current-item => {
+        //                 HomePageLogic.selected-brand = self.current-item-text;
+        //             }
+        //         }
 
-                Rectangle {
-                    width: 2px;
-                    y: 0px;
-                    height: parent.height;
-                    background: Pallet.panel-background.brighter(0.2);
-                }
+        //         Rectangle {
+        //             width: 2px;
+        //             y: 0px;
+        //             height: parent.height;
+        //             background: Pallet.panel-background.brighter(0.2);
+        //         }
 
-                elevator-types := SlotMachineSelector{
-                    button-background-active: Pallet.slot-machine-button-green-active;
-                    button-background: Pallet.slot-machine-button-green;
+        //         elevator-types := SlotMachineSelector{
+        //             button-background-active: Pallet.slot-machine-button-green-active;
+        //             button-background: Pallet.slot-machine-button-green;
 
-                    y: parent.height / 2;
+        //             y: parent.height / 2;
 
-                     button-height: 80px;
-                    button-width: 325px;
+        //              button-height: 80px;
+        //             button-width: 325px;
                     
-                    height: 320px;
-                    width: 325px;
+        //             height: 320px;
+        //             width: 325px;
                     
-                    items: HomePageLogic.types_SCH;
-                    current-item: HomePageLogic.types_SCH[2];
+        //             items: HomePageLogic.types_SCH;
+        //             current-item: HomePageLogic.types_SCH[2];
 
-                    changed current-item => {
-                        HomePageLogic.selected-type = self.current-item-text;
-                    }
-                }
-            }
-        }
+        //             changed current-item => {
+        //                 HomePageLogic.selected-type = self.current-item-text;
+        //             }
+        //         }
+        //     }
+        // }
 
-        Rectangle {
-            col: 1; row: 0;
-            background: Pallet.panel-background;
-            height: 448px;
+        // Rectangle {
+        //     col: 1; row: 0;
+        //     background: Pallet.panel-background;
+        //     height: 448px;
             
-            GridLayout {
-                padding: 24px;
+        //     GridLayout {
+        //         padding: 24px;
 
 
-                spacing-horizontal: 8px;
-                spacing-vertical: 8px;
+        //         spacing-horizontal: 8px;
+        //         spacing-vertical: 8px;
 
-                Text {
-                    row: 0; col: 0;
-                    colspan: 2;
-                    height: 50px;
+        //         Text {
+        //             row: 0; col: 0;
+        //             colspan: 2;
+        //             height: 50px;
 
-                    text: "Modu Views";
-                    font-family: "Roboto";
-                    color: #ffffff;
-                    font-weight: 700;
-                    font-size: 24px;
-                }
+        //             text: "Modu Views";
+        //             font-family: "Roboto";
+        //             color: #ffffff;
+        //             font-weight: 700;
+        //             font-size: 24px;
+        //         }
 
-                VerticalLayout {
-                    row: 1; col: 0;
-                    spacing: 8px;
+        //         VerticalLayout {
+        //             row: 1; col: 0;
+        //             spacing: 8px;
 
-                    for i in 4 : Rectangle {
-                        GridLayout {
-                            Image {
-                                col: 0;
-                                row: 0;
-                                rowspan: 4;
-                                source: @image-url("../../assets/icons/Empty_img.png");
-                                width: 64px; height: 64px;
-                                image-rendering: pixelated;
-                            }
+        //             for i in 4 : Rectangle {
+        //                 GridLayout {
+        //                     Image {
+        //                         col: 0;
+        //                         row: 0;
+        //                         rowspan: 4;
+        //                         source: @image-url("../../assets/icons/Empty_img.png");
+        //                         width: 64px; height: 64px;
+        //                         image-rendering: pixelated;
+        //                     }
 
-                            VerticalLayout {
-                                padding-left: 10px;
-                                col: 1;
-                                Text {
-                                    text: "Modu-View " + (i + 1);
-                                    color: #ffffff;
-                                    font-family: "Roboto";
-                                    font-weight: 700;
-                                    font-size: 16px;
-                                }
-                            }
+        //                     VerticalLayout {
+        //                         padding-left: 10px;
+        //                         col: 1;
+        //                         Text {
+        //                             text: "Modu-View " + (i + 1);
+        //                             color: #ffffff;
+        //                             font-family: "Roboto";
+        //                             font-weight: 700;
+        //                             font-size: 16px;
+        //                         }
+        //                     }
 
-                            VerticalLayout {
-                                col: 1;
-                                row: 1;
-                                height: 20px;
-                                padding-top: 10px;
-                                padding-left: 10px;
-                                Text {
-                                    text: "ID: ABC123!@# ";
-                                    color: #ffffff;
-                                    font-family: "Roboto";
-                                    font-weight: 500;
-                                    font-size: 12px;
-                                }
-                                Text {
-                                    text: "Last: 10/10/2025 ";
-                                    color: #ffffff;
-                                    font-family: "Roboto";
-                                    font-weight: 500;
-                                    font-size: 12px;
-                                }
-                            }
-                        }
-                    }
-                }
-                VerticalLayout {
-                    row: 1; col: 1;
-                    spacing: 8px;
+        //                     VerticalLayout {
+        //                         col: 1;
+        //                         row: 1;
+        //                         height: 20px;
+        //                         padding-top: 10px;
+        //                         padding-left: 10px;
+        //                         Text {
+        //                             text: "ID: ABC123!@# ";
+        //                             color: #ffffff;
+        //                             font-family: "Roboto";
+        //                             font-weight: 500;
+        //                             font-size: 12px;
+        //                         }
+        //                         Text {
+        //                             text: "Last: 10/10/2025 ";
+        //                             color: #ffffff;
+        //                             font-family: "Roboto";
+        //                             font-weight: 500;
+        //                             font-size: 12px;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         VerticalLayout {
+        //             row: 1; col: 1;
+        //             spacing: 8px;
 
-                    for i in 4 : Rectangle {
-                        GridLayout {
-                            Image {
-                                col: 0;
-                                row: 0;
-                                rowspan: 4;
-                                source: @image-url("../../assets/icons/Empty_img.png");
-                                width: 64px; height: 64px;
-                                image-rendering: pixelated;
-                            }
+        //             for i in 4 : Rectangle {
+        //                 GridLayout {
+        //                     Image {
+        //                         col: 0;
+        //                         row: 0;
+        //                         rowspan: 4;
+        //                         source: @image-url("../../assets/icons/Empty_img.png");
+        //                         width: 64px; height: 64px;
+        //                         image-rendering: pixelated;
+        //                     }
 
-                            VerticalLayout {
-                                padding-left: 10px;
-                                col: 1;
-                                Text {
-                                    text: "Modu-View " + (i + 1);
-                                    color: #ffffff;
-                                    font-family: "Roboto";
-                                    font-weight: 700;
-                                    font-size: 16px;
-                                }
-                            }
+        //                     VerticalLayout {
+        //                         padding-left: 10px;
+        //                         col: 1;
+        //                         Text {
+        //                             text: "Modu-View " + (i + 1);
+        //                             color: #ffffff;
+        //                             font-family: "Roboto";
+        //                             font-weight: 700;
+        //                             font-size: 16px;
+        //                         }
+        //                     }
 
-                            VerticalLayout {
-                                col: 1;
-                                row: 1;
-                                height: 20px;
-                                padding-top: 10px;
-                                padding-left: 10px;
-                                Text {
-                                    text: "ID: ABC123!@# ";
-                                    font-family: "Roboto";
-                                    color: #ffffff;
-                                    font-weight: 500;
-                                    font-size: 12px;
-                                }
-                                Text {
-                                    text: "Last: 10/10/2025 ";
-                                    font-family: "Roboto";
-                                    color: #ffffff;
-                                    font-weight: 500;
-                                    font-size: 12px;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        //                     VerticalLayout {
+        //                         col: 1;
+        //                         row: 1;
+        //                         height: 20px;
+        //                         padding-top: 10px;
+        //                         padding-left: 10px;
+        //                         Text {
+        //                             text: "ID: ABC123!@# ";
+        //                             font-family: "Roboto";
+        //                             color: #ffffff;
+        //                             font-weight: 500;
+        //                             font-size: 12px;
+        //                         }
+        //                         Text {
+        //                             text: "Last: 10/10/2025 ";
+        //                             font-family: "Roboto";
+        //                             color: #ffffff;
+        //                             font-weight: 500;
+        //                             font-size: 12px;
+        //                         }
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        Rectangle {
-            col: 1; row: 1;
-            height: self.width - 80px;
-            background: Pallet.panel-background;
+        // Rectangle {
+        //     col: 1; row: 1;
+        //     height: self.width - 80px;
+        //     background: Pallet.panel-background;
 
-            GridLayout {
-                padding: 24px;
+        //     GridLayout {
+        //         padding: 24px;
 
-                spacing-horizontal: 8px;
-                spacing-vertical: 8px;
+        //         spacing-horizontal: 8px;
+        //         spacing-vertical: 8px;
 
-                Text {
-                    row: 0; col: 0;
-                    colspan: 2;
-                    height: 50px;
+        //         Text {
+        //             row: 0; col: 0;
+        //             colspan: 2;
+        //             height: 50px;
 
-                    text: "Help";
-                    font-family: "Roboto";
-                    color: #ffffff;
-                    font-weight: 700;
-                    font-size: 24px;
-                }
+        //             text: "Help";
+        //             font-family: "Roboto";
+        //             color: #ffffff;
+        //             font-weight: 700;
+        //             font-size: 24px;
+        //         }
 
-                SimpleButton { 
-                    row: 1; col: 0; 
-                    background: Pallet.panel-background.brighter(0.4);
-                    Text {
-                        text: "Option 1";
-                        font-family: "Roboto";
-                        color: #ffffff;
-                        font-weight: 700;
-                        font-size: 18px;
-                    }
-                }
-                SimpleButton { 
-                    row: 1; col: 1; 
-                    background: Pallet.panel-background.brighter(0.4);
-                    Text {
-                        text: "Option 2";
-                        font-family: "Roboto";
-                        color: #ffffff;
-                        font-weight: 700;
-                        font-size: 18px;
-                    }
-                }
-                SimpleButton { 
-                    row: 2; col: 0; 
-                    background: Pallet.panel-background.brighter(0.4);
-                    Text {
-                        text: "Option 3";
-                        font-family: "Roboto";
-                        color: #ffffff;
-                        font-weight: 700;
-                        font-size: 18px;
-                    }
-                }
-                SimpleButton { 
-                    row: 2; col: 1; 
-                    background: Pallet.panel-background.brighter(0.4);
-                    Text {
-                        text: "Option 4";
-                        font-family: "Roboto";
-                        color: #ffffff;
-                        font-weight: 700;
-                        font-size: 18px;
-                    }
-                }
-            }
-        }
+        //         SimpleButton { 
+        //             row: 1; col: 0; 
+        //             background: Pallet.panel-background.brighter(0.4);
+        //             Text {
+        //                 text: "Option 1";
+        //                 font-family: "Roboto";
+        //                 color: #ffffff;
+        //                 font-weight: 700;
+        //                 font-size: 18px;
+        //             }
+        //         }
+        //         SimpleButton { 
+        //             row: 1; col: 1; 
+        //             background: Pallet.panel-background.brighter(0.4);
+        //             Text {
+        //                 text: "Option 2";
+        //                 font-family: "Roboto";
+        //                 color: #ffffff;
+        //                 font-weight: 700;
+        //                 font-size: 18px;
+        //             }
+        //         }
+        //         SimpleButton { 
+        //             row: 2; col: 0; 
+        //             background: Pallet.panel-background.brighter(0.4);
+        //             Text {
+        //                 text: "Option 3";
+        //                 font-family: "Roboto";
+        //                 color: #ffffff;
+        //                 font-weight: 700;
+        //                 font-size: 18px;
+        //             }
+        //         }
+        //         SimpleButton { 
+        //             row: 2; col: 1; 
+        //             background: Pallet.panel-background.brighter(0.4);
+        //             Text {
+        //                 text: "Option 4";
+        //                 font-family: "Roboto";
+        //                 color: #ffffff;
+        //                 font-weight: 700;
+        //                 font-size: 18px;
+        //             }
+        //         }
+        //     }
+        // }
     }
 }

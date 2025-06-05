@@ -12,6 +12,7 @@ tokio = { version = "1.44.1", features = ["full"] }
 rumqttc = "0.24.0"
 rustls = "0.23.25"
 serde_json = "1.0.140"
+open = "5.3.2"
 
 [build-dependencies]
 slint-build = "1.8.0"

@@ -266,11 +266,6 @@ export component ButtonList {
     }
 }
 
-export struct elevator {
-    id: int,
-    brand: string,
-    types: [string],
-}
 
 export component SlotMachineSelector inherits Rectangle {
     width: 300px;
@@ -281,6 +276,7 @@ export component SlotMachineSelector inherits Rectangle {
     in property <length> button-height: 50px;
     in property <length> button-width: 250px;
     in property <length> button-spacing: 10px;
+    in property <bool> enable-debugging: false;
 
     in property <brush> button-background: Pallet.slot-machine-button-blue;
     in property <brush> button-background-active: Pallet.slot-machine-button-blue-active; 
@@ -384,7 +380,7 @@ export component SlotMachineSelector inherits Rectangle {
 
 
         // DEBUG
-        Text {
+        if enable-debugging : Text {
             x: 10px;
             y: 10px;
             text: "Distance           : " + distance + 
