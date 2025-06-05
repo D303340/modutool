@@ -452,7 +452,7 @@ component command-panel-config inherits command-panel {
                 }
                 
                 clicked => {
-                    SchindlerPageLogic.Send_Command_Number("SHOW_EEPROM_INFO:=", 1);
+                    SchindlerPageLogic.Send_Command_Number("GC_SHOW_EE:=", 1);
                     // SchindlerPageLogic.Send_Command("fake");
                 }
             }    
@@ -489,8 +489,7 @@ component command-panel-config inherits command-panel {
                 }
                 
                 clicked => {
-                    // SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
-                    SchindlerPageLogic.Send_Command("fake");
+                    SchindlerPageLogic.Send_Command_Number("CLC_RAM_FREQUENCY:=", 1);
                 }
             }
         }
@@ -529,7 +528,7 @@ component command-panel-io inherits command-panel {
                     width: 60px;
                     height: 30px;
                     clicked => {
-    
+                        SchindlerPageLogic.Send_Command_Number("ENABLE_IO_NOTIFICATION:=", self.toggled == true ? 1 : 0);
                     }
                 }
             }
@@ -563,6 +562,10 @@ component command-panel-io inherits command-panel {
                     color: Pallet.default-text;
                     vertical-alignment: center;
                 }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("CTRL_IOSTATUS:=", 1);
+                }
             }
 
             SimpleButton {
@@ -580,6 +583,10 @@ component command-panel-io inherits command-panel {
                     color: Pallet.default-text;
                     vertical-alignment: center;
                 }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("CTRL_IOSTATUS_RQST:=", 1);
+                }
             }
 
             SimpleButton {
@@ -596,6 +603,10 @@ component command-panel-io inherits command-panel {
                     font-family: "Roboto";
                     color: Pallet.default-text;
                     vertical-alignment: center;
+                }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("CAR_IOSTATUS_RQST:=", 1);
                 }
             }
         }   
@@ -629,7 +640,7 @@ component command-panel-io inherits command-panel {
                 }
                 
                 clicked => {
-                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                    SchindlerPageLogic.Send_Command_Number("CTRL_AVAILABILITY:=", 1);
                 }
             }
 
@@ -650,7 +661,7 @@ component command-panel-io inherits command-panel {
                 }
                 
                 clicked => {
-                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                    SchindlerPageLogic.Send_Command_Number("CTRL_SHOW_SERVICES:=", 1);
                 }
             }
         }   
@@ -687,7 +698,7 @@ component command-panel-errors inherits command-panel {
             }
             HorizontalLayout {
                 spacing: 8px;
-                NumberInput {
+                number := NumberInput {
                     width: 200px;
                     height: 45px;
                 }
@@ -707,6 +718,10 @@ component command-panel-errors inherits command-panel {
                         font-size: 18px;
                         height: 12px;
                     }
+
+                    clicked => {
+                        SchindlerPageLogic.Send_Command_Number("SHOW_LAST_ERROR:=", number.value);
+                    }
                 }
             }
             
@@ -724,6 +739,10 @@ component command-panel-errors inherits command-panel {
                     font-family: "Roboto";
                     color: Pallet.default-text;
                     vertical-alignment: center;
+                }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("", 4);
                 }
             }
         }   
@@ -757,7 +776,7 @@ component command-panel-errors inherits command-panel {
                 }
                 
                 clicked => {
-                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                    SchindlerPageLogic.Send_Command_Number("", 5);
                 }
             }
         }   
@@ -791,7 +810,7 @@ component command-panel-errors inherits command-panel {
                 }
                 
                 clicked => {
-                    SchindlerPageLogic.Send_Command_Number("SYSTEM_INFO:=", 1);
+                    SchindlerPageLogic.Send_Command_Number("clr_persistent:=", 1);
                 }
             }
         }   
@@ -834,7 +853,7 @@ component command-panel-traffic inherits command-panel {
     
                     Rectangle {
                         width: 150px;
-                        DropDown {
+                        simulation_traffic_selection := DropDown {
                             go-up: true;
                             y: -270px;
                             button-width: parent.width;
@@ -859,7 +878,7 @@ component command-panel-traffic inherits command-panel {
                         }
                     }
     
-                    NumberInput {
+                    floor-calls-input := NumberInput {
                         width: 150px;
                         height: 40px;
                     }
@@ -880,6 +899,10 @@ component command-panel-traffic inherits command-panel {
                         font-family: "Roboto";
                         color: #ffffff;
                     }   
+
+                    clicked => {
+                        SchindlerPageLogic.Send_Command(simulation_traffic_selection.current-item-id == 0 ? "SYS_SIM_START:=12D" : "SYS_SIM_START:=11E");
+                    }
                 }
                 SimpleButton {
                     height: 45px;
@@ -892,22 +915,28 @@ component command-panel-traffic inherits command-panel {
                         font-family: "Roboto";
                         color: #ffffff;
                     }
-                    
+
+                    clicked => {
+                        SchindlerPageLogic.Send_Command_Number("SIM_FLOOR_CALL:=", floor-calls-input.value)
+                    }
                 }
             }
 
             SimpleButton {
-                    height: 45px;
-                    background: #9C3C3C;
-                    Text {
-                        text: "Stop Traffic";
-                        font-weight: 500;
-                        font-size: 18px;
-                        font-family: "Roboto";
-                        color: #ffffff;
-                    }
+                height: 45px;
+                background: #9C3C3C;
+                Text {
+                    text: "Stop Traffic";
+                    font-weight: 500;
+                    font-size: 18px;
+                    font-family: "Roboto";
+                    color: #ffffff;
                 }
-            
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command("SYS_SIM_START:=0");
+                }
+            }
         }   
     }
     
@@ -938,6 +967,10 @@ component command-panel-traffic inherits command-panel {
                     color: Pallet.default-text;
                     vertical-alignment: center;
                 }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("CAR_LOAD_RQST:=", 1);
+                }
             }
 
             SimpleButton {
@@ -954,6 +987,10 @@ component command-panel-traffic inherits command-panel {
                     font-family: "Roboto";
                     color: Pallet.default-text;
                     vertical-alignment: center;
+                }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("READ_SHAFT_EE:=", 1);
                 }
             }
         }   
@@ -986,6 +1023,10 @@ component command-panel-traffic inherits command-panel {
                     color: Pallet.default-text;
                     vertical-alignment: center;
                 }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command("TELE_TRIP_COUNTER")
+                }
             }
 
             SimpleButton {
@@ -1003,11 +1044,13 @@ component command-panel-traffic inherits command-panel {
                     color: Pallet.default-text;
                     vertical-alignment: center;
                 }
+
+                clicked => {
+                    SchindlerPageLogic.Send_Command_Number("TELE_CMD:=", 0);
+                }
             }
         }   
-    }
-
-    
+    }   
 }
 
 // Keypad Panel
