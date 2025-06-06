@@ -688,14 +688,20 @@ component command-panel-errors inherits command-panel {
             padding-left: 10px;
             padding-right: 10px;
 
-            Text {
-                text: "Show Error(s)";
-                font-family: "Roboto";
-                color: #ffffff;
-                font-weight: 700;
-                font-size: 18px;
-                height: 12px;
+            Rectangle {
+                Text {
+                    x: 0;
+                    text: "Show Error(s)";
+                    font-family: "Roboto";
+                    color: #ffffff;
+                    font-weight: 700;
+                    font-size: 18px;
+                }
+                
+                height: 16px;
+                // width: 200px;
             }
+
             HorizontalLayout {
                 spacing: 8px;
                 number := NumberInput {
@@ -842,13 +848,18 @@ component command-panel-traffic inherits command-panel {
                 HorizontalLayout {
                     height: 20px;
                     alignment: space-between;
-                    Text {
-                        text: "Trips/hour traffic";
-                        font-weight: 500;
-                        font-size: 18px;
-                        font-family: "Roboto";
-                        color: #ffffff;
-                        vertical-alignment: center;
+                    Rectangle {
+                        Text {
+                            x: 0;
+                            text: "Trips/hour traffic";
+                            font-weight: 500;
+                            font-size: 18px;
+                            font-family: "Roboto";
+                            color: #ffffff;
+                            vertical-alignment: center;
+                        }
+
+                        height: 16px;
                     }
     
                     Rectangle {

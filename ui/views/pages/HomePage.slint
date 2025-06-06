@@ -15,13 +15,32 @@ export global HomePageLogic {
                                             { id: 1, text: "Modu-Soft OTS" },  
                                             { id: 2, text: "Modu-Soft SCH" },
                                             { id: 3, text: "Modu-Soft KNE" },
-                                            { id: 4, text: "Modu-Soft THY" }];
+                                            { id: 4, text: "Modu-Soft THY" },
+                                            { id: 5, text: "Kollmorgen"}];
+
+                                            
+    in-out property <[ButtonInfo]> types_ORA: [{id: 0, mode: 0, text: "Modu-Soft ORA1", active: false}, 
+                                               {id: 1, mode: 0, text: "Modu-Soft ORA2", active: false}];
     
+    in-out property <[ButtonInfo]> types_OTS: [{id: 0, mode: 0, text: "Single", active: false}, 
+                                                {id: 1, mode: 0, text: "Double", active: false}];
+
     in-out property <[ButtonInfo]> types_SCH: [{id: 0, mode: 0, text: "SCIC 2", active: false}, 
-                                                {id: 1, mode: 0, text: "SCIC 3", active: false},
-                                                {id: 2, mode: 0, text: "SCIC 5", active: false},
-                                                {id: 3, mode: 0, text: "SCPU / 3300", active: false},
-                                                {id: 4, mode: 0, text: "SCPU / 6300", active: false}];
+                                               {id: 1, mode: 0, text: "SCIC 3", active: false},
+                                               {id: 2, mode: 0, text: "SCIC 5", active: false},
+                                               {id: 3, mode: 0, text: "SCPU / 3300", active: false},
+                                               {id: 4, mode: 0, text: "SCPU / 6300", active: false}];
+
+    in-out property <[ButtonInfo]> types_KNE: [{id: 0, mode: 0, text: "6.6 or Lower", active: false}, 
+                                               {id: 1, mode: 0, text: "6.7.18", active: false},
+                                               {id: 2, mode: 0, text: "6.8 or Higher", active: false}];
+
+    in-out property <[ButtonInfo]> types_THY: [{id: 0, mode: 0, text: "Modu-Soft cm4", active: false}, 
+                                               {id: 1, mode: 0, text: "Modu-Soft TCI", active: false},
+                                               {id: 2, mode: 0, text: "Modu-Soft MCI", active: false}];
+
+    in-out property <[ButtonInfo]> types_Kollmorgen: [{id: 0, mode: 0, text: "MPK441", active: false}];
+
 
     in-out property <string> selected-brand: "Modu-Soft SCH";
     in-out property <string> selected-type: "SCIC 2";
@@ -31,36 +50,29 @@ export global HomePageLogic {
 
 
 export component HomePageChildPanel {
-    // width: 600px;
+    width: 600px;
     // height: 300px;
     in-out property <string> title: "title";
 
-    GridLayout {
-        spacing: 10px;
-        Rectangle {
-            row: 0;
-            height: 20px;
-            VerticalLayout {
-                padding: 14px;
-                padding-left: 6px;
+    VerticalLayout {
+        padding: 20px;
+        padding-top: 10px;
+        title := Text {
+            text: root.title;
+            font-family: "Roboto";
 
-                title := Text {
-                    text: root.title;
-                    font-family: "Roboto";
-                    color: #838383;
-                    font-weight: 100;
-                    font-size: 18px;
-                    
-                    // width: parent.width;
-                    horizontal-alignment: left;
-                }
-            }
+            color: #838383;
+            font-size: 18px;
+            
+            // width: parent.width;
+            horizontal-alignment: left;
         }
 
         VerticalLayout {
-            padding: 20px;
-            row: 1;
-            @children
+            padding-top: 10px;
+            Rectangle {
+                @children
+            }
         }
     }
 }
@@ -73,6 +85,9 @@ export component HomePage inherits Page {
     background: Pallet.background;
 
     GridLayout {
+        height: 800px;
+        x: 0;
+        y: 0;
         padding: 12px;
 
         spacing-horizontal: 12px;
@@ -83,137 +98,346 @@ export component HomePage inherits Page {
             col: 0; row: 1;
             colspan: 3;
             background: Pallet.panel-background;
+            height: (800px / 2) - 12px; 
 
             HomePageChildPanel {
                 title: "New Connection";
-                HorizontalLayout {
-                    alignment: space-between;
-                    spacing: 125px;
+                width: 1206px;
+                height: parent.height;
+                GridLayout {
 
-                    HorizontalLayout {
-                        Image {
-                            source: @image-url("../../assets/icons/Empty_img.png");
-                            image-fit: cover;
-    
-                            width: 200px;
-                            height: 300px; 
-                        }
-    
-                        VerticalLayout {
-                            height: 300px;
-                            padding-left: 25px;
+                    Rectangle {
+                        col: 0;
 
+                        HorizontalLayout {
+                            padding-top: 20px;
+                            padding-bottom: 20px;
+                            y: 0;
+                            Image {
+                                source: @image-url("../../assets/icons/Empty_img.png");
+                                image-fit: cover;
+        
+                                width: 200px;
+                            }
+        
                             VerticalLayout {
-                                alignment: start;
-
-                                Text {
-                                    text: "Modu-Soft SCH";
-                                    font-family: "Roboto";
-                                    font-size: 38px;
-                                    color: #ffffff;
+                                padding-left: 25px;
+    
+                                VerticalLayout {
+                                    alignment: start;
+                                    padding-top: 12px;
+    
+                                    Text {
+                                        text: HomePageLogic.selected-brand;
+                                        font-family: "Roboto";
+                                        font-size: 38px;
+                                        color: #ffffff;
+                                    }
+                                    Text {
+                                        text: HomePageLogic.selected-type;
+                                        font-family: "Roboto";
+                                        font-size: 18px;
+                                        color: #ffffff;
+                                    }
                                 }
-                                Text {
-                                    text: "SCIC 3300";
-                                    font-family: "Roboto";
-                                    font-size: 18px;
-                                    color: #ffffff;
-                                }
-                            }
-                            
-
-                            Rectangle {
                                 
-                                Text {
-                                    x: 0;
-                                    y: 30px;
-                                    width: 250px;
-                                    text: "To connect to the Modu-Soft SCH, connect the";
-                                    font-family: "Roboto";
-                                    font-size: 16px;
-                                    color: #949494;
-                                }
-
-                                Text {
-                                    x: 89px;
-                                    y: 49px;
-                                    width: 250px;
-                                    text: "Green";
-                                    font-family: "Roboto";
-                                    font-weight: 800;
-                                    font-size: 16px;
-                                    color: #39FF5E;
-                                }
-
-                                Text {
-                                    x: 135px;
-                                    y: 49px;
-                                    width: 250px;
-                                    text: "Wire";
-                                    font-family: "Roboto";
-                                    font-size: 16px;
-                                    color: #949494;
-                                }
-                            }
-                            
-                            
-                            SimpleButton {
-                                width: 160px;
-                                height: 50px;
-                                padding-bottom: 210px;
     
-                                Text {
-                                    text: "Connect";
-                                    font-family: "Roboto";
-                                    color: #ffffff;
-                                    font-weight: 500;
-                                    font-size: 24px;
-                                    x: 12px;
-                                }
+                                Rectangle {
+                                    
+                                    Text {
+                                        x: 0;
+                                        y: 30px;
+                                        width: 250px;
+                                        text: "To connect to the Modu-Soft SCH,";
+                                        font-family: "Roboto";
+                                        font-size: 16px;
+                                        color: #949494;
+                                    }
+
+                                    Text {
+                                        x: 0;
+                                        y: 49px;
+                                        width: 250px;
+                                        text: "connect the";
+                                        font-family: "Roboto";
+                                        font-size: 16px;
+                                        color: #949494;
+                                    }
     
-                                Image {
-                                    source: @image-url("../../assets/icons/Connect.png");
-                                    width: 24px;
-                                    height: 24px;
-                                    x: parent.width - self.width - 12px;
+                                    Text {
+                                        x: 89px;
+                                        y: 49px;
+                                        width: 43px;
+                                        text: "Green";
+                                        font-family: "Roboto";
+                                        font-weight: 800;
+                                        font-size: 16px;
+                                        color: #39FF5E;
+                                    }
+    
+                                    Text {
+                                        x: 135px;
+                                        y: 49px;
+                                        width: 250px;
+                                        text: "Wire";
+                                        font-family: "Roboto";
+                                        font-size: 16px;
+                                        color: #949494;
+                                    }
+                                }
+                                
+                                
+                                SimpleButton {
+                                    width: 160px;
+                                    height: 50px;
+                                    padding-bottom: 210px;
+        
+                                    Text {
+                                        text: "Connect";
+                                        font-family: "Roboto";
+                                        color: #ffffff;
+                                        font-weight: 500;
+                                        font-size: 24px;
+                                        x: 12px;
+                                    }
+        
+                                    Image {
+                                        source: @image-url("../../assets/icons/Connect.png");
+                                        width: 24px;
+                                        height: 24px;
+                                        x: parent.width - self.width - 12px;
+                                    }
+
+                                    clicked => {
+                                        if (HomePageLogic.selected-brand == "Modu-Soft SCH") {
+                                            if (HomePageLogic.selected-type == "SCPU / 3300") {
+                                                HomePageLogic.to-schindler();
+                                            }
+                                        }
+
+                                        if (HomePageLogic.selected-brand == "Kollmorgen") {
+                                            if (HomePageLogic.selected-type == "MPK441") {
+                                                HomePageLogic.to-kollmorgen();
+                                            }
+                                        }
+                                        
+                                    }
                                 }
                             }
                         }
                     }
 
-                    HorizontalLayout {
-                        spacing: 24px;
-
-                        SlotMachineSelector{    
-                            button-height: 80px;
-                            button-width: 250px;
-                            
-                            height: 320px;
-                            width: 250px;
-                            
-                            items: HomePageLogic.brands;
-                            current-item: HomePageLogic.brands[2];
+                    Rectangle {
+                        col: 1;
+                        
+                        HorizontalLayout {
+                            spacing: 24px;
+                            x: parent.width - 550px - self.spacing;
+                            // y: -30px;
+                            SlotMachineSelector{    
+                                button-height: 80px;
+                                button-width: 275px;
+                                
+                                height: 320px;
+                                width: self.button-width;
+                                
+                                items: HomePageLogic.brands;
+                                current-item: HomePageLogic.brands[2];
+        
+                                changed current-item => {
+                                    HomePageLogic.selected-brand = self.current-item-text;
+                                }
+                            }
     
-                            property <string> selected-brand: HomePageLogic.brands[self.current-item.id].text;
-                            changed current-item => {
-                                HomePageLogic.selected-brand = self.current-item-text;
+                            SlotMachineSelector{
+                                button-background-active: Pallet.slot-machine-button-green-active;
+                                button-background: Pallet.slot-machine-button-green;
+    
+                                button-height: 80px;
+                                button-width: 275px;
+                                
+                                height: 320px;
+                                width: self.button-width;
+
+
+                                states [
+                                    active when HomePageLogic.selected-brand == "Modu-Soft ORA": {
+                                        items: HomePageLogic.types_ORA;
+                                    }
+
+                                    active when HomePageLogic.selected-brand == "Modu-Soft OTS": {
+                                        items: HomePageLogic.types_OTS;
+                                    }
+
+                                    active when HomePageLogic.selected-brand == "Modu-Soft SCH": {
+                                        items: HomePageLogic.types_SCH;
+                                    }
+
+                                    active when HomePageLogic.selected-brand == "Modu-Soft KNE": {
+                                        items: HomePageLogic.types_KNE;
+                                    }
+
+                                    active when HomePageLogic.selected-brand == "Modu-Soft THY": {
+                                        items: HomePageLogic.types_THY;
+                                    }
+
+                                    active when HomePageLogic.selected-brand == "Kollmorgen": {
+                                        items: HomePageLogic.types_Kollmorgen;
+                                    }
+                                ]
+
+                                changed current-item-text => {
+                                    HomePageLogic.selected-type = self.current-item-text;
+                                }
+                                
+                                changed items => {
+                                    self.current-item = self.items[self.items.length / 2];
+                                    HomePageLogic.selected-type = self.current-item.text;
+                                    debug("CURRENT BRAND: " + HomePageLogic.selected-brand);
+                                    debug("CURRENT TYPE: " + HomePageLogic.selected-type);
+                                }
                             }
                         }
+                    }
+                }
+            }
+        }
 
-                        SlotMachineSelector{
-                            button-background-active: Pallet.slot-machine-button-green-active;
-                            button-background: Pallet.slot-machine-button-green;
+        // Last Connection
+        Rectangle {
+            row: 0;
+            col: 0;
+            background: Pallet.panel-background;
+            width: 622px;
+            HomePageChildPanel {
+                title: "Last Connection";
+                width: parent.width;
+                height: (800px / 2) - 24px; 
+                HorizontalLayout {
+                    padding-top: 20px;
+                    padding-bottom: 20px;
+                    y: 0;
+                    Image {
+                        source: @image-url("../../assets/icons/Empty_img.png");
+                        image-fit: cover;
 
-                            button-height: 80px;
-                            button-width: 250px;
+                        width: 200px;
+                        // height: 280px; 
+                    }
+
+                    VerticalLayout {
+                        padding-left: 25px;
+                        padding-right: 75px;
+
+                        VerticalLayout {
+                            alignment: start;
+                            padding-top: 12px;
+
+                            Text {
+                                text: "Modu-Soft SCH";
+                                font-family: "Roboto";
+                                font-size: 38px;
+                                color: #ffffff;
+                            }
+                            Text {
+                                text: "SCIC 3300";
+                                font-family: "Roboto";
+                                font-size: 18px;
+                                color: #ffffff;
+                            }
+                        }
+                        
+
+                        Rectangle {
                             
-                            height: 320px;
-                            width: 250px;
-                            
-                            items: HomePageLogic.types_SCH;
-                            current-item: HomePageLogic.types_SCH[2];
+                            Text {
+                                x: 0;
+                                y: 30px;
+                                width: 250px;
+                                text: "To connect to the Modu-Soft SCH,";
+                                font-family: "Roboto";
+                                font-size: 16px;
+                                color: #949494;
+                            }
 
-                            changed current-item => {
-                                HomePageLogic.selected-type = self.current-item-text;
+                            Text {
+                                x: 0;
+                                y: 49px;
+                                width: 250px;
+                                text: "make sure the";
+                                font-family: "Roboto";
+                                font-size: 16px;
+                                color: #949494;
+                            }
+
+                            Text {
+                                x: 184px;
+                                y: 49px;
+                                width: 250px;
+                                text: "and";
+                                font-family: "Roboto";
+                                font-size: 16px;
+                                color: #949494;
+                            }
+
+                            Text {
+                                x: 85px;
+                                y: 69px;
+                                width: 250px;
+                                text: "are connected";
+                                font-family: "Roboto";
+                                font-size: 16px;
+                                color: #949494;
+                            }
+
+                            Text {
+                                x: 106px;
+                                y: 49px;
+                                width: 250px;
+                                text: "modu-tool";
+                                font-family: "Roboto";
+                                font-weight: 800;
+                                font-size: 16px;
+                                color: #39dbff;
+                            }
+
+                            Text {
+                                x: 0px;
+                                y: 69px;
+                                width: 250px;
+                                text: "modu-view";
+                                font-family: "Roboto";
+                                font-weight: 800;
+                                font-size: 16px;
+                                color: #39dbff;
+                            }
+                        }
+                        
+                        
+                        SimpleButton {
+                            width: 185px;
+                            height: 50px;
+                            padding-bottom: 210px;
+                            background: #00B26E;
+
+                            Text {
+                                text: "Reconnect";
+                                font-family: "Roboto";
+                                color: #ffffff;
+                                font-weight: 500;
+                                font-size: 24px;
+                                x: 12px;
+                            }
+
+                            Image {
+                                source: @image-url("../../assets/icons/Connect.png");
+                                width: 24px;
+                                height: 24px;
+                                x: parent.width - self.width - 12px;
+                            }
+
+                            clicked => {
+                                HomePageLogic.to-schindler();
                             }
                         }
                     }
@@ -222,148 +446,75 @@ export component HomePage inherits Page {
         }
 
         Rectangle {
-            row: 0;
-            col: 0;
-            background: Pallet.panel-background;
-
-            HomePageChildPanel {
-                title: "Last Connection";
-                HorizontalLayout {
-                    padding-left: 20px;
-                        Image {
-                            source: @image-url("../../assets/icons/Empty_img.png");
-                            image-fit: cover;
-    
-                            width: 200px;
-                            height: 280px; 
-                        }
-    
-                        VerticalLayout {
-                            height: 300px;
-                            padding-left: 25px;
-                            padding-right: 75px;
-                            padding: 20px;
-
-                            VerticalLayout {
-                                alignment: start;
-
-                                Text {
-                                    text: "Modu-Soft SCH";
-                                    font-family: "Roboto";
-                                    font-size: 38px;
-                                    color: #ffffff;
-                                }
-                                Text {
-                                    text: "SCIC 3300";
-                                    font-family: "Roboto";
-                                    font-size: 18px;
-                                    color: #ffffff;
-                                }
-                            }
-                            
-
-                            Rectangle {
-                                
-                                Text {
-                                    x: 0;
-                                    y: 30px;
-                                    width: 250px;
-                                    text: "To connect to the Modu-Soft SCH, make sure the";
-                                    font-family: "Roboto";
-                                    font-size: 16px;
-                                    color: #949494;
-                                }
-
-                                Text {
-                                    x: 184px;
-                                    y: 49px;
-                                    width: 250px;
-                                    text: "and";
-                                    font-family: "Roboto";
-                                    font-size: 16px;
-                                    color: #949494;
-                                }
-
-                                Text {
-                                    x: 85px;
-                                    y: 69px;
-                                    width: 250px;
-                                    text: "are connected";
-                                    font-family: "Roboto";
-                                    font-size: 16px;
-                                    color: #949494;
-                                }
-
-                                Text {
-                                    x: 106px;
-                                    y: 49px;
-                                    width: 250px;
-                                    text: "modu-tool";
-                                    font-family: "Roboto";
-                                    font-weight: 800;
-                                    font-size: 16px;
-                                    color: #39dbff;
-                                }
-
-                                Text {
-                                    x: 0px;
-                                    y: 69px;
-                                    width: 250px;
-                                    text: "modu-view";
-                                    font-family: "Roboto";
-                                    font-weight: 800;
-                                    font-size: 16px;
-                                    color: #39dbff;
-                                }
-                            }
-                            
-                            
-                            SimpleButton {
-                                width: 185px;
-                                height: 50px;
-                                padding-bottom: 210px;
-                                background: #00B26E;
-    
-                                Text {
-                                    text: "Reconnect";
-                                    font-family: "Roboto";
-                                    color: #ffffff;
-                                    font-weight: 500;
-                                    font-size: 24px;
-                                    x: 12px;
-                                }
-    
-                                Image {
-                                    source: @image-url("../../assets/icons/Connect.png");
-                                    width: 24px;
-                                    height: 24px;
-                                    x: parent.width - self.width - 12px;
-                                }
-
-                                clicked => {
-                                    HomePageLogic.to-kollmorgen();
-                                }
-                            }
-                        }
-                    }
-            }
-        }
-
-        Rectangle {
             row: 0; 
             col: 1;
             background: Pallet.panel-background;
             width: 280px;
+            height: (800px / 2) - 24px; 
 
             HomePageChildPanel {
                 title: "Modu-View";
+                width: parent.width;
+                height: parent.height;
 
-                HorizontalLayout {
-                    Text {
-                        text: "Modu-View";
-                        font-family: "Roboto";
-                        font-size: 38px;
-                        color: #ffffff;
+
+                VerticalLayout {
+                    alignment: start;
+                    padding-top: 25px;
+                    for i in 3 : VerticalLayout {
+                        spacing: 12px;
+                        HorizontalLayout {
+                            height: 75px;
+                            alignment: start;
+                            spacing: 15px;
+    
+                            // image
+                            Rectangle {
+                                width: 60px;
+                                height: 60px;
+                                Image {
+                                    source: @image-url("../../assets/icons/modu-view.png");
+                                    width: 60px;
+                                    height: 60px;
+                                    x: 0;
+                                }
+                            }
+        
+                            // details
+                            VerticalLayout {
+                                Text {
+                                    text: "Modu-View";
+                                    font-family: "Roboto";
+                                    font-size: 20px;
+                                    color: #ffffff;
+                                }
+    
+                                VerticalLayout {
+                                    alignment: end;
+                                    Text {
+                                        text: "id: yugrYR*&#";
+                                        font-family: "Roboto";
+                                        font-size: 16px;
+                                        color: #b7b7b7;
+                                    }
+                                    Text {
+                                        text: "Last: 1 hour ago";
+                                        font-family: "Roboto";
+                                        font-size: 16px;
+                                        color: #b7b7b7;
+                                    }
+                                }
+                            }
+                        }  
+
+                        if i != 2 : Rectangle {
+                            height: 12px;
+                            Rectangle { 
+                                background: Pallet.child-panel-background.brighter(0.25);
+                                height: 1px;
+                                y: 0;
+                            }
+                        }
                     }
                 }
             }
@@ -374,9 +525,86 @@ export component HomePage inherits Page {
             col: 2;
             background: Pallet.panel-background;
             width: 280px;
+            height: (800px / 2) - 24px; 
 
             HomePageChildPanel {
                 title: "Help?";
+                width: parent.width;
+                height: parent.height;
+
+
+                VerticalLayout {
+                    alignment: start;
+                    padding-top: 25px;
+                     VerticalLayout {
+                        spacing: 4px;
+
+                        HorizontalLayout {
+                            height: 100px;
+    
+                            // image
+                            Rectangle {
+                                border-radius: 4px;
+                                clip: true;
+                                Image {
+                                    source: @image-url("../../assets/images/help-navigation.jpg");
+                                    image-fit: cover;
+                                    source-clip-y: -32;
+                                    width: parent.width;
+                                    height: parent.height;
+                                    x: 0;
+                                }
+
+                                // Darken image
+                                Rectangle {
+                                    width: 300px;
+                                    background: @radial-gradient(circle, transparent 10%, black.transparentize(0.4) 100%);
+                                }
+                                
+                                Text {
+                                    text: "Navigation";
+                                    font-family: "Roboto";
+                                    font-size: 24px;
+                                    color: #ffffff;
+                                    font-weight: 700;
+                                }
+                            }
+                        } 
+
+                        HorizontalLayout {
+                            height: 100px;
+    
+                            // image
+                            Rectangle {
+                                border-radius: 4px;
+                                clip: true;
+                                Image {
+                                    source: @image-url("../../assets/images/help-connect-dark.jpg");
+                                    image-fit: cover;
+                                    source-clip-y: 40;
+                                    width: parent.width;
+                                    height: parent.height;
+                                    x: 0;
+                                }
+
+                                // Darken image
+                                Rectangle {
+                                    width: 300px;
+                                    background: @radial-gradient(circle, transparent 10%, black.transparentize(0.4) 100%);
+                                }
+
+                                Text {
+                                    text: "Connection";
+                                    font-family: "Roboto";
+                                    font-size: 24px;
+                                    color: #ffffff;
+                                    font-weight: 700;
+                                }
+                            }
+                        } 
+                        
+                    }
+                }
             }
         }
 
