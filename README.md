@@ -1,4 +1,4 @@
-# Slint & Rust Way Better Template (WBT)
+# Slint & Rust Way Better Template
 A way better template for slint rust.
 ## Making a new page
 
